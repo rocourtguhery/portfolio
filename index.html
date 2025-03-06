@@ -1,11 +1,232 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css">
+    <link rel="stylesheet" href="./src/css/islandGen.css" type="text/css">
+    <link rel="stylesheet" href="./src/css/villagesGen.css" type="text/css">
+    <link rel="stylesheet" href="./src/css/coastal_Kingdom.css" type="text/css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2D Map Generator</title>
 </head>
 <body>
     
+
+    <div id="new-map-generator-box">
+        <div id="new-map-generator-backdrop"></div>
+        <div id="readMe">
+            <div id="close-readMe"><div class="btn-close"></div></div>
+            <h2 id="-map-generator-and-more-html-css-js-">🌍 Map Generator and More (HTML, CSS, JS)</h2>
+            <p><img src="./src/assets/images/map-generator-screenshot.png" alt="Project Preview"> </p>
+            <h4 id="-description">🚀 Description</h4>
+            <p>Un générateur de carte interactif combiné avec des fonctionnalités avancées pour la simulation de commerce, de transport maritime et de gestion de villages.<br>Ce projet est entièrement réalisé en <strong>HTML, CSS et JavaScript</strong> sans frameworks externes.</p>
+            
+            <h4>🛠️ Technologies Utilisées</h4>
+            <div style="padding: 10px 25px;">
+                <p>HTML5 – Structure du projet</p>
+                <p>CSS3 – Mise <span class="hljs-keyword">en</span> page et animations</p>
+                <p>JavaScript (ES6+) – <span class="hljs-keyword">G</span>é<span class="hljs-keyword">n</span>ération <span class="hljs-keyword">de</span> carte et logique du jeu</p>
+            </div>
+            <h4>💡 Fonctionnalités principales</h4>
+            <div style="padding: 10px 25px;">
+                <p>✔️ Génération dynamique de cartes 🌍</p>
+                <p>✔️ Génération procédurale d'îles 🌴</p>
+                <p>✔️ Gestion des ressources et commerce entre villages 📦</p>
+                <p>✔️ Déplacement des navires avec <strong>wrap-around</strong> (traversée Est-Ouest) ⛵</p>
+                <p>✔️ Système de marché avec fluctuations des prix 📈</p>
+                <p>✔️ Simulation de transport maritime avec routes commerciales optimisées</p>
+                <p>✔️ Navigation fluide avec drag & inertie</p>
+                <p>✔️ Interface interactive avec icônes et animations</p>
+            </div>
+
+            <h4>Choisir une île pour démarrer</h4>
+            <p><img src="./src/assets/images/choose-start-island.png" alt="Project Preview"> </p>
+            <br>
+            <h4>Cree un village</h4>
+            <span>Clicker sur une cellule valide pour cree un village</span>
+            <p><img src="./src/assets/images/create-a-village.png" alt="Project Preview"> </p>
+            <br>
+            <h4>Gérer votre village</h4>
+            <span>Clicker sur une cellule valide pour cree un village</span>
+            <p><img src="./src/assets/images/new-village.png" alt="Project Preview"> </p>
+            <br>
+
+        </div>
+        <div id="intro-panel">
+            <div id="welcome">
+                <div id="load-map">
+                    <div id="load-map-btn"></div>
+                    <span class="label-load-map">Charger une carte</span>
+                </div>
+                <div id="new-map">
+                    <div id="new-map-btn"></div>
+                    <span class="label-new-map">Lancer une nouvelle carte</span>
+                </div>
+                <a id="readMe-link" href="#" >Lire le README</a>
+            </div>
+            <div id="load-map-panel">
+                
+            </div>
+            <div id="new-map-generator">
+                <div id="new-map-generator-back-btn" class="btn-back"></div>
+                <div id="map-size">
+                    <h6 class="map-size-header">Taille de la carte</h6>
+                    <div id="map-size-conf">
+                        <div id="map-x">
+                            <span>X:</span>
+                            <div class="map-size-numberX"></div>
+                            <div class="map-size-number-modif">
+                                <div class="number-plus plusX"></div>
+                                <div class="number-minus minusX"></div>
+                            </div>
+                        </div>
+                        <div id="map-y">
+                            <span>Y:</span>
+                            <div class="map-size-numberY"></div>
+                            <div class="map-size-number-modif">
+                                <div class="number-plus plusY"></div>
+                                <div class="number-minus minusY"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="genMap">
+                    <span>Générer une carte</span>
+                </div>
+                <div id="map-info"></div>
+                <div id="map-name-box">
+                    <h6 class="map-name-header">Nom de la carte</h6>
+                    <input id="map-name" type="text">
+                    <!-- <div id="map-name"> </div> -->
+                </div>
+                <div id="save-map">
+                    <div id="save-map-text">Save</div>
+                </div>
+                <div id="save-signature"></div>
+            </div>
+        </div>
+    </div>
+    <div id="game-box">
+    </div>
+    <div id="mini-map"></div>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script type="text/javascript" src="src/js/class/class_islands.js"></script>
+    <script type="text/javascript" src="src/js/class/class_villages.js"></script>
+    <script type="text/javascript" src="src/js/class/class_buildings.js"></script>
+    <script type="text/javascript" src="src/js/class/class_warehouses.js"></script>
+    <script type="text/javascript" src="src/js/class/class_granaries.js"></script>
+    <script type="text/javascript" src="src/js/class/class_markets.js"></script>
+    <script type="text/javascript" src="src/js/class/class_ports.js"></script>
+    <script type="text/javascript" src="src/js/class/class_dockyards.js"></script>
+    <script type="text/javascript" src="src/js/class/class_shipyards.js"></script>
+    <script type="text/javascript" src="src/js/class/class_workers.js"></script>
+    <script type="text/javascript" src="src/js/class/class_merchants.js"></script>
+    <script type="text/javascript" src="src/js/class/class_ships.js"></script>
+    <script type="text/javascript" src="src/js/class/class_sailors.js"></script>
+    <script type="text/javascript" src="src/js/utility_obj.js"></script>
+    <script type="text/javascript" src="src/js/utility_funct.js"></script>
+    <script type="text/javascript" src="src/js/islandGen.js"></script>
+    <script type="text/javascript" src="src/js/villagesGen.js"></script>
+    <script type="text/javascript" src="src/js/humanTownhall.js"></script>
+    <script type="text/javascript" src="src/js/coastal_Kingdom.js"></script>
+
+
+
+    <script type="text/javascript">
+        let velocityX = 0, velocityY = 0;
+        let isDragging = false;
+        let startX, startY;
+        let isAnimating = false;
+
+        const gameBox = document.getElementById('game-box');
+
+        function updateMiniMap() {
+            let loopLeft = (gameBox.scrollLeft / cellSize) * (cellSize * 0.05) - 6;
+                    let loopTop = (gameBox.scrollTop / cellSize) * (cellSize * 0.05) - 6;
+                    $('#mini-map-loop').css({"left": `${(loopLeft >= 0)? loopLeft : 0}px`,
+                                            "top":`${(loopTop >= 0)? loopTop : 0}px`});
+        }
+
+        function animateInertia() {
+            if (isAnimating) return;
+            isAnimating = true;
+
+            function step() {
+                gameBox.scrollLeft -= velocityX;
+                gameBox.scrollTop -= velocityY;
+
+                velocityX *= 0.5;
+                velocityY *= 0.5;
+
+                updateMiniMap();
+
+                if (Math.abs(velocityX) < 0.1 && Math.abs(velocityY) < 0.1) {
+                    isAnimating = false;
+                    return;
+                }
+                requestAnimationFrame(step);
+            }
+            step();
+        }
+
+        function handleScrollEvent(e, isWheel = false) {
+            e.preventDefault();
+            if (gameBox.classList.contains("dontMove")) return;
+
+            if (isWheel) {
+                velocityX -= e.deltaX * 0.5; // Facteur d'accélération
+                velocityY -= e.deltaY * 0.5;
+            } else if (isDragging) {
+                const x = e.pageX - gameBox.offsetLeft;
+                const y = e.pageY - gameBox.offsetTop;
+
+                velocityX = x - startX;
+                velocityY = y - startY;
+
+                startX = x;
+                startY = y;
+            }
+
+            gameBox.scrollLeft -= velocityX;
+            gameBox.scrollTop -= velocityY;
+
+            updateMiniMap();
+
+            if (isWheel) animateInertia();
+        }
+
+        gameBox.addEventListener('mousemove', (e) => {
+            if (isDragging) handleScrollEvent(e);
+        });
+
+        gameBox.addEventListener('wheel', (e) => handleScrollEvent(e, true));
+
+        gameBox.addEventListener('mousedown', (e) => {
+            if (e.target.classList.contains("village")) return;
+            gameBox.classList.add('dragging');
+
+            isDragging = true;
+            startX = e.pageX - gameBox.offsetLeft;
+            startY = e.pageY - gameBox.offsetTop;
+            velocityX = velocityY = 0;
+        });
+
+        window.addEventListener('mouseup', () => {
+            gameBox.classList.remove('dragging');
+            isDragging = false;
+            animateInertia();
+        });
+
+    </script>
+
 </body>
 </html>
