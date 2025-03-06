@@ -1,0 +1,756 @@
+.mapCase{
+    user-select:none;
+    width: 64px;
+    height: 64px;
+    border-top: 1px solid;
+    border-right: 1px solid;
+    border-color: rgba(125, 182, 159, 1.3);
+    font-size: 12px;
+    background-size: contain !important;
+    display: flex;
+    justify-content: space-between;
+    display: -webkit-flex;
+    -webkit-justify-content: space-between;
+    flex-wrap: wrap;
+    -webkit-flex-wrap: wrap;
+    transform-origin: center !important;
+}
+.mapCase.plain> div {
+    position: relative !important;
+}
+.island-resource{
+    width: 31px;
+    height: 31px;
+    z-index: 10;
+    background-repeat: no-repeat !important;
+    background-size: contain !important;
+}
+.island-name{
+    position: absolute;
+    letter-spacing: 5px;
+    font-size: 20px;
+    /* font-weight: 500; */
+    color: #466948;
+    opacity: 0.2;
+    z-index: 1;
+    width: max-content;
+    transform: translate(-25%, -120%);
+    text-shadow: -1px -1px 0 #ddd, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+.island-name:hover{
+    opacity: 1;
+    z-index: 100;
+}
+.island-location{
+    font-size: 10px;
+    text-shadow: none;
+    letter-spacing: 0px;
+    color: #333;
+    font-weight: bold;
+}
+.ress-icon{
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+.ress-name{
+    display: none;
+}
+.ress-info{
+    display: none;
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background: #777;
+    border-radius: 10px;
+}
+.insland-resource:hover ~ .ressinfo{
+    display: block;
+}
+
+@keyframes sparkle {
+    0%, 100% {
+        filter: brightness(1);
+    }
+    50% {
+        filter: brightness(1.5);
+    }
+}
+
+.island-resource.gemsPurple {
+}
+
+
+/* .mapCase.ocean{
+    background: no-repeat url("../assets/images/ocean_50x50.png");
+    background-size: contain !important;
+}
+.mapCase.ocean.hidden{
+    background: #F4F5F0;
+    box-shadow: 0px 0px 10px 10px #F4F5F0;
+    opacity: 1;
+    z-index: 10;
+} */
+.mapCase.plain{
+    background: no-repeat url("../assets/images/grass50x50.png") !important;
+    background-size: contain !important;
+}
+.mapCase.hill{
+    background: no-repeat url("../assets/images/hill-3.png") !important;
+    background-size: contain !important;
+}
+.mapCase.mountain{
+    background: no-repeat url("../assets/images/mountain-2.png") !important;
+    background-size: contain !important;
+}
+.mapCase.deser{
+    background: no-repeat url("../assets/images/deser-1.png") !important;
+    background-size: contain !important;
+}
+.mapCase.oasis{
+    background: no-repeat url("../assets/images/oasis.png") !important;
+    background-size: contain !important;
+}
+.mapCase.corner-out-1.nord-est{
+    background: no-repeat url("../assets/images/beach-corner-out-1-nordEst.png");
+    background-size: contain !important;
+}
+.mapCase.corner-out-1.nord-ouest{
+    background: no-repeat url("../assets/images/beach-corner-out-1-nordOuest.png");
+    background-size: contain !important;
+}
+.mapCase.corner-out-1.sud-est{
+    background: no-repeat url("../assets/images/beach-corner-out-1-sudEst.png");
+    background-size: contain !important;
+}
+.mapCase.corner-out-1.sud-ouest{
+    background: no-repeat url("../assets/images/beach-corner-out-1-sudOuest.png");
+    background-size: contain !important;
+}
+.mapCase.corner-out-2.nord-est{
+    background: no-repeat url("../assets/images/beach-corner-out-2-nordEst.png");
+    background-size: contain !important;
+}
+.mapCase.corner-out-2.nord-ouest{
+    background: no-repeat url("../assets/images/beach-corner-out-2-nordOuest.png");
+    background-size: contain !important;
+}
+.mapCase.corner-out-2.sud-est{
+    background: no-repeat url("../assets/images/beach-corner-out-2-sudEst.png");
+    background-size: contain !important;
+}
+.mapCase.corner-out-2.sud-ouest{
+    background: no-repeat url("../assets/images/beach-corner-out-2-sudOuest.png");
+    background-size: contain !important;
+}
+.mapCase.corner-out-3.nord-est{
+    background: no-repeat url("../assets/images/beach-corner-out-3-nordEst.png");
+    background-size: contain !important;
+}
+.mapCase.corner-out-3.nord-ouest{
+    background: no-repeat url("../assets/images/beach-corner-out-3-nordOuest.png");
+    background-size: contain !important;
+}
+.mapCase.corner-out-3.sud-est{
+    background: no-repeat url("../assets/images/beach-corner-out-3-sudEst.png");
+    background-size: contain !important;
+}
+.mapCase.corner-out-3.sud-ouest{
+    background: no-repeat url("../assets/images/beach-corner-out-3-sudOuest.png");
+    background-size: contain !important;
+}
+.mapCase.corner-in-1.nord-est{
+    background: no-repeat url("../assets/images/beach-corner-in-1-nordEst.png");
+    background-size: contain !important;
+}
+.mapCase.corner-in-1.nord-ouest{
+    background: no-repeat url("../assets/images/beach-corner-in-1-nordOuest.png");
+    background-size: contain !important;
+}
+.mapCase.corner-in-1.sud-est{
+    background: no-repeat url("../assets/images/beach-corner-in-1-sudEst.png");
+    background-size: contain !important;
+}
+.mapCase.corner-in-1.sud-ouest{
+    background: no-repeat url("../assets/images/beach-corner-in-1-sudOuest.png");
+    background-size: contain !important;
+}
+.mapCase.corner-in-2.nord-est{
+    background: no-repeat url("../assets/images/beach-corner-in-2-nordEst.png");
+    background-size: contain !important;
+}
+.mapCase.corner-in-2.nord-ouest{
+    background: no-repeat url("../assets/images/beach-corner-in-2-nordOuest.png");
+    background-size: contain !important;
+}
+.mapCase.corner-in-2.sud-est{
+    background: no-repeat url("../assets/images/beach-corner-in-2-sudEst.png");
+    background-size: contain !important;
+}
+.mapCase.corner-in-2.sud-ouest{
+    background: no-repeat url("../assets/images/beach-corner-in-2-sudOuest.png");
+    background-size: contain !important;
+}
+.mapCase.corner-in-3.nord-est{
+    background: no-repeat url("../assets/images/beach-corner-in-3-nordEst.png");
+    background-size: contain !important;
+}
+.mapCase.corner-in-3.nord-ouest{
+    background: no-repeat url("../assets/images/beach-corner-in-3-nordOuest.png");
+    background-size: contain !important;
+}
+.mapCase.corner-in-3.sud-est{
+    background: no-repeat url("../assets/images/beach-corner-in-3-sudEst.png");
+    background-size: contain !important;
+}
+.mapCase.corner-in-3.sud-ouest{
+    background: no-repeat url("../assets/images/beach-corner-in-3-sudOuest.png");
+    background-size: contain !important;
+}
+.mapCase.beach-1.nord{
+    background: no-repeat url("../assets/images/beach-1-nord.png");
+    background-size: contain !important;
+}
+.mapCase.beach-1.sud{
+    background: no-repeat url("../assets/images/beach-1-sud.png");
+    background-size: contain !important;
+}
+.mapCase.beach-1.est{
+    background: no-repeat url("../assets/images/beach-1-est.png");
+    background-size: contain !important;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.mapCase.beach-1.ouest{
+    background: no-repeat url("../assets/images/beach-1-ouest.png");
+    background-size: contain !important;
+    flex-direction: column;
+    align-items: flex-end;
+}
+.mapCase.beach-2.nord{
+    background: no-repeat url("../assets/images/beach-2-nord.png");
+    background-size: contain !important;
+}
+.mapCase.beach-2.sud{
+    background: no-repeat url("../assets/images/beach-2-sud.png");
+    background-size: contain !important;
+}
+.mapCase.beach-2.est{
+    background: no-repeat url("../assets/images/beach-2-est.png");
+    background-size: contain !important;
+}
+.mapCase.beach-2.ouest{
+    background: no-repeat url("../assets/images/beach-2-ouest.png");
+    background-size: contain !important;
+}
+.mapCase.beach-3.nord{
+    background: no-repeat url("../assets/images/beach-3-nord.png");
+    background-size: contain !important;
+}
+.mapCase.beach-3.sud{
+    background: no-repeat url("../assets/images/beach-3-sud.png");
+    background-size: contain !important;
+}
+.mapCase.beach-3.est{
+    background: no-repeat url("../assets/images/beach-3-est.png");
+    background-size: contain !important;
+}
+.mapCase.beach-3.ouest{
+    background: no-repeat url("../assets/images/beach-3-ouest.png");
+    background-size: contain !important;
+}
+.mapCase.beach-4.nord{
+    background: no-repeat url("../assets/images/beach-4-nord.png");
+    background-size: contain !important;
+}
+.mapCase.beach-4.sud{
+    background: no-repeat url("../assets/images/beach-4-sud.png");
+    background-size: contain !important;
+}
+.mapCase.beach-4.est{
+    background: no-repeat url("../assets/images/beach-4-est.png");
+    background-size: contain !important;
+}
+.mapCase.beach-4.ouest{
+    background: no-repeat url("../assets/images/beach-4-ouest.png");
+    background-size: contain !important;
+}
+
+/* NORD ---- */
+.mapCase.nord .island-resource{
+    bottom: 5px;
+}
+.mapCase.nord .island-resource.fish{
+    top: -20px;
+    right: 20px;
+}
+.mapCase.nord .island-resource.stone {
+    bottom: 5px;
+}
+.mapCase.nord .fish{
+}
+.mapCase.beach-4.nord .island-resource.fish{
+    top: 0px;
+    left: 20px;
+}
+
+/* SUD ---- */
+.mapCase.sud .island-resource{
+}
+.mapCase.sud .island-resource.stone{
+    top: 5px;
+}
+.mapCase.sud .fish{
+    top: 60px;
+    left: 20px;
+}
+.mapCase.sud.beach-4 .fish{
+    top: 40px;
+    left: 20px;
+}
+
+/* EST ---- */
+.mapCase.est .island-resource.stone{
+    bottom: 5px;
+}
+.mapCase.est .fish {
+    top: 20px;
+    left: 60px;
+}
+
+/* OUEST ---- */
+.mapCase.ouest .island-resource{
+}
+.mapCase.ouest .island-resource.stone{
+    bottom: 5px;
+}
+.mapCase.ouest {
+    flex-direction: row-reverse;
+    -webkit-flex-direction: row-reverse;
+}
+.mapCase.ouest .fish{
+    top: 20px;
+    left: -20px;
+}
+
+/* NORD-EST ---- */
+.mapCase.nord-est .island-resource{
+}
+.mapCase.nord-est .fish{
+}
+.mapCase.corner-out-3.nord-est .wool{
+}
+
+/* NORD-OUEST ---- */
+.mapCase.nord-ouest .island-resource{
+}
+.mapCase.nord-ouest .fish {
+}
+
+/* SUD-EST ---- */
+.mapCase.sud-est .island-resource{
+}
+.mapCase.sud-est .fish{
+}
+
+/* SUD-OUEST ---- */
+.mapCase.sud-ouest .island-resource{
+}
+.mapCase.sud-ouest .fish{
+}
+
+
+/* MOUNTAIN ---- */
+.mapCase.mountain .iron{
+    transform: translate(2px, 10px);
+    filter: contrast(1.7) brightness(1.2) grayscale(0.5) drop-shadow(3px 1px 1px #000);
+}
+.mapCase.mountain .silver{
+    transform: translate(18px, 7px);
+    filter: contrast(1.1) drop-shadow(-2px 3px 1px black);
+}
+.mapCase.mountain .gold{
+    transform: translate(30px, 0px);
+    filter: drop-shadow(3px 3px 1px black);
+}
+
+/* RIVER ---- */
+.mapCase.river-1, .mapCase.river-2, .mapCase.river-3, .mapCase.river-4{
+    /* justify-content: center;
+    -webkit-justify-content: center;
+    align-self: center;
+    -webkit-align-self: center; */
+}
+.mapCase.river-1 .stone,.mapCase.river-2 .stone,.mapCase.river-3 .stone,.mapCase.river-4 .stone{
+}
+.mapCase.river-1.nor .fish{
+}
+.mapCase.river-1.sud .fish{
+}
+.mapCase.river-1.est .fish{
+}
+.mapCase.river-1.ouest .fish{
+    top: 20px;
+    left: 0px;
+}
+.mapCase.river-3 .fish{
+}
+.mapCase.river-4.nord .fish{
+    top: unset;
+    left: unset;
+}
+.mapCase.river-4.sud .fish{
+}
+.mapCase.river-4.est .fish{
+}
+.mapCase.river-4.ouest .fish{
+}
+.mapCase.river-2.nord .fish, .river-2.est .fish {
+}
+.mapCase.river-2.sud .fish {
+}
+.mapCase.river-2.ouest .fish {
+}
+.mapCase.river-1.nord .gold, .mapCase.river-2.nord .gold, .mapCase.river-3.nord .gold, .mapCase.river-4.nord .gold {
+}
+.mapCase.river-1.sud .gold, .mapCase.river-2.sud .gold, .mapCase.river-3.sud .gold, .mapCase.river-4.sud .gold {
+}
+.mapCase.river-1.est .gold, .mapCase.river-2.est .gold, .mapCase.river-3.est .gold, .mapCase.river-4.est .gold {
+}
+.mapCase.river-1.ouest .gold, .mapCase.river-2.ouest .gold, .mapCase.river-3.ouest .gold, .mapCase.river-4.ouest .gold {
+}
+
+/* PLAIN ---- */
+.mapCase.plain .stone{
+}
+
+/* HILL ---- */
+.mapCase.hill .copper{
+    transform: translate(15px, 0px);
+    filter: contrast(2.7) brightness(1.2)  drop-shadow(-1px 3px 1px #000);
+}
+.mapCase.hill .wool{
+    transform: translate(28px, -6px) rotateZ(-45deg);
+}
+.mapCase.hill .coal{
+    transform: translate(0px, 0px);
+    filter: contrast(1.9) brightness(1.1) drop-shadow(-1px 1px 1px #222);
+}
+
+/* OASIS ---- */
+.mapCase.oasis{
+    justify-content: center;
+    -webkit-justify-content: center;
+    align-self: center;
+    -webkit-align-self: center;
+}
+.mapCase.oasis .gems_purple{
+}
+.mapCase.oasis .gems_blue{
+}
+.mapCase.oasis .gems_green{
+}
+
+/* CORNER-1-OUT */
+.mapCase.corner-out-1.nord-ouest .fish{
+}
+.mapCase.corner-out-1.nord-est .fish{
+}
+/* CORNER-2-OUT */
+.mapCase.corner-out-2.sud-ouest .fish {
+}
+/* CORNER-3-OUT */
+.mapCase.corner-out-3.nord-est .fish {
+}
+.mapCase.corner-out-3.sud-ouest{
+}
+.mapCase.corner-out-3.nord-ouest .fish {
+}
+.mapCase.corner-out-3.sud-ouest .fish {
+}
+.mapCase.corner-out-3.sud-est .fish {
+}
+/* CORNER-1-IN */
+
+/* CORNER-1-IN */
+/* CORNER-2-IN */
+.mapCase.corner-in-2{
+    justify-content: center;
+    -webkit-justify-content: center;
+    align-items: center;
+    -webkit-align-items: center;
+}
+.mapCase.corner-in-2 .fish{
+}
+/* CORNER-3-IN */
+.mapCase.corner-in-3.nord-est .fish, .mapCase.corner-in-1.nord-est .fish{
+}
+.mapCase.corner-in-3.nord-ouest .fish, .mapCase.corner-in-1.nord-ouest .fish{
+}
+.mapCase.corner-in-3.sud-est .fish, .mapCase.corner-in-1.sud-est .fish{
+}
+.mapCase.corner-in-3.sud-ouest .fish, .mapCase.corner-in-1.sud-est .fish{
+}
+/* CORNER-1-IN */
+
+/* EMBOUCHURE-1 */
+.mapCase.embouchure-1.nord .fish{
+    bottom: 0;
+}
+.mapCase.embouchure-1.sud .fish{
+    bottom: 0;
+}
+.mapCase.embouchure-1.est .fish{
+    left: unset;
+    top: 30px;
+}
+.mapCase.embouchure-1.nord .gold, .mapCase.embouchure-2.nord .gold, .mapCase.embouchure-3.nord .gold {
+}
+.mapCase.embouchure-1.sud .gold, .mapCase.embouchure-2.sud .gold, .mapCase.embouchure-3.sud .gold {
+}
+.mapCase.embouchure-1.est .gold, .mapCase.embouchure-2.est .gold, .mapCase.embouchure-3.est .gold {
+}
+.mapCase.embouchure-1.ouest .gold, .mapCase.embouchure-2.ouest .gold, .mapCase.embouchure-3.ouest .gold {
+}
+
+/* BEACH-4 est */
+.mapCase.beach-4 .fish{
+}
+.mapCase.beach-4.ouest .fish{
+}
+.mapCase.beach-4.est .fish{
+}
+
+
+
+
+
+.mapCase.embouchure-1.nord{
+    background: no-repeat url("../assets/images/embouchure-1-nord.png");
+    background-size: contain !important;
+}
+.mapCase.embouchure-1.sud{
+    background: no-repeat url("../assets/images/embouchure-1-sud.png");
+    background-size: contain !important;
+}
+.mapCase.embouchure-1.est{
+    background: no-repeat url("../assets/images/embouchure-1-est.png");
+    background-size: contain !important;
+}
+.mapCase.embouchure-1.ouest{
+    background: no-repeat url("../assets/images/embouchure-1-ouest.png");
+    background-size: contain !important;
+}
+.mapCase.embouchure-2.nord{
+    background: no-repeat url("../assets/images/embouchure-2-nord.png");
+    background-size: contain !important;
+}
+.mapCase.embouchure-2.sud{
+    background: no-repeat url("../assets/images/embouchure-2-sud.png");
+    background-size: contain !important;
+}
+.mapCase.embouchure-2.est{
+    background: no-repeat url("../assets/images/embouchure-2-est.png");
+    background-size: contain !important;
+}
+.mapCase.embouchure-2.ouest{
+    background: no-repeat url("../assets/images/embouchure-2-ouest.png");
+    background-size: contain !important;
+}
+.mapCase.embouchure-3.nord{
+    background: no-repeat url("../assets/images/embouchure-3-nord.png");
+    background-size: contain !important;
+}
+.mapCase.embouchure-3.sud{
+    background: no-repeat url("../assets/images/embouchure-3-sud.png");
+    background-size: contain !important;
+}
+.mapCase.embouchure-3.est{
+    background: no-repeat url("../assets/images/embouchure-3-est.png");
+    background-size: contain !important;
+}
+.mapCase.embouchure-3.ouest{
+    background: no-repeat url("../assets/images/embouchure-3-ouest.png");
+    background-size: contain !important;
+}
+.mapCase.river-1.nord{
+    background: no-repeat url("../assets/images/river-1-nord.png");
+    background-size: contain !important;
+}
+.mapCase.river-1.sud{
+    background: no-repeat url("../assets/images/river-1-sud.png");
+    background-size: contain !important;
+}
+.mapCase.river-1.est{
+    background: no-repeat url("../assets/images/river-1-est.png");
+    background-size: contain !important;
+}
+.mapCase.river-1.ouest{
+    background: no-repeat url("../assets/images/river-1-ouest.png");
+    background-size: contain !important;
+}
+.mapCase.river-2.nord{
+    background: no-repeat url("../assets/images/river-2-nord.png");
+    background-size: contain !important;
+}
+.mapCase.river-2.sud{
+    background: no-repeat url("../assets/images/river-2-sud.png");
+    background-size: contain !important;
+}
+.mapCase.river-2.est{
+    background: no-repeat url("../assets/images/river-2-est.png");
+    background-size: contain !important;
+}
+.mapCase.river-2.ouest{
+    background: no-repeat url("../assets/images/river-2-ouest.png");
+    background-size: contain !important;
+}
+.mapCase.river-3.nord{
+    background: no-repeat url("../assets/images/river-3-nord.png");
+    background-size: contain !important;
+}
+.mapCase.river-3.sud{
+    background: no-repeat url("../assets/images/river-3-sud.png");
+    background-size: contain !important;
+}
+.mapCase.river-3.est{
+    background: no-repeat url("../assets/images/river-3-est.png");
+    background-size: contain !important;
+}
+.mapCase.river-3.ouest{
+    background: no-repeat url("../assets/images/river-3-ouest.png");
+    background-size: contain !important;
+}
+.mapCase.river-4.nord{
+    background: no-repeat url("../assets/images/river-4-nord.png");
+    background-size: contain !important;
+}
+.mapCase.river-4.sud{
+    background: no-repeat url("../assets/images/river-4-sud.png");
+    background-size: contain !important;
+}
+.mapCase.river-4.est{
+    background: no-repeat url("../assets/images/river-4-est.png");
+    background-size: contain !important;
+}
+.mapCase.river-4.ouest{
+    background: no-repeat url("../assets/images/river-4-ouest.png");
+    background-size: contain !important;
+}
+
+
+.mapCase .gold, .gold{
+    background: no-repeat url("../assets/images/gold.png");
+    width: 16px  !important;
+    height: 16px  !important;
+    /* animation: sparkle 3s infinite; */
+}
+.mapCase .silver, .silver{
+    background: no-repeat url("../assets/images/silver.png");
+    width: 16px  !important;
+    height: 16px  !important;
+    /* animation: sparkle 3s infinite; */
+}
+.mapCase .iron, .iron{
+    background: no-repeat url("../assets/images/iron.png");
+    width: 16px  !important;
+    height: 16px  !important;
+}
+.mapCase .copper, .copper{
+    background: no-repeat url("../assets/images/iron.png");
+    width: 16px  !important;
+    height: 16px  !important;
+}
+.mapCase .coal, .coal{
+    background: no-repeat url("../assets/images/coal.png");
+    width: 16px  !important;
+    height: 16px  !important;
+}
+.mapCase .stone, .stone{
+    background: no-repeat url("../assets/images/stone-1.png");
+    width: 24px !important;
+    height: 24px !important;
+    filter: brightness(1.25) drop-shadow(0px 1px 0px black);
+}
+.mapCase .gems_purple, .gems_purple{
+    background: no-repeat url("../assets/images/gemsPurple.png");
+    width: 16px  !important;
+    height: 16px  !important;
+    /* animation: sparkle 3s infinite; */
+}
+.mapCase .gems_green, .gems_green{
+    background: no-repeat url("../assets/images/gemsGreen.png");
+    width: 16px  !important;
+    height: 16px  !important;
+    /* animation: sparkle 3s infinite; */
+}
+.mapCase .gems_blue, .gems_blue{
+    background: no-repeat url("../assets/images/gemsBlue.png");
+    width: 16px  !important;
+    height: 16px  !important;
+    /* animation: sparkle 3s infinite; */
+}
+.mapCase .fish, .fish{
+    background: no-repeat url("../assets/images/fish-13.png");
+    width: 22px  !important;
+    height: 22px  !important;
+    opacity: 0.7;
+}
+.mapCase.river-1 .fish,
+.mapCase.river-2 .fish,
+.mapCase.river-3 .fish,
+.mapCase.river-4 .fish,
+.mapCase.embouchure-1 .fish,
+.mapCase.embouchure-2 .fish,
+.mapCase.embouchure-3 .fish{
+    background: no-repeat url("../assets/images/fish-3.png");
+    width: 18px !important;
+    height: 18px !important;
+    opacity: 0.8;
+    filter: drop-shadow(0px 1px 0px black);
+}
+.mapCase .wood, .wood{
+    background: url("../assets/images/wood.png");
+}
+.mapCase .vine, .vine{
+    background: url("../assets/images/vine-2.png");
+}
+.vine-icon{
+    background: url("../assets/images/vine-icon.png");
+}
+.mapCase .sugar_cane, .sugar_cane{
+    background: url("../assets/images/sugar_cane.png");
+}
+.mapCase .cereals, .cereals{
+    background: url("../assets/images/cereals.png");
+}
+.mapCase .wool, .wool{
+    background: url("../assets/images/sheep.png");
+    height: 25px !important;
+}
+.mapCase .tobacco, .tobacco{
+    background: url("../assets/images/tobacco.png");
+}
+.mapCase .coffee, .coffee{
+    background: url("../assets/images/coffee.png");
+}
+.mapCase .cacao, .cacao{
+    background: url("../assets/images/cacao.png");
+
+}
+.mapCase .cotton, .cotton{
+    background: url("../assets/images/cotton.png");
+
+}
+.mapCase .banana, .banana{
+    background: url("../assets/images/banana.png");
+
+}
+.mapCase .orchards, .orchards{
+    background: url("../assets/images/orchards.png");
+
+}
+.mapCase .meat, .meat{
+    background: url("../assets/images/meat.png");
+}

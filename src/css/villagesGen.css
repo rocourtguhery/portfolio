@@ -1,0 +1,114 @@
+.village{
+    background: no-repeat url("../assets/images/village-2.png") !important;
+    background-size: contain !important;
+    width: 31px;
+    height: 31px;
+    z-index: 20;
+    cursor: pointer !important;
+}
+.village.capitale{
+    background: no-repeat url("../assets/images/village-2.png") !important;
+    background-size: contain !important;
+    width: 31px;
+    height: 31px;
+}
+.village-ress-select{
+    border: 1px solid rgb(237, 233, 29);
+    zoom: 1.5;
+    z-index: 50;
+}
+.ship{
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    z-index: 50;
+    display: none;
+}
+.chatte{
+    background: no-repeat url("../assets/images/ship-3.1.png") !important;
+    background-size: contain !important;
+}
+.mapCase .interieur{
+    
+}
+.mapCase .cotiere{
+   
+}
+.village-name{
+    position: absolute;
+    width: max-content;
+    top: -15px;
+    left: -25%;
+    font-weight: 600;
+}
+/* VILLAGE POSITION */
+.mapCase.sud .cotiere, .mapCase.nord .cotiere {
+    right: 0;
+}
+.mapCase.nord .cotiere {
+    bottom: 0;
+
+}
+.mapCase.nord-est .village.cotiere {
+    left: 0;
+    bottom: 0;
+}
+.mapCase.corner-out-3.nord-est .village.cotiere {
+    left: 25px !important;
+    top: 7px;
+}
+.mapCase.nord-ouest .village.cotiere {
+    right: 0;
+    bottom: 0;
+}
+.mapCase.corner-out-3.nord-ouest .village.cotiere {
+    left: 10px;
+    top: 10px;
+}
+
+.mapCase.sud-est .village.cotiere {
+    left: 0;
+    top: 0;
+}
+.mapCase.corner-out-3.sud-est .village.cotiere {
+    left: 25px !important;
+    top: 25px !important;
+}
+.mapCase.sud-ouest .village.cotiere {
+    right: 0;
+    top: 0;
+}
+.mapCase.corner-out-3.sud-ouest .village.cotiere {
+    left: 5px;
+    top: 25px;
+}
+
+.mapCase.corner-in-2.nord-est .village.cotiere {
+    bottom: 0px;
+    left: 0px;
+}
+.mapCase.corner-in-2.nord-ouest .village.cotiere {
+    bottom: 0px;
+    right: 0px;
+}
+.mapCase.corner-in-2.sud-est .village.cotiere {
+    top: 0px;
+    left: 0px;
+}
+.mapCase.corner-in-2.sud-ouest .village.cotiere {
+    top: 0px;
+    right: 0px;
+}
+
+.mapCase.hidden {
+    background-color: black; 
+    opacity: 0; 
+}
+
+.mapCase.discovered {
+    opacity: 1;
+    background-color: transparent;
+}
+.mapCase.discovered {
+    transition: opacity 0.5s ease-in-out, background-color 0.5s ease-in-out;
+}
