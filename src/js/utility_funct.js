@@ -314,7 +314,7 @@ function simulateTravel(startPort, buyerName, endPort, sellerName, ship, onCompl
                     "display": wrap? "none": "block", 
                     "transition": `transform ${captainManeuverTime}ms ease-out`,
                     "transform-origin": "center center", 
-                    "transform": `rotate(${start.orientation}deg) translate(50%, 50%)`
+                    "transform": `rotate(${start.orientation}deg) translate(0%, 20%)`
                 });
                 if (wrap) {
                     $(`#${ship.id}`).fadeTo(100, 0);
@@ -375,7 +375,7 @@ async function animatePath(ship, path, onCompletion) {
                 "display": wrap? "none": "block",
                 "transition": `transform 100ms ease-out`,
                 "transform-origin": "center center", 
-                "transform":`translate(50%, 50%) rotate(${step.orientation}deg)`
+                "transform":`translate(0%, 20%) rotate(${step.orientation}deg)`
             }).animate(
                 { top: `${step.x * cellSize}px`, left: `${step.y * cellSize}px` },
                 2500,
@@ -660,14 +660,14 @@ function displayVillageHappiness(villageId, happiness){
     $(`.village-${villageId} #village-info-happiness`).empty().append(formatHappiness(happiness));
 }
 function displayVillageGold(villageId, totalGold){
-    let html = `<span class="gourdes"></span><span style="position:absolute;left:22px;top:3px;">${shortNumberFormat(totalGold)}</span><span class="info-text"> ${totalGold} Pièces</span>`;
+    let html = `<span class="gourdes"></span><span>${shortNumberFormat(totalGold)}</span><span class="info-text"> ${totalGold} Pièces</span>`;
     $(`.village-${villageId} #village-info-gold`).empty().append(html);
 }
 function updateWarehouseResources(villageId, stockId, quantity){
     $(`.village-${villageId} #townhall-view-warehouse #${stockId} .stock-num`).empty().text(Math.floor(quantity));
 }
 function newWarehouseResources(villageId, stockId, stockType, stockQuantity){
-    let html = `<div id="${stockId}" class="stock stock-${stockType} resource icon-${stockType}"><span class="stock-num">${Math.floor(stockQuantity)}</span><span class="info-text">${ressourceFrName(stockType)}</span></div>`;
+    let html = `<div id="${stockId}" class="stock stock-${stockType} resource icon-${stockType}"><span class="stock-num">${Math.floor(stockQuantity)}</span><span class="info-text">${ressourceFrName(stockType)||""}</span></div>`;
     $(`.village-${villageId} #townhall-view-warehouse`).append(html);
 }
 function formatHappiness(happiness){
@@ -681,7 +681,7 @@ function formatHappiness(happiness){
 function formatworkersConsumptions(consumption){
     let html = ``;
     Object.entries(consumption).forEach(([name, value]) => {
-        html += `<div class="conso conso-${name}">x${value}<span class="info-text">${ressourceFrName(name)}</span></div>`;
+        html += `<div class="conso conso-${name}">x${value}<span class="info-text">${ressourceFrName(name)||""}</span></div>`;
     });
     return html;
 }
@@ -747,9 +747,8 @@ function amenagementIcon(amenagement){
         jewelry_workshop: `<i class='tag-icon tag-rg-icon-jewelry_workshop'>&#xe812;</i>`,
         theater: `<i class='tag-icon tag-rg-icon-theater'>&#xe813;</i>`,
         perfume_workshop: `<i class='tag-icon tag-rg-icon-perfume_workshop'>&#xe814;</i>`,
-
     }
-    return amenagements[amenagement];
+    return amenagements[amenagement] || false;
 }
 function amenagementFrName(amenagement){
     const amenagements = {
@@ -783,7 +782,7 @@ function amenagementFrName(amenagement){
         perfume_workshop: `Atelier de parfum`,
         theater: `Théâtre`,
     }
-    return amenagements[amenagement];
+    return amenagements[amenagement] || false;
 }
 function ressourceFrName(resource){
     const ressourcesFr = {
@@ -826,61 +825,89 @@ function ressourceFrName(resource){
         shield: "bouclier",
 
     }
-    return ressourcesFr[resource] || '';
+    return ressourcesFr[resource] || false;
+}
+function workersFrType(type){
+    const workersType = {
+        peasant: "Paysan",
+        workman: "Ouvrier",
+        learner: "Apprenti",
+        deckhand: "Mousse",
+        dockhand: "Docker",
+        farmer: "Fermier", 
+        master_Farmer: "Agriculteur", 
+        miller: "Meunier", 
+        hookman: "Pêcheur à la ligne", 
+        netter: "Pêcheur au filet", 
+        fisherman: "Pêcheur", 
+        seaman: "Marin", 
+        longshoreman: "Manutentionnaire", // portuaire
+        foreman: "Contremaître",
+        carpenter: "Charpentier",
+        master_shipwright: "Maître charpentier naval",
+        miner: "Mineur", 
+        lumberjack: "Bûcheron", 
+        sawyer: "Scieur de long", 
+        blacksmith: "Forgeron", 
+        master_builder: "Maître d'œuvre", 
+        maneuver: "Manœuvre", 
+        rancher: "Éleveur", 
+        herdsman: "Berger", 
+        stonemason: "Tailleur de pierre", 
+        sailor: "Matelot", 
+        capitain: "Capitaine", 
+        merchant: "Marchand", 
+        broker: "Courtier", 
+        administrator: "Administrateur", 
+        weaver: "Tisserand", 
+        tailor: "Tailleur", 
+        brewer: "Brasseur",
+        tobacconist: "Fabricant de cigares", 
+        coffee_roaster: "Torréfacteur", 
+        chocolatier: "Chocolatier", 
+        jeweller: "Bijoutier-joaillier", 
+    }
+    return workersType[type];
 }
 function startGlobalTimer(villages, interval = 60000) {
-    // Managing population growth and worker consumption
+    // Managing population growth, worker consumption, production management
     setInterval(() => {
         villages.forEach(village => {
             if (village.workers.length <= 0) return;
             const port = village.amenagements.find(building => building.type === "port");
             village.managePopulation();
+            village.amenagementsProduction();
+            village.workshopsProduction();
 
             if (village.owner) return;
             port.planShipConstruction();
         });
     }, interval); 
 
-    // Taxes management
+    // Taxes management, trade Management and Plan Construction management
     setInterval(() => {
         villages.forEach(village => {
             if (village.workers.length <= 0) return;
             village.generateTaxes();
-        });
-    }, 15000);
-    
-    // Trade Management, Plan Construction management
-    setInterval(() => {
-        villages.forEach(village => {
-            if (village.workers.length <= 0 || village.owner) return;
+
+            if (village.owner) return;
             const market = village.amenagements.find(building => building.type === "market");
             market.maintainMarket();
 
-            if (village.workers.length <= 0) return;
             village.planConstruction();
+            
         });
-        // renderVillageStats(villages);
-    }, 15000); 
+    }, 30000);
 
-    // Production management, Construction management
+    // Construction management
     setInterval(() => {
         villages.forEach(village => {
             if (village.workers.length <= 0) return;
-            village.workshopsProduction();
-
-            // if (village.owner) return;
             village.startConstruction();
         });
-    }, 5000);  
-
-    // Production management
-    setInterval(() => {
-        villages.forEach(village => {
-            if (village.workers.length <= 0) return;
-            village.amenagementsProduction();
-        });
-    }, 2500);  
+    }, 5000);
 }
+
 function showMap(grid, islands, callback){
     const fragment = document.createDocumentFragment();
     islands.forEach(island => {
@@ -1100,4 +1127,38 @@ function tornKingdomMap(){
         maps[mapName] = { grid: tornKingdomGrid, islands: tornKingdomIslands, gridSize:{x:50, y:50} };
         localStorage.setItem("maps", JSON.stringify(maps) );
     });
+}
+function showTabsBtn(village){
+    const buildingsBtn = document.querySelector(`.village-${village.id} .buildings-btn`);
+    const marketBtn = document.querySelector(`.village-${village.id} .market-btn`);
+    const portBtn = document.querySelector(`.village-${village.id} .port-btn`);
+    
+    /* const amenagements = village.amenagements.find(building => building.category === "amenagement");
+    const market = village.amenagements.find(building => building.type === "market");
+    const port = village.amenagements.find(building => building.type === "port"); */
+
+    if (isBtnHidden(buildingsBtn) && villageHasBuilding(village, false, "amenagement" )) {
+        // $(`#buildings-box-tabs .buildings-btn`).show(50);
+        buildingsBtn.style.display = 'block';
+    }
+    if (isBtnHidden(marketBtn) && villageHasBuilding(village, "market", false )) {
+        // $(`#buildings-box-tabs .market-btn`).show(50);
+        marketBtn.style.display = 'block';
+    }
+    if (isBtnHidden(portBtn) && villageHasBuilding(village, "port", false )) {
+        // $(`#buildings-box-tabs .port-btn`).show(50);
+        portBtn.style.display = 'block';
+    }
+}
+function isBtnHidden(el) {
+    return (el.offsetParent === null)
+}
+function villageHasBuilding(village, buildingType = false, buildingCategory = false) {
+    if (buildingType) {
+        return village.amenagements.some(building => building.type === buildingType);
+    }
+    if (buildingCategory) {
+        return village.amenagements.some(building => building.category === buildingCategory);
+    }
+    return false;
 }
