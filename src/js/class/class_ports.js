@@ -110,7 +110,7 @@ class Ports extends Buildings {
         const preparationTime = Math.floor(5000 / dockerContribution);
         setTimeout(() => {
             this.processMaritimeRoutes(ship, villageBuyer, villageSeller)
-            this.portsGainExperience(0.15);
+            this.portsGainExperience(0.05);
         }, preparationTime);
         
     }
@@ -143,7 +143,7 @@ class Ports extends Buildings {
             dockyard.checkSupplies();
             dockyard.selectShipToRepair();
         };
-        this.portsGainExperience(0.2);
+        this.portsGainExperience(0.05);
     }
     evaluateMaritimeNeeds() {
         const shipyardsVillages = villages.filter(village => 

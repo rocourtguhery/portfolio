@@ -28,7 +28,7 @@ class Warehouses extends Buildings {
             const qtyToAdd = Math.min(quantity, maxNonFoodSpace, freeSpace);
             this.updateStock(resourceType, qtyToAdd);
         }
-        this.buildingGainExperience(0.25);
+        this.buildingGainExperience(0.05);
     }
     foodQuotaCap(){
         const totalCapacity = this.calculateCapacity();

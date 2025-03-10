@@ -143,8 +143,8 @@ class Ships{
                         transportUnit.from = "-";
                         transportUnit.to = "-";
                         port.unloadGoods(transportUnit);
-                        this.gainExperience(0.2);
-                        portSeller.portsGainExperience(0.2);
+                        this.gainExperience(0.05);
+                        portSeller.portsGainExperience(0.05);
                     });
 
                 }, preparationTime);
@@ -167,8 +167,8 @@ class Ships{
                         transportUnit.from = "-";
                         transportUnit.to = "-";
                         port.unloadGoods(transportUnit);
-                        this.gainExperience(0.2);
-                        portSeller.portsGainExperience(0.2);
+                        this.gainExperience(0.05);
+                        portSeller.portsGainExperience(0.05);
                     })
                 
                 }, preparationTime);
@@ -204,6 +204,6 @@ class Ships{
         }
     }
     getLevelUpThreshold() {
-        return this.level * 150;
+        return this.level * 100;
     }
 }

@@ -20,7 +20,6 @@ class Buildings{
         this.stock = []; 
         this.baseProduction = this.buildingBaseProduction(); // Production de base par tick
         this.nextLevelProgress = 0;
-
     }
     buildingBaseProduction() {
         const production = amenagementProduction(this.type);
@@ -119,7 +118,7 @@ class Buildings{
 
         const toolMultiplier = lookForTools?  1.5 : 0.8;
 
-        let millMultiplier = 1.0;
+        let millMultiplier = 1;
 
         if (this.resource && this.resource?.type === "cereals") {
 
@@ -130,23 +129,48 @@ class Buildings{
                     const millers = mill.workers;
                     const millerContribution = millers.reduce((sum, worker) => {
 
-                        worker.gainExperience(0.2);
+                        worker.gainExperience(0.05);
                         return sum + worker.laborforce;
 
                     }, 0);
 
                     return total + (1.5 * millerContribution);
 
-            }, 1.0);
+            }, 1);
         }
 
         workers.forEach(w => {
-            w.gainExperience(0.2);
+            w.gainExperience(0.05);
         });
 
-        this.buildingGainExperience(0.15);
+        this.buildingGainExperience(0.05);
 
         return baseProduction * workerContribution * toolMultiplier * millMultiplier;
+    }
+    showBuildingProd(){
+        const baseProduction = this.production || 1; // Production de base
+        const workers = this.workers;
+        const workerContribution = workers.reduce((total, worker) => total + worker.laborforce, 0);
+        const lookForTools = this.pickFromStorage("tools", Math.ceil(workers.length / 2), "check");
+        const toolMultiplier = lookForTools?  1.5 : 0.8;
+        let millMultiplier = 1;
+        if (this.resource && this.resource?.type === "cereals") {
+            millMultiplier = this.getBuildingVillage().amenagements
+            .filter(a => a.type === "mill")
+                .reduce((total, mill) => {
+                    const millers = mill.workers;
+                    const millerContribution = millers.reduce((sum, worker) => {
+                        return sum + worker.laborforce;
+                    }, 0);
+                    return total + (1.5 * millerContribution);
+            }, 1);
+        }
+        const prod = baseProduction * workerContribution * toolMultiplier * millMultiplier;
+        const bonus = {tools: `x1.5 | x0.8`};
+        if (this.resource && this.resource?.type === "cereals") {
+            bonus["mill"] = `${millMultiplier > 1? 0: millMultiplier} | 0`;
+        }
+        return {prod, bonus};
     }
 
     handleWorkshopProduction() {
@@ -240,14 +264,15 @@ class Buildings{
         return false;
     }
     buildingGainExperience(amount) {
+        const village = this.getBuildingVillage().village;
         const xpMultiplicator = (this.workers.length >= this.maxLabors)? 1.25 : 1;
         this.nextLevelProgress += xpMultiplicator * amount;
-        if (this.nextLevelProgress >= this.getLevelUpThreshold() && this.level < 3  ) {
+        if (this.nextLevelProgress >= this.getLevelUpThreshold() && this.level < 3  && !village.owner) {
             this.planUpgrade();
         }
     }
     getLevelUpThreshold() {
-        return this.level * 100;
+        return this.level * 200;
     }
     planUpgrade() {
         const village = this.getBuildingVillage().village;
