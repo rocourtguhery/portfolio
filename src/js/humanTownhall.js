@@ -4,7 +4,14 @@ $(document).ready(function () {
         const villageId = $this.attr("id").split("-")[1].replace("x", "-");
         $("#game-box .mapCase").fadeTo(20, 0);
         $("#islandsOption-backdrop").fadeTo(250, 0.7);
-        $("#game-box").after(`<div id="village-management-box" class="village-${villageId}"><div id="village-management" villageId="${villageId}"><div class="btn-close close-page"></div></div></div>`);
+        let html = `<div id="village-management-box" class="village-${villageId}">`;
+        html += `<div id="village-management" villageId="${villageId}">`;
+            html += `<div id="village-management-drop"></div>`;
+            html += `<div class="btn-close close-page"></div>`;
+        html += `</div>`;
+        
+        html += `</div>`;
+        $("#game-box").after(html);
         $("#mini-map").fadeOut(150);
         displayVillage(villageId);
     });
@@ -28,12 +35,12 @@ $(document).ready(function () {
     });
     $(document).on("click",`.buildings-box-btn`, function() {
         if($(this).hasClass("active")) return;
-        $(".buildings-box-btn").removeClass("active").animate({
+        $(".buildings-box-btn").animate({
             backgroundPositionX: "20px"
-        },50 );
+        },50 ).removeClass("active");
         $(this).animate({
             backgroundPositionX: "0px"
-        },250 ,()=>{
+        },50 ,()=>{
             $(this).addClass("active");
         });
     });
@@ -169,9 +176,7 @@ $(document).ready(function () {
 function displayVillage(villageId){
     const village = villages.find(village => village.id === villageId);
     $("#village-management").append(`<div id="village-name-banner-box"><div id="village-name-banner"><span id="village-name">${village.name}</span><input id="edit-village-name" type="text" maxLength="18" value="${village.name}" ></div></div>`);
-    const resources = village.resources.filter(res => res.discovered);
-    const manants = village.workers.filter(worker => worker.type === "manant" || !worker.buildingID );
-
+    
     let header = `<div id="village-info">`;
         header += `<div class="population"><span id="village-info-population"></span> <span class="info-text">Populations</span> </div>`;
         header += `<div class="building"><span id="village-info-building"></span> <span class="info-text">Bâtiments</span> </div>`;
@@ -180,42 +185,20 @@ function displayVillage(villageId){
     header += `</div>`;
 
     let body = `<div id="buildings-box">`;
-        body += `<div class="townhall-view">`;
-            body += `<div id="townhall-box-1">`;
-                body += `<div class="townhall-img"><div class="townhall-management"><i class='fas fa-landmark'></i></div></div>`;
-                body += `<div class="resource-catalog"></div>`;
-                body += `<div id="new-workers-box"></div>`;
-            body += `</div>`;
-            body += `<div id="townhall-view-warehouse"></div>`;
-            body += `<div id="planConstruction-view">`;
-                body += `<div id="planConstruction-view-header">Construction</div>`;
-                body += `<div id="planConstruction-building-list"></div>`;
-            body += `</div>`;
-            body += `<div id="constructionQueue">`;
-                body += `<div id="constructionQueue-header">Chantier</div>`;
-                body += `<div id="constructionQueue-list"></div>`;
-            body += `</div>`;
-        body += `</div>`;
 
         body += `<div id="buildings-box-tabs">`;
-            body += `<div id="townhall-btn" class="buildings-box-btn active"><span class="info-text">${amenagementFrName("townhall")}</span></div>`;
-            body += `<div id="buildings-btn" class="buildings-box-btn"><span class="info-text">Amenagements</span></div>`;
-            body += `<div id="market-btn" class="buildings-box-btn"><span class="info-text">${amenagementFrName("market")}</span></div>`;
-            body += `<div id="port-btn" class="buildings-box-btn"><span class="info-text">${amenagementFrName("port")}</span></div>`;
+            body += `<div class="buildings-box-btn townhall-btn active"><span class="info-text">${amenagementFrName("townhall")||""}</span></div>`;
+            body += `<div class="buildings-box-btn buildings-btn"><span class="info-text">Amenagements</span></div>`;
+            body += `<div class="buildings-box-btn market-btn"><span class="info-text">${amenagementFrName("market")||""}</span></div>`;
+            body += `<div class="buildings-box-btn port-btn"><span class="info-text">${amenagementFrName("port")||""}</span></div>`;
         body += `</div>`;
     body += `</div>`;
 
     $("#village-name-banner-box").append(header);
     $("#village-management").append(body);
-
+    showTabsBtn(village);
     displayVillageInfo(village);
-    displayResources(village, resources);
-    displayWorkers(manants, village, `#new-workers-box`);
-    displayWarehouse(village);
-
-    
-    displayConstructionQueue(village, `#constructionQueue-list`);
-    displayPlanConstructionBuildings(village);
+    displayTownhall(village);
 
     $(document).on("keyup",`#edit-village-name`, function(event) {
         if (event.keyCode === 13) {
@@ -248,6 +231,38 @@ function displayVillage(villageId){
         });
     });
     resizeName();
+}
+function displayTownhall(village) {
+    let body = `<div class="townhall-view display-village-components">`;
+        body += `<div id="townhall-box-1">`;
+            body += `<div class="townhall-img"><div class="townhall-management"><i class='fas fa-landmark'></i></div></div>`;
+            body += `<div class="resource-catalog"></div>`;
+            body += `<div id="new-workers-box"></div>`;
+        body += `</div>`;
+        body += `<div id="townhall-view-warehouse"></div>`;
+        body += `<div id="planConstruction-view">`;
+            body += `<div id="planConstruction-view-header">Construction</div>`;
+            body += `<div id="planConstruction-building-list"></div>`;
+        body += `</div>`;
+        body += `<div id="constructionQueue">`;
+            body += `<div id="constructionQueue-header">Chantier</div>`;
+            body += `<div id="constructionQueue-list"></div>`;
+        body += `</div>`;
+    body += `</div>`;
+    $("#buildings-box").append(body);
+
+    const resources = village.resources.filter(res => res.discovered);
+    const peasants = village.workers.filter(worker => worker.type === "peasant" || !worker.buildingID );
+
+    displayResources(village, resources);
+    displayWorkers(peasants, village, `#new-workers-box`);
+    displayWarehouse(village);
+
+    displayConstructionQueue(village, `#constructionQueue-list`);
+    displayPlanConstructionBuildings(village);
+    $(".townhall-view").fadeIn().css({
+        display: 'flex'
+    });
 }
 function displayVillageInfo(village){
     const totalHabitant = village.workers.length;
@@ -282,6 +297,7 @@ function displayWorkers(workers, village, selector){
 }
 function displayWorkerAvatarAndOption(worker, amenagements){
     let html = `<div class="worker-img ${worker.type}">`;
+            html +=`<span class="info-text">${workersFrType(worker.type)}</span>`;
             html += `<div class="worker-info-option">`;
                 html += `<div class="show-worker-info"><i class='fas fa-info-circle'></i></div>`;
                 html += (amenagements.length > 0)? `<div class="assign-worker" data-worker='${JSON.stringify(worker)}'><i class='far fa-id-badge'></i></div>`: "";
@@ -311,8 +327,8 @@ function displayAssignWorker(village, worker){
             if (amenagement.maxLabors > amenagement.workers.length) {
                 html += `<div buildingId="${amenagement.id}" type="${amenagement.type}" class="batiment-box ${amenagement.type}-box">`;
                 html += `<div class="batiment-icon icon-${amenagement.type}">`;
-                const resource = amenagement.resource && ["mine", "farm"].includes(amenagement.type)? ` de ${ressourceFrName(amenagement.resource.type)}`: ``;
-                html += `${amenagementIcon(amenagement.type)} <div class="batiment-name">${amenagementFrName(amenagement.type)} ${resource}</div>`;
+                const resource = amenagement.resource && ["mine", "farm"].includes(amenagement.type)? ` de ${ressourceFrName(amenagement.resource.type)||""}`: ``;
+                html += `${amenagementIcon(amenagement.type)} <div class="batiment-name">${amenagementFrName(amenagement.type)||""} ${resource}</div>`;
                 html += `</div>`;
                 html += `<span class="totalWorkers">(${amenagement.workers.length}/${amenagement.maxLabors})</span>`;
                 html += `</div>`;
@@ -337,11 +353,11 @@ function displayWarehouse(village){
     let html = `<div id="warehouse-view-header">Warehouse</div>`;
     if (granary) {
         granary?.stock.forEach(s => {
-            html += `<div id="${s.stockId}" class="stock stock-${s.type} resource icon-${s.type}"><span class="stock-num">${Math.floor(s.quantity)}</span><span class="info-text">${ressourceFrName(s.type)}</span></div>`;
+            html += `<div id="${s.stockId}" class="stock stock-${s.type} resource icon-${s.type}"><span class="stock-num">${Math.floor(s.quantity)}</span><span class="info-text">${ressourceFrName(s.type)||""}</span></div>`;
         });
     }
     warehouse?.stock.forEach(s => {
-        html += `<div id="${s.stockId}" class="stock stock-${s.type} resource icon-${s.type}"><span class="stock-num">${Math.floor(s.quantity)}</span><span class="info-text">${ressourceFrName(s.type)}</span></div>`;
+        html += `<div id="${s.stockId}" class="stock stock-${s.type} resource icon-${s.type}"><span class="stock-num">${Math.floor(s.quantity)}</span><span class="info-text">${ressourceFrName(s.type)||""}</span></div>`;
     });
     $(`.village-${village.id} #townhall-view-warehouse`).empty().append(html);
 }
@@ -441,12 +457,12 @@ function getBuildingCost(village, building, resource){
     const amenagement = amenagementForResource(resource.type);
     const buildingCost = document.createElement('div');
     buildingCost.className = `building-planConstruction-cost`;
-    let buildingCostBody = `<div class="building-planConstruction-type">${amenagementFrName(building.type)}`;
-    buildingCostBody += resource && ["mine", "farm"].includes(amenagement)? ` de ${ressourceFrName(resource.type)}` : ``;
+    let buildingCostBody = `<div class="building-planConstruction-type">${amenagementFrName(building.type)||""}`;
+    buildingCostBody += resource && ["mine", "farm"].includes(amenagement)? ` de ${ressourceFrName(resource.type)||""}` : ``;
     buildingCostBody += `</div>`;
     buildingCostBody += `<div class="building-planConstruction-cost-list">`;
         Object.entries(building.cost).forEach(([name, value]) => {
-            buildingCostBody += `<div class="building-cost"><div class="cost-icon cost-${name}"></div>x${value}<span  class="info-text">${value} ${ressourceFrName(name)}</span></div>`;
+            buildingCostBody += `<div class="building-cost"><div class="cost-icon cost-${name}"></div>x${value}<span  class="info-text">${value} ${ressourceFrName(name)||""}</span></div>`;
         });
     buildingCostBody += `</div>`;
     buildingCostBody += `<div class="minPopulation"><i class='fas fa-users'></i> > ${building.minPopulation - 1}</div>`;
@@ -477,7 +493,7 @@ function getBuildingOptions(village, building, priority){
     const buildingInfo = document.createElement('div');
     buildingInfo.className = `building-planConstruction-info`;
     buildingInfo.innerHTML = `<div class="btn-close close-building-planConstruction-info"></div>`;
-    buildingInfo.innerHTML += `<i class='fas fa-info-circle'></i> <div class="building-planConstruction-type">${amenagementFrName(building.type)}</div> Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.`;
+    buildingInfo.innerHTML += `<i class='fas fa-info-circle'></i> <div class="building-planConstruction-type">${amenagementFrName(building.type)||""}</div> Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.`;
 
     return {buildingAction, buildingInfo};
 }
@@ -492,8 +508,8 @@ function displayConstructionQueue(village, selector){
         village.constructionSite.forEach((building, index) => {
             constructionSite += `<div id="queue-${index}" type="${building.type}" class="batiment-box ${building.type}-box constructionSite">`;
             constructionSite += `<div class="batiment-icon icon-${building.type}">`;
-            const resource = building.resource && ["mine", "farm"].includes(building.type)? ` de ${ressourceFrName(building.resource.type)}`: ``;
-            constructionSite += `${amenagementIcon(building.type)} <div class="batiment-name">${amenagementFrName(building.type)} ${resource}</div>`;
+            const resource = building.resource && ["mine", "farm"].includes(building.type)? ` de ${ressourceFrName(building.resource.type)||""}`: ``;
+            constructionSite += `${amenagementIcon(building.type)} <div class="batiment-name">${amenagementFrName(building.type)||""} ${resource}</div>`;
             constructionSite += `</div>`;
             
             const existingBuilding = village.amenagements.find(amenagement => amenagement.type === building.type && amenagement?.resourceId === building?.resourceId);
@@ -509,9 +525,9 @@ function displayConstructionQueue(village, selector){
         constructionQueue += `<div id="queue-${index}" type="${building.type}" class="batiment-box ${building.type}-box">`;
         constructionQueue += `<div class="batiment-icon icon-${building.type}">`;
 
-        const resource = building?.resource && ["mine", "farm"].includes(building.type)? ` de ${ressourceFrName(building.resource.type)}`: ``;
+        const resource = building?.resource && ["mine", "farm"].includes(building.type)? ` de ${ressourceFrName(building.resource.type)||""}`: ``;
 
-        constructionQueue += `${amenagementIcon(building.type)} <div class="batiment-name">${amenagementFrName(building.type)} ${resource}</div>`;
+        constructionQueue += `${amenagementIcon(building.type)} <div class="batiment-name">${amenagementFrName(building.type)||""} ${resource}</div>`;
         constructionQueue += `</div>`;
         constructionQueue += `<span class="" constructionTime="${building.constructionTime}"><i class='far fa-hourglass'></i><span class="info-text"></span></span>`;
         constructionQueue += `</div>`;
@@ -530,7 +546,7 @@ function updateBuildingListCost(village){
         const contentBox = $(`#${buildingId}`).find(`.building-planConstruction-cost-list`);
         contentBox.empty();
         Object.entries(newCost).forEach(([name, value]) => {
-            let html = `<div class="building-cost"><div class="cost-icon cost-${name}"></div>x${value}<span  class="info-text">${value} ${ressourceFrName(name)}</span></div>`;
+            let html = `<div class="building-cost"><div class="cost-icon cost-${name}"></div>x${value}<span  class="info-text">${value} ${ressourceFrName(name)||""}</span></div>`;
             contentBox.append(html);
         });
     });
