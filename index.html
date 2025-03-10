@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="./src/css/islandGen.css" type="text/css">
     <link rel="stylesheet" href="./src/css/villagesGen.css" type="text/css">
     <link rel="stylesheet" href="./src/css/coastal_Kingdom.css" type="text/css">
+    <link rel="stylesheet" href="./src/css/humanBuildings.css" type="text/css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2D Map Generator</title>
@@ -114,7 +115,12 @@
     </div>
     <div id="mini-map"></div>
 
-    
+    <svg>
+        <filter id="wavy2">
+          <feTurbulence x="0" y="0" baseFrequency="0.02" numOctaves="5" seed="1" />
+          <feDisplacementMap in="SourceGraphic" scale="20" />
+        </filter>
+      </svg>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -137,6 +143,7 @@
     <script type="text/javascript" src="src/js/islandGen.js"></script>
     <script type="text/javascript" src="src/js/villagesGen.js"></script>
     <script type="text/javascript" src="src/js/humanTownhall.js"></script>
+    <script type="text/javascript" src="src/js/humanBuildings.js"></script>
     <script type="text/javascript" src="src/js/coastal_Kingdom.js"></script>
 
 
