@@ -287,8 +287,8 @@ class Markets extends Buildings {
             });
             transportUnit?.clearCargo(); // Vide le cargo et réinitialise l'état du transport
             transportUnit.busy = false;
-            transportUnit.gainExperience(0.2); // L'unité prend de l'expérience
-            this.buildingGainExperience(0.2); // Le bâtiment prend de l'expérience
+            transportUnit.gainExperience(0.05); // L'unité prend de l'expérience
+            this.buildingGainExperience(0.05); // Le bâtiment prend de l'expérience
 
             const dockyard = this.getBuildingVillage().dockyard;
             const shipyard = this.getBuildingVillage().shipyard;

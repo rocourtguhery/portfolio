@@ -292,14 +292,14 @@ class Villages {
         const warehouse = this.amenagements.find(a => a.type === "warehouse");
         let foodStock = warehouse.pickFromStorage("food", null, "quantity");
         const housingCapacity = this.houses * 5;
-        const unassignedWorkers = this.workers.filter(worker => worker.type === "manant" && !worker.workPlace);
+        const unassignedWorkers = this.workers.filter(worker => worker.type === "peasant" && !worker.workPlace);
         const totalNeededLabors = this.amenagements.reduce((sum, building) => sum + (building.maxLabors - building.labors), 0);
         
         // Vérification de population
         if (foodStock && foodStock > this.workers.length * 1.3 && this.workers.length < housingCapacity) {
             if (totalNeededLabors > 0 ) {
                 if (this.owner){
-                    this.manantPopUp(warehouse);
+                    this.peasantPopUp(warehouse);
                     warehouse.pickFromStorage("food", 10);
                     return;
                 }
@@ -314,7 +314,7 @@ class Villages {
                     warehouse.pickFromStorage("food", 10);
                 }
             }else if(unassignedWorkers.length < 3){
-                this.manantPopUp(warehouse);
+                this.peasantPopUp(warehouse);
             }
         }
 
@@ -327,9 +327,9 @@ class Villages {
         }
         this.checkAndBuildHouse();
     }
-    manantPopUp(warehouse){
+    peasantPopUp(warehouse){
         const workerData = {
-            type: "manant",
+            type: "peasant",
             level: 1,
             workPlace: null,
             buildingID: null,
@@ -340,9 +340,9 @@ class Villages {
         warehouse.pickFromStorage("food", 10);
 
         // if (!this.owner) return;
-        const manants = this.workers.filter(worker => worker.type === "manant" || !worker.buildingID );
+        const peasants = this.workers.filter(worker => worker.type === "peasant" || !worker.buildingID );
         displayVillagePopulation(this.id, this.workers.length);
-        displayWorkers(manants, this, `#new-workers-box`);
+        displayWorkers(peasants, this, `#new-workers-box`);
         displayPlanConstructionBuildings(this);
     }
     assignWorker(building, unassignedWorkers){
@@ -362,7 +362,7 @@ class Villages {
             }
             return;
         } */
-        if (!worker.type || worker.type === "manant") {
+        if (!worker.type || worker.type === "peasant") {
             const workerType =  buildingWorkersLevel[building.type]?.find( w => w.level === 1 )?.workerType;
             worker.type = workerType;
         }
@@ -662,8 +662,8 @@ class Villages {
                 this.constructionSite = [];
                 if (this.owner) {
                     displayConstructionQueue(this, `#constructionQueue-list`);
-                    const manants = this.workers.filter(worker => worker.type === "manant" || !worker.buildingID );
-                    displayWorkers(manants, this, `#new-workers-box`);
+                    const peasants = this.workers.filter(worker => worker.type === "peasant" || !worker.buildingID );
+                    displayWorkers(peasants, this, `#new-workers-box`);
                 }
 
             }, time * 1000);
@@ -684,8 +684,8 @@ class Villages {
                 if (this.owner) {
                     displayConstructionQueue(this, `#constructionQueue-list`);
                     displayVillageAmenagements(this.id, this.amenagements.length);
-                    const manants = this.workers.filter(worker => worker.type === "manant" || !worker.buildingID );
-                    displayWorkers(manants, this, `#new-workers-box`);
+                    const peasants = this.workers.filter(worker => worker.type === "peasant" || !worker.buildingID );
+                    displayWorkers(peasants, this, `#new-workers-box`);
                 }
 
             }, nextBuilding.constructionTime * 1000);

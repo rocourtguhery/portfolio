@@ -27,7 +27,7 @@ class Workers{
         }
     }
     getLevelUpThreshold() {
-        return this.level * 150;
+        return this.level * 100;
     }
     levelUp() {
         this.level += 1;
