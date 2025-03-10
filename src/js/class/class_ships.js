@@ -143,8 +143,8 @@ class Ships{
                         transportUnit.from = "-";
                         transportUnit.to = "-";
                         port.unloadGoods(transportUnit);
-                        this.gainExperience(0.05);
-                        portSeller.portsGainExperience(0.05);
+                        this.gainExperience(0.25);
+                        portSeller.portsGainExperience(0.2);
                     });
 
                 }, preparationTime);
@@ -167,8 +167,8 @@ class Ships{
                         transportUnit.from = "-";
                         transportUnit.to = "-";
                         port.unloadGoods(transportUnit);
-                        this.gainExperience(0.05);
-                        portSeller.portsGainExperience(0.05);
+                        this.gainExperience(0.25);
+                        portSeller.portsGainExperience(0.2);
                     })
                 
                 }, preparationTime);

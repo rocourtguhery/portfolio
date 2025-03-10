@@ -20,7 +20,7 @@ class Granaries extends Buildings {
         } else {
             this.stock.push({ type: resourceType, quantity: qtyToAdd });
         }
-        this.buildingGainExperience(0.05);
+        this.buildingGainExperience(0.2);
     }
     upgrade() {
         super.upgrade();

@@ -44,7 +44,7 @@ class Buildings{
         const workerData = {
             type: workerTypeForLevel,
             level: 1,
-            workPlace: this.type,
+            workPlaceType: this.type,
             villageID: this.villageID,
             buildingID: this.id,
         }
@@ -76,7 +76,7 @@ class Buildings{
         const depotCapacity = warehouse.capacity;
         const depotStock = warehouse.stock.reduce((sum, item) => sum + item.quantity, 0);
 
-        if (depotStock >= depotCapacity) return;
+        if (depotStock >= depotCapacity || this.workers.length <= 0) return;
 
         if (category === "amenagement") {
 
@@ -143,7 +143,7 @@ class Buildings{
             w.gainExperience(0.05);
         });
 
-        this.buildingGainExperience(0.05);
+        this.buildingGainExperience(0.5);
 
         return baseProduction * workerContribution * toolMultiplier * millMultiplier;
     }
@@ -168,7 +168,7 @@ class Buildings{
         const prod = baseProduction * workerContribution * toolMultiplier * millMultiplier;
         const bonus = {tools: `x1.5 | x0.8`};
         if (this.resource && this.resource?.type === "cereals") {
-            bonus["mill"] = `${millMultiplier > 1? 0: millMultiplier} | 0`;
+            bonus["mill"] = `x${millMultiplier > 1? 0: millMultiplier}`;
         }
         return {prod, bonus};
     }
@@ -265,8 +265,10 @@ class Buildings{
     }
     buildingGainExperience(amount) {
         const village = this.getBuildingVillage().village;
-        const xpMultiplicator = (this.workers.length >= this.maxLabors)? 1.25 : 1;
+        const xpMultiplicator = (this.workers.length >= this.maxLabors)? 1.5 : 1;
         this.nextLevelProgress += xpMultiplicator * amount;
+        const pourcentageProgress = (this.nextLevelProgress * 100) / this.getLevelUpThreshold();
+        upgradeBuildingcheck(this, pourcentageProgress);
         if (this.nextLevelProgress >= this.getLevelUpThreshold() && this.level < 3  && !village.owner) {
             this.planUpgrade();
         }
