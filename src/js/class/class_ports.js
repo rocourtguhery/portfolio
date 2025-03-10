@@ -55,7 +55,7 @@ class Ports extends Buildings {
         const sailorsData = {
             type: "sailor",
             level: 2,
-            workPlace: this.type,
+            workPlaceType: this.type,
             villageID: village.id,
             villageName: village.name,
             buildingID: this.id,
@@ -72,7 +72,7 @@ class Ports extends Buildings {
         const sailorsData = {
             type: workerTypeForLevel,
             level: 1,
-            workPlace: this.type,
+            workPlaceType: this.type,
             villageID: village.id,
             buildingID: this.id,
         }
@@ -86,7 +86,7 @@ class Ports extends Buildings {
         return baseRange + (this.level * 4); // Ajoute 4 cellules par niveau
     }
     portsGainExperience(amount) {
-        const xpMultiplicator = (this.workers.length >= this.maxLabors)? 1.25 : 1;
+        const xpMultiplicator = (this.workers.length >= this.maxLabors)? 1.5 : 1;
         this.nextLevelProgress += xpMultiplicator * amount;
         if ( this.nextLevelProgress >= this.getLevelUpThreshold() && this.level < 3  ) {
             this.planUpgrade();
@@ -110,7 +110,7 @@ class Ports extends Buildings {
         const preparationTime = Math.floor(5000 / dockerContribution);
         setTimeout(() => {
             this.processMaritimeRoutes(ship, villageBuyer, villageSeller)
-            this.portsGainExperience(0.05);
+            this.portsGainExperience(0.2);
         }, preparationTime);
         
     }
@@ -143,7 +143,7 @@ class Ports extends Buildings {
             dockyard.checkSupplies();
             dockyard.selectShipToRepair();
         };
-        this.portsGainExperience(0.05);
+        this.portsGainExperience(0.2);
     }
     evaluateMaritimeNeeds() {
         const shipyardsVillages = villages.filter(village => 

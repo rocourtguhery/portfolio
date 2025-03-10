@@ -34,7 +34,7 @@ $(document).ready(function () {
         $(this).find(".info-text").fadeOut(100);
     });
     $(document).on("click",`.buildings-box-btn`, function() {
-        if($(this).hasClass("active")) return;
+        if($(this).hasClass("active") || $(this).hasClass("market-btn") || $(this).hasClass("port-btn") ) return;
         $(".buildings-box-btn").animate({
             backgroundPositionX: "20px"
         },50 ).removeClass("active");
@@ -85,18 +85,21 @@ $(document).ready(function () {
         const info = $(this);
         $(".assign-worker-buildings").fadeOut(50).remove();
         $(".worker-info").fadeOut(50);
-        info.parents(".worker").find(".worker-info").fadeIn(250).css({
+        const worker = JSON.parse(info.parents(`.worker-info-option`).attr("data-worker"));
+        const townhallBox = info.parents(`#townhall-box-1`);
+        townhallBox.append(displayWorkerInfo(worker));
+        townhallBox.find(".worker-info").fadeIn(250).css({
             display: "flex"
         });
     });
     $(document).on("click",`.worker-info .close-worker-info`, function() {
-        $(this).parents(".worker").find(".worker-info").fadeOut(50);
+        $(".worker-info").fadeOut(50).remove();
     });
     $(document).on("click",`.assign-worker`, function() {
         const assign = $(this);
         const villageId = assign.parents(".worker").attr("villageId");
-        const worker = JSON.parse(assign.attr("data-worker"));
-        $(".worker-info").fadeOut(50);
+        const worker = JSON.parse(assign.parents(`.worker-info-option`).attr("data-worker"));
+        $(".worker-info").fadeOut(50).remove();
         $(".assign-worker-buildings").fadeOut(50).remove();
         
         const village = villages.find(village => village.id === villageId);
@@ -129,6 +132,11 @@ $(document).ready(function () {
         $this.find(".batiment-icon").removeClass("batiment-box-click");
         $(`#worker-${workerID}`).fadeOut(550).remove();
         $(`#assign-worker-${workerID}`).fadeOut(550).remove();
+
+        const unemployed = village.workers.filter(worker => !worker.workPlaceType);
+        if (unemployed.length <= 3) {
+            $(`.village-${village.id} #prev-next-btn-box`).remove();
+        }
 
         $this.prop('disabled', true);
     });
@@ -189,8 +197,8 @@ function displayVillage(villageId){
         body += `<div id="buildings-box-tabs">`;
             body += `<div class="buildings-box-btn townhall-btn active"><span class="info-text">${amenagementFrName("townhall")||""}</span></div>`;
             body += `<div class="buildings-box-btn buildings-btn"><span class="info-text">Amenagements</span></div>`;
-            body += `<div class="buildings-box-btn market-btn"><span class="info-text">${amenagementFrName("market")||""}</span></div>`;
-            body += `<div class="buildings-box-btn port-btn"><span class="info-text">${amenagementFrName("port")||""}</span></div>`;
+            body += `<div class="buildings-box-btn market-btn"><span class="info-text">${amenagementFrName("market")||""} | interface en dev</span></div>`;
+            body += `<div class="buildings-box-btn port-btn"><span class="info-text">${amenagementFrName("port")||""} | interface en dev</span></div>`;
         body += `</div>`;
     body += `</div>`;
 
@@ -252,10 +260,10 @@ function displayTownhall(village) {
     $("#buildings-box").append(body);
 
     const resources = village.resources.filter(res => res.discovered);
-    const peasants = village.workers.filter(worker => worker.type === "peasant" || !worker.buildingID );
+    const unemployeds = village.workers.filter(worker => worker.type === "peasant" || !worker.buildingID );
 
     displayResources(village, resources);
-    displayWorkers(peasants, village, `#new-workers-box`);
+    displayWorkers(unemployeds, village, `#new-workers-box`);
     displayWarehouse(village);
 
     displayConstructionQueue(village, `#constructionQueue-list`);
@@ -282,7 +290,6 @@ function displayWorkers(workers, village, selector){
             workers.forEach(worker => {
                 html += `<div id="worker-${worker.id}" villageId="${village.id}" class="worker">`;
                     html += displayWorkerAvatarAndOption(worker, amenagementsForWorkers);
-                    html += displayWorkerInfo(worker);
                 html += `</div>`;
             });
         $(`.village-${village.id} ${selector}`).empty().append(html);
@@ -298,9 +305,9 @@ function displayWorkers(workers, village, selector){
 function displayWorkerAvatarAndOption(worker, amenagements){
     let html = `<div class="worker-img ${worker.type}">`;
             html +=`<span class="info-text">${workersFrType(worker.type)}</span>`;
-            html += `<div class="worker-info-option">`;
+            html += `<div class="worker-info-option" data-worker='${JSON.stringify(worker)}'>`;
                 html += `<div class="show-worker-info"><i class='fas fa-info-circle'></i></div>`;
-                html += (amenagements.length > 0)? `<div class="assign-worker" data-worker='${JSON.stringify(worker)}'><i class='far fa-id-badge'></i></div>`: "";
+                html += (amenagements.length > 0)? `<div class="assign-worker"><i class='far fa-id-badge'></i></div>`: "";
             html += `</div>`;
         html += `</div>`;
     return html;
@@ -308,13 +315,23 @@ function displayWorkerAvatarAndOption(worker, amenagements){
 function displayWorkerInfo(worker){
     let html = `<div class="worker-info">`;
             html += `<div class="btn-close close-worker-info"></div>`;
-            html += `<div class="worker-type">${worker.type}</div>`;
-            html += `<div class="happiness_labor">`;
-            html += `<div class="worker-happiness">${formatHappiness(worker.happiness)} <span class="indice">${worker.happiness}</span></div>`;
-            html += `<div class="worker-labor"><span class="labor-force"><i class='fas fa-hammer'></i></span><span class="indice">${parseFloat(worker.laborforce).toFixed(2)}</span><span class="info-text">Force de Travail</span></div>`; //
+            html += `<div class="worker-type">${workersFrType(worker.type)}</div>`;
+
+            html += `<div class="worker-info-header">`;
+                html += `<div class="worker-img ${worker.type}"></div>`;
+
+                html += `<div class="happiness_labor">`;
+
+                    html += `<div class="worker-happiness">${formatHappiness(worker.happiness)} <span class="indice">${worker.happiness}</span><span class="info-text">bonheur</span></div>`;
+                    html += `<div class="worker-labor"><span class="labor-force"><i class='fas fa-hammer'></i></span><span class="indice">${parseFloat(worker.laborforce).toFixed(2)}</span><span class="info-text">Force de Travail</span></div>`;
+
+                    html += `<div class="worker-consumption">`;
+                        html += `<h6>Besoins</h6>`;
+                        html += `${formatworkersConsumptions(worker.consumption)}`;
+                    html += `</div>`;
+
+                html += `</div>`;
             html += `</div>`;
-            html += `<h6>Consommations</h6>`;
-            html += `<div class="worker-consumption">${formatworkersConsumptions(worker.consumption)}</div>`;
             html += `<div class="worker-info-text"><h6><i class='fas fa-info-circle'></i></h6>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.</div>`;
         html += `</div>`;
     return html;
@@ -324,15 +341,13 @@ function displayAssignWorker(village, worker){
     let html = `<div id="assign-worker-${worker.id}" class="assign-worker-buildings" workerId="${worker.id}" >`;
         html += `<div class="assign-worker-box-header">Affectations<div class="btn-close close-assign-worker"></div></div>`;
         amenagementsForWorkers.forEach(amenagement => {
-            if (amenagement.maxLabors > amenagement.workers.length) {
-                html += `<div buildingId="${amenagement.id}" type="${amenagement.type}" class="batiment-box ${amenagement.type}-box">`;
-                html += `<div class="batiment-icon icon-${amenagement.type}">`;
-                const resource = amenagement.resource && ["mine", "farm"].includes(amenagement.type)? ` de ${ressourceFrName(amenagement.resource.type)||""}`: ``;
-                html += `${amenagementIcon(amenagement.type)} <div class="batiment-name">${amenagementFrName(amenagement.type)||""} ${resource}</div>`;
-                html += `</div>`;
-                html += `<span class="totalWorkers">(${amenagement.workers.length}/${amenagement.maxLabors})</span>`;
-                html += `</div>`;
-            }
+            html += `<div buildingId="${amenagement.id}" type="${amenagement.type}" class="batiment-box ${amenagement.type}-box">`;
+            html += `<div class="batiment-icon icon-${amenagement.type}">`;
+            const resource = amenagement.resource && ["mine", "farm"].includes(amenagement.type)? ` de ${ressourceFrName(amenagement.resource.type)||""}`: ``;
+            html += `${amenagementIcon(amenagement.type)} <div class="batiment-name">${amenagementFrName(amenagement.type)||""} ${resource}</div>`;
+            html += `</div>`;
+            html += `<span class="totalWorkers">(${amenagement.workers.length}/${amenagement.maxLabors})</span>`;
+            html += `</div>`;
         });
         html += `</div>`;
     $(`.village-${village.id} #townhall-box-1`).append(html);

@@ -91,12 +91,17 @@ class Villages {
                 const newWarehouses = new Warehouses(newBuildingData);
                 this.amenagements.push(newWarehouses);
                 buildings.push(newWarehouses);
-                newWarehouses.addToStock("food", 150);
-                newWarehouses.addToStock("cereals",  !this.owner? 125 : 250);
-                newWarehouses.addToStock("wood", !this.owner? 125 : 250);
-                newWarehouses.addToStock("stone",  !this.owner? 125 : 250);
+                newWarehouses.addToStock("food", 100);
+                newWarehouses.addToStock("cereals", 100);
+                newWarehouses.addToStock("wood", 100);
+                newWarehouses.addToStock("stone",  100);
                 newWarehouses.addToStock("iron",  !this.owner? 50 : 100);
                 newWarehouses.addToStock("tools",  !this.owner? 100 : 50);
+                
+                if (this.owner) {
+                    this.peasantPopUp(newWarehouses);
+                    this.peasantPopUp(newWarehouses);
+                }
 
                 break;
 
@@ -161,10 +166,10 @@ class Villages {
                 buildings.push(building);
                 if (!this.owner) {
                     building.generateWorkers();
-                }
-                if (building.type === "townhall" && this.owner) {
-                    building.generateWorkers();
-                    building.generateWorkers();
+                }else {
+                    if (building.category === "amenagement" || building.category === "workshop") {
+                        amenagementsBuilding(building);
+                    }
                 }
                 break;
         }
@@ -292,7 +297,7 @@ class Villages {
         const warehouse = this.amenagements.find(a => a.type === "warehouse");
         let foodStock = warehouse.pickFromStorage("food", null, "quantity");
         const housingCapacity = this.houses * 5;
-        const unassignedWorkers = this.workers.filter(worker => worker.type === "peasant" && !worker.workPlace);
+        const unemployed = this.workers.filter(worker => worker.type === "peasant" && !worker.workPlaceType);
         const totalNeededLabors = this.amenagements.reduce((sum, building) => sum + (building.maxLabors - building.labors), 0);
         
         // Vérification de population
@@ -306,14 +311,14 @@ class Villages {
 
                 const building = this.amenagements.find(a => a.maxLabors > a.workers.length && a.type !== "market");
                 if(building) {
-                    if (unassignedWorkers.length > 0) {
-                        this.assignWorker(building, unassignedWorkers);
+                    if (unemployed.length > 0) {
+                        this.assignWorker(building, unemployed);
                         return;
                     }
                     building.generateWorkers();
                     warehouse.pickFromStorage("food", 10);
                 }
-            }else if(unassignedWorkers.length < 3){
+            }else if(unemployed.length < 3){
                 this.peasantPopUp(warehouse);
             }
         }
@@ -331,7 +336,7 @@ class Villages {
         const workerData = {
             type: "peasant",
             level: 1,
-            workPlace: null,
+            workPlaceType: null,
             buildingID: null,
             villageID: this.id,
         }
@@ -340,13 +345,13 @@ class Villages {
         warehouse.pickFromStorage("food", 10);
 
         // if (!this.owner) return;
-        const peasants = this.workers.filter(worker => worker.type === "peasant" || !worker.buildingID );
+        const unemployeds = this.workers.filter(worker => !worker.workPlaceType || !worker.buildingID );
         displayVillagePopulation(this.id, this.workers.length);
-        displayWorkers(peasants, this, `#new-workers-box`);
+        displayWorkers(unemployeds, this, `#new-workers-box`);
         displayPlanConstructionBuildings(this);
     }
-    assignWorker(building, unassignedWorkers){
-        const worker = unassignedWorkers.shift();
+    assignWorker(building, unemployed){
+        const worker = unemployed.shift();
         /* if (building.type === "port") {
             const flottes = building.flottes.length;
             const sailorTotal = building.sailors.length;
@@ -354,7 +359,7 @@ class Villages {
             building.flottes.forEach(ship => { levelTotal += ship.level; });
                 
             if (sailorTotal < (levelTotal * 3)) {
-                unassignedWorkers.shift();
+                unemployed.shift();
                 const workerType = buildingWorkersLevel["ship"]?.find( w => w.level === 1 )?.workerType;
                 const sailor = new Sailors(building.place.x, building.place.y, workerType, 1, this.villageID, this.islandID, null);
                 this.workers.push(sailor);
@@ -468,7 +473,7 @@ class Villages {
     generateTaxes() {
         
         const happinessMultiplier = Math.min(this.getAverageHappiness() / 100, 1.5); // Max x1.5
-        const taxedWorkes = this.workers.filter(worker => worker.workPlace !== null);
+        const taxedWorkes = this.workers.filter(worker => worker.workPlaceType !== null);
         const population = taxedWorkes.length;
 
         // Calcul des taxes
@@ -662,8 +667,8 @@ class Villages {
                 this.constructionSite = [];
                 if (this.owner) {
                     displayConstructionQueue(this, `#constructionQueue-list`);
-                    const peasants = this.workers.filter(worker => worker.type === "peasant" || !worker.buildingID );
-                    displayWorkers(peasants, this, `#new-workers-box`);
+                    const unemployeds = this.workers.filter(worker => worker.type === "peasant" || !worker.buildingID );
+                    displayWorkers(unemployeds, this, `#new-workers-box`);
                 }
 
             }, time * 1000);
@@ -684,9 +689,8 @@ class Villages {
                 if (this.owner) {
                     displayConstructionQueue(this, `#constructionQueue-list`);
                     displayVillageAmenagements(this.id, this.amenagements.length);
-                    const peasants = this.workers.filter(worker => worker.type === "peasant" || !worker.buildingID );
-                    displayWorkers(peasants, this, `#new-workers-box`);
-                    
+                    const unemployeds = this.workers.filter(worker => worker.type === "peasant" || !worker.buildingID );
+                    displayWorkers(unemployeds, this, `#new-workers-box`);
                     if (this.amenagements.length <= 3 || nextBuilding.type === "market" || nextBuilding.type === "port") {
                         showTabsBtn(this);
                     }

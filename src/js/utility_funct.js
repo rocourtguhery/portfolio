@@ -477,7 +477,7 @@ function addBuildingToQueue(village, building, priority, specialization = false)
         const hasInsufficientPopulation = village.workers.length < (existingBuilding.level / 0.25) + minPopulation;
         if (isMaxLevel || hasInsufficientPopulation ) return;
 
-        const updatedCost = existingBuilding.calculateCostForNextLevel(building.type);
+        const updatedCost = existingBuilding.calculateCostForNextLevel();
         if (!specialization) {
             building.cost = updatedCost;
         }
@@ -623,24 +623,23 @@ function shipyardGetAvailableModels(shipyardLevel, market, shipType = false){
             { model: "line_ship", type: "warship", cost: { lumber: 150, fabric: 125, iron: 40, coal: 60, tools: 40 }, price: 20000, constructionTime: 420, capacity: 200, speed: 1.3, defense: 20, attac: 30, minLevel: 3 }
         ]
     }
-    function calculateShipPrice(ship, market) {
-        const basePrice = Object.entries(ship.cost).reduce((sum, [resource, amount]) => {
-            return sum + (amount * market.getPrice(resource));
-        }, 0);
-        return basePrice * 2; // Multiplication par 2 pour la marge
-    }
 
-    function getShipOptions(market) {
-        return Object.values(typeOfShips).flatMap(ships => 
-            ships.map(ship => {
-                return { ...ship, price: calculateShipPrice(ship, market) }; // Cloner l'objet pour éviter les mutations
-            })
-        );
-    }
-
-    const shipsAvailable = getShipOptions(market).filter(ship => ship.minLevel <= shipyardLevel);
+    const shipsAvailable = getShipOptions(typeOfShips, market).filter(ship => ship.minLevel <= shipyardLevel);
 
     return shipType ? shipsAvailable.filter(ship => ship.type === shipType) : shipsAvailable;
+}
+function calculatePrice(resourceCost, market) {
+    const basePrice = Object.entries(resourceCost).reduce((sum, [resource, amount]) => {
+        return sum + (amount * market? market.getPrice(resource): determinePrice(resource));
+    }, 0);
+    return basePrice * 2; // Multiplication par 2 pour la marge
+}
+function getShipOptions(typeOfShips, market) {
+    return Object.values(typeOfShips).flatMap(ships => 
+        ships.map(ship => {
+            return { ...ship, price: calculatePrice(ship.cost, market) }; // Cloner l'objet pour éviter les mutations
+        })
+    );
 }
 function isFarEnough(newX, newY, existingVillages, minDistance = 2) {
     return !existingVillages.some(village => 
@@ -786,52 +785,52 @@ function amenagementFrName(amenagement){
 }
 function ressourceFrName(resource){
     const ressourcesFr = {
-        food: "Nourritures",
+        food: "Nourritures | Foods",
         gems_purple: "Saphir", //Diamant violet, Améthyste, Kunzite violette, Saphir Violet, Tanzanite violette, Spinelle violette
-        gold: "Or",
-        silver: "Argent",
+        gold: "Or | Gold",
+        silver: "Argent | Silver",
         gems_green: "Émeraude", //Diamant vert, Saphir vert, Émeraude, Tourmaline verte, Péridot, Chrome Diopside, Tourmaline chromée, Zircon vert, Grenat Tsavorite
         gems_blue: "Topaz", //Diamant bleu, Topaz bleu, Tourmaline bleue, Cyanite, Apatite bleue, Zircon Bleu, Spinelle Bleu, Benitoïte, Lazulite,
-        iron: "Fer",
-        copper: "Cuivre",
-        sugar_cane: "Cannes à Sucres",
-        vine: "Vigne",
-        tobacco: "Tabac",
-        coffee: "Café",
-        cacao: "Cacao",
-        coal: "Charbon",
-        wool: "Laine",
-        orchards: "Fruit",
-        meat: "Viande",
-        cotton: "Cotton",
-        banana: "Banane",
-        cereals: "Céréale",
-        stone: "Pierre",
-        wood: "Bois",
-        fish: "Poisson",
+        iron: "Fer | Iron",
+        copper: "Cuivre | Copper",
+        sugar_cane: "Cannes à Sucres | Sugar canes",
+        vine: "Vignes | Vines",
+        tobacco: "Tabacs | Tobaccos",
+        coffee: "Café | Coffee",
+        cacao: "Cacaos | Cocoas",
+        coal: "Charbons | Coals",
+        wool: "Laines | Wools",
+        orchards: "Fruits | Fruits", // "Vergers | Orchards"
+        meat: "Viandes | Meats",
+        cotton: "Cotons | Cottons",
+        banana: "Bananes | Bananas",
+        cereals: "Céréales | Cereals",
+        stone: "Pierres | Stones",
+        wood: "Bois | Woods",
+        fish: "Poissons | Fishs",
 
-        lumbers: "bois d'oeuvre",
-        tools: "Outils",
-        fabric: "tissus",
-        clothes: "vêtements",
-        liquor: "spiritueux",
-        cigars: "cigares",
-        chocolate: "chocolats",
-        ground_coffee: "café moulu",
-        jewelry: "bijoux",
-        rifle: "fusil",
-        artillery: "artillerie",
-        spear: "lance",
-        shield: "bouclier",
+        lumber: "Bois d'oeuvre | Lumber",
+        tools: "Outils | Tools",
+        fabric: "Tissus | Fabrics",
+        clothes: "Vêtements | Clothes",
+        liquor: "Alcool | Liquor",
+        cigars: "Cigares | Cigars",
+        chocolate: "Chocolat | Chocolate",
+        ground_coffee: "Café moulu | Fine coffee",
+        jewelry: "Bijoux | Jewelry",
+        rifle: "Fusil | Gun",
+        artillery: "Artillerie | Artillery",
+        spear: "Lance | Spear",
+        shield: "Bouclier | shield",
 
     }
     return ressourcesFr[resource] || false;
 }
 function workersFrType(type){
     const workersType = {
-        peasant: "Paysan",
-        workman: "Ouvrier",
-        learner: "Apprenti",
+        peasant: "Paysan | Peasant",
+        workman: "Ouvrier | Worker",
+        learner: "Apprenti | Learner",
         deckhand: "Mousse",
         dockhand: "Docker",
         farmer: "Fermier", 
@@ -876,9 +875,6 @@ function startGlobalTimer(villages, interval = 60000) {
             if (village.workers.length <= 0) return;
             const port = village.amenagements.find(building => building.type === "port");
             village.managePopulation();
-            village.amenagementsProduction();
-            village.workshopsProduction();
-
             if (village.owner) return;
             port.planShipConstruction();
         });
@@ -898,6 +894,16 @@ function startGlobalTimer(villages, interval = 60000) {
             
         });
     }, 30000);
+    setInterval(() => {
+
+        villages.forEach(village => {
+            if (village.workers.length <= 0) return;
+
+            village.amenagementsProduction();
+            village.workshopsProduction();
+        });
+
+    }, 15000); 
 
     // Construction management
     setInterval(() => {
@@ -1145,7 +1151,7 @@ function showTabsBtn(village){
 }
 function isBtnHidden(el) {
     if (el) {
-        return (el.offsetParent === null)
+        return (el.offsetParent === null);
     }
     return false;
 }

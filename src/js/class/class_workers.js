@@ -5,7 +5,7 @@ class Workers{
         this.villageID = data.villageID;
         this.type = data.type; // Type de travailleur (mineur, fermier, etc.)
         this.buildingID = data.buildingID;
-        this.workPlaceType = data.workPlace;
+        this.workPlaceType = data.workPlaceType;
         this.level = data.level; // Niveau du travailleur
         this.laborforce = this.calculateLaborforce(); // Force de travail
         this.consumption = this.calculateConsumption();

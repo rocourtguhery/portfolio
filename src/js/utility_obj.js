@@ -23,8 +23,8 @@ const constructionPriorities = {
         { type: "lumberjack_hut", cost: { wood: 5, stone: 10 }, constructionTime: 60, minPopulation: 2 },
         { type: "fishing_hut", cost: { wood: 10, stone: 5 }, constructionTime: 60, minPopulation: 2 },
         { type: "mine", cost: { wood: 20, stone: 10 }, constructionTime: 60, minPopulation: 5 },
-        { type: "market", cost: { wood: 15, stone: 15 }, constructionTime: 60, minPopulation: 5 },
-        { type: "port", cost: { wood: 25, stone: 10 }, constructionTime: 120, minPopulation: 5 },
+        { type: "market", cost: { wood: 15, stone: 15 }, constructionTime: 60, minPopulation: 7 },
+        { type: "port", cost: { wood: 25, stone: 10 }, constructionTime: 120, minPopulation: 7 },
         { type: "forge", cost: { wood: 20, stone: 20, iron: 10 }, constructionTime: 120, minPopulation: 12 },
         { type: "mill", cost: { wood: 20, stone: 10, cereals: 5 }, constructionTime: 120, minPopulation: 15 },
         { type: "granary", cost: { wood: 20, stone: 20 }, constructionTime: 120, minPopulation: 18 },
@@ -422,7 +422,7 @@ const torn_Kingdom_maps = {
     ]
 }
 
-const noNeedWorkersPlace = ["townhall", "warehouse", "granary", "barracks", "theater"];
+const noNeedWorkersPlace = ["townhall", "warehouse", "granary", "barracks", "theater","market","port"];
 
 const resourcesFacilities = ["farm", "livestock_ranches", "quarry", "lumberjack_hut", "fishing_hut", "mine"];
 
