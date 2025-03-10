@@ -34,7 +34,6 @@ $(document).on("click",`.amenagements-view .workers-type-minus`, function() {
         const worker = building.workers.splice(workerIndex, 1)[0]; // Retire et récupère le worker trouvé
         worker.workPlaceType = null;
         worker.buildingID = null;
-        worker.type = "peasant";
         const numWorkerType = $this.parents(`.workers-type-option`).find(`.workers-type-number`);
         numWorkerType.attr("numWorker",`${(building.workers.length)}`);
         numWorkerType.text(`x${building.workers.length}`);
