@@ -686,6 +686,10 @@ class Villages {
                     displayVillageAmenagements(this.id, this.amenagements.length);
                     const peasants = this.workers.filter(worker => worker.type === "peasant" || !worker.buildingID );
                     displayWorkers(peasants, this, `#new-workers-box`);
+                    
+                    if (this.amenagements.length <= 3 || nextBuilding.type === "market" || nextBuilding.type === "port") {
+                        showTabsBtn(this);
+                    }
                 }
 
             }, nextBuilding.constructionTime * 1000);

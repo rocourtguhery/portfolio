@@ -1132,26 +1132,22 @@ function showTabsBtn(village){
     const buildingsBtn = document.querySelector(`.village-${village.id} .buildings-btn`);
     const marketBtn = document.querySelector(`.village-${village.id} .market-btn`);
     const portBtn = document.querySelector(`.village-${village.id} .port-btn`);
-    
-    /* const amenagements = village.amenagements.find(building => building.category === "amenagement");
-    const market = village.amenagements.find(building => building.type === "market");
-    const port = village.amenagements.find(building => building.type === "port"); */
 
     if (isBtnHidden(buildingsBtn) && villageHasBuilding(village, false, "amenagement" )) {
-        // $(`#buildings-box-tabs .buildings-btn`).show(50);
         buildingsBtn.style.display = 'block';
     }
     if (isBtnHidden(marketBtn) && villageHasBuilding(village, "market", false )) {
-        // $(`#buildings-box-tabs .market-btn`).show(50);
         marketBtn.style.display = 'block';
     }
     if (isBtnHidden(portBtn) && villageHasBuilding(village, "port", false )) {
-        // $(`#buildings-box-tabs .port-btn`).show(50);
         portBtn.style.display = 'block';
     }
 }
 function isBtnHidden(el) {
-    return (el.offsetParent === null)
+    if (el) {
+        return (el.offsetParent === null)
+    }
+    return false;
 }
 function villageHasBuilding(village, buildingType = false, buildingCategory = false) {
     if (buildingType) {
