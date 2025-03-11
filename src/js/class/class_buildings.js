@@ -84,7 +84,7 @@ class Buildings{
 
             if( !warehouse.canProduct(resourceType) ) return;
 
-            const quantity = this.calculateBuildingProduction(this);
+            const quantity = this.calculateBuildingProduction();
 
             if (granary && granary.allowedResources.includes(resourceType)) {
                 granary.addToStock(resourceType, quantity);
@@ -99,10 +99,10 @@ class Buildings{
             
             if( !warehouse.canProduct(production) ) return;
 
-            const produced = this.handleWorkshopProduction(this);
+            const product = this.handleWorkshopProduction();
 
-            if (produced) {
-                warehouse.addToStock(produced.type, produced.quantity);
+            if (product) {
+                warehouse.addToStock(product.type, product.quantity);
             }
         } 
     }
@@ -185,10 +185,9 @@ class Buildings{
 
                 const stock = this.pickFromStorage(resource, null, "quantity");
 
-                if (stock && stock >= quantity) return true;
-
-                return false;
-            });
+                return stock && stock >= quantity;
+                
+            }) && this.level >= option.minLevel;
 
         });
 
@@ -220,8 +219,6 @@ class Buildings{
 
             Object.entries(resourceShortages).forEach(([resource, quantity]) => {
                 const existingNeed = supplyNeeds.find(need => need.type === resource);
-
-                if (!supplyNeeds) return;
 
                 if (existingNeed && (existingNeed.quantity + quantity) < 150){
                     existingNeed.quantity += quantity;
