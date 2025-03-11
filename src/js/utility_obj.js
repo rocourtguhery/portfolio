@@ -230,10 +230,10 @@ const workshopProduction = {
     "forge": [ // iron: 25, copper: 25, coal: 20, wood: 10, tools: 15
         { resources: { iron: 1, wood: 3 }, minLevel: 1, result: { type: "tools", quantity: 4.5 }},
         { resources: { copper: 1, wood: 3 }, minLevel: 1, result: { type: "tools", quantity: 4.5 }},
-        { resources: { iron: 1, coal: 1, wood: 1 }, minLevel: 1, result: { type: "tools", quantity: 6 }},
-        { resources: { iron: 1, coal: 1, wood: 1, tools: 1 }, minLevel: 1, result: { type: "tools", quantity: 9 }},
-        { resources: { copper: 1, coal: 1, wood: 1 }, minLevel: 1, result: { type: "tools", quantity: 6 }},
-        { resources: { copper: 1, coal: 1, wood: 1, tools: 1 }, minLevel: 1, result: { type: "tools", quantity: 9 }},
+        { resources: { iron: 1, coal: 1, wood: 1 }, minLevel: 2, result: { type: "tools", quantity: 6 }},
+        { resources: { iron: 1, coal: 1, wood: 1, tools: 1 }, minLevel: 2, result: { type: "tools", quantity: 9 }},
+        { resources: { copper: 1, coal: 1, wood: 1 }, minLevel: 3, result: { type: "tools", quantity: 6 }},
+        { resources: { copper: 1, coal: 1, wood: 1, tools: 1 }, minLevel: 3, result: { type: "tools", quantity: 9 }},
         /* { resources: { iron: 3, coal: 2, wood: 1 }, minLevel: 2, result: { type: "spear", quantity: 1.8 }},
         { resources: { iron: 5, coal: 2}, minLevel: 3, result: { type: "shield", quantity: 1.8 }}, */
     ],
@@ -274,7 +274,7 @@ const workshopProduction = {
     ],
     "coffee_workshop" : [ // coffee: 20, tools: 15, ground_coffee: 30
         { resources: { coffee: 2, tools: 2 }, minLevel:2, result: { type: "ground_coffee", quantity: 6.1 }},
-        { resources: { coffee: 4}, result: { type: "ground_coffee", quantity: 5.8 }},
+        { resources: { coffee: 4}, minLevel:1, result: { type: "ground_coffee", quantity: 5.8 }},
     ],
     "jewelry_workshop": [ // gems_purple: 120, gems_green: 90, gold: 100, silver: 40, tools: 15
         { resources: { gold: 2, tools: 1 }, minLevel: 1, result: { type: "jewelry", quantity: 3.5 }},

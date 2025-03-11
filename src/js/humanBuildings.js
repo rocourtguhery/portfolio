@@ -101,7 +101,7 @@ $(document).on("click",`.upgrade-btn`, function() {
     const market = building.getBuildingVillage().market;
     const hasInsufficientPopulation = village.workers.length < (building.level / 0.25) + building.minPopulation;
     if (hasInsufficientPopulation ){
-        const msg = $this.parents(`.village-buildings`).find(`.msg`);
+        const msg = $this.parents(`.village-buildings .village-workshops`).find(`.msg`);
         msg.empty().text(`Démographie insuffisantes!`).fadeIn(50,()=>{
             setTimeout(() => {
                 msg.fadeOut(50);
@@ -132,7 +132,7 @@ function displayAmenagementsBuildings(village){
     
         const workshopsDiv = document.createElement('div');
         workshopsDiv.className = `village-workshops`;
-        workshopsDiv.innerHTML = `<h6 class="village-buildings-list-title">Ateliers</h6><div class="village-workshops-list"></div>`;
+        workshopsDiv.innerHTML = `<h6 class="village-buildings-list-title">Ateliers</h6><span class="village-buildings-msg msg"></span><div class="village-workshops-list"></div>`;
         
         villageBuildings.appendChild(workshopsDiv);
 
@@ -150,8 +150,12 @@ function displayAmenagementsBuildings(village){
 
 function amenagementsBuilding(building) {
     const villageId = building.getBuildingVillage().id;
-    const amenagementsList = document.querySelector(`.village-${villageId} .amenagements-view .village-buildings .village-amenagements-list`);
-    if (!amenagementsList) return;
+    let targetClass = `village-amenagements-list`;
+    if (building.category === `workshop`) {
+        targetClass = `village-workshops-list`;
+    }
+    const listDiv = document.querySelector(`.village-${villageId} .amenagements-view .village-buildings .${targetClass}`);
+    if (!listDiv) return;
     
     const pourcentageProgress = (building.nextLevelProgress * 100) / building.getLevelUpThreshold();
 
@@ -183,7 +187,7 @@ function amenagementsBuilding(building) {
 
     buildingDiv.innerHTML = html;
     
-    document.querySelector('.amenagements-view .village-buildings .village-amenagements-list').appendChild(buildingDiv);
+    listDiv.appendChild(buildingDiv);
     displayBuildingWorkers(building);
     displayBuildingProduction(building);
     upgradeBuildingcheck(building, pourcentageProgress);
@@ -224,7 +228,7 @@ function displayBuildingProduction(building){
     const buildingProduction = document.querySelector(`#building-${building.id} .building-production.production`);
     buildingProduction.innerHTML = "";
     if (building.category === "amenagement") {
-        let html = ``; 
+        let html = ``;
         html += `<div class="production-title">Production</div>`;
         html += `<div class="resource">${ressourceFrName(building?.resource.type)} :<span class="quantity">+${Math.floor(building.showBuildingProd().prod)}/j</span></div>`;
         const bonusFactor = building.showBuildingProd().bonus;
@@ -234,6 +238,35 @@ function displayBuildingProduction(building){
             html += `<span class="bonus-factor factor-${key}">${ressourceFrName(key) || amenagementFrName(key) || ""} : (${value})</span>`;
         })
         html += `</div>`;
+        buildingProduction.innerHTML = html;
+    }
+    if (building.category === "workshop") {
+        const productionOptions = workshopProduction[building.type];
+        const production = building.calculateBuildingProduction();
+        let html = ``;
+        html += `<div class="production-title">Production de ${ressourceFrName(productionOptions[0].result.type)||""}</div>`;
+        productionOptions.forEach(option => {
+            if (building.level !== option.minLevel) return;
+            const { type, quantity } = option.result;
+            html += `<div class="production-option">`;
+                html += `<div class="resource production-cost-list">`;
+                    Object.entries(option.resources).forEach(([resource, quantity], index, arr) => {
+                        html += `<div class="production-cost"><div class="cost-icon cost-${resource}"></div>x${quantity}<span  class="info-text" style="color:#333;">${quantity} ${ressourceFrName(resource)||""}</span></div>`;
+                        if (arr.length > 1 && index !== (arr.length -1)) {
+                            html += `<span class="production-cost-plus"> <i class='fas fa-plus'></i> </span>`;
+                        }
+                    })
+                    html += `<i class='fas fa-long-arrow-alt-right'></i>`;
+                    html += `<div class="quantity">`;
+                    html += `<div class="production-result production-cost">`;
+                    html += `${Math.round(quantity)} <div class="cost-icon cost-${type}"></div>`;
+                    html += `<span  class="info-text" style="color:#333;">${ressourceFrName(type)||""}</span>`;
+                    html += `</div>`;
+
+                    html += `</div>`;
+                html += `</div>`;
+            html += `</div>`;
+        })
         buildingProduction.innerHTML = html;
     }
 }

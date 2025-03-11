@@ -115,10 +115,30 @@ html, body {
 
 }
 #readMe-link{
+    background: no-repeat url(../assets/images/readMe.png);
+    background-size: contain;
+    background-position: top center;
     position: absolute;
     bottom: 60px;
     right: 70px;
-    font-size: 14px;
+    font-size: 12px;
+    font-weight: 500;
+    height: 75px;
+    width: 64px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    filter: drop-shadow(0px -20px 10px blue) drop-shadow(0px 20px 10px red);
+    cursor: pointer;
+}
+#readMe-link span{
+    cursor: pointer;
+    color: #fff;
+    text-shadow: 1px 1px black, -1px 1px black, 1px -1px black, -1px -1px black;
+}
+#readMe-link:hover{
+    transform: scale(1.05);
+    bottom: 61px;
 }
 #intro-panel{
     position: relative;
@@ -1532,12 +1552,14 @@ div#buildings-box-tabs::before {
     background-position: bottom;
     background-size: 32px;
 }
+.production-cost .cost-iron,
 #townhall-view-warehouse .stock.icon-iron,
 #planConstruction-view .building-cost .cost-iron{
     background: no-repeat url("../assets/images/iron-icon.png");
     background-position: bottom;
     background-size: 32px;
 }
+.production-cost .cost-tools,
 #townhall-view-warehouse .stock.icon-tools,
 #planConstruction-view .building-cost .cost-tools{
     background: no-repeat url("../assets/images/tools-icon-1.png");
@@ -1587,12 +1609,14 @@ div#buildings-box-tabs::before {
     background-size: 32px;
     filter: contrast(1.2) brightness(1.2);
 }
+.production-cost .cost-cotton,
 #townhall-view-warehouse .stock.icon-cotton,
 #planConstruction-view .building-cost .cost-cotton{
     background: no-repeat url("../assets/images/cotton-icon-1.png");
     background-position: center 8px;
     background-size: 32px;
 }
+.production-cost .cost-wool,
 #townhall-view-warehouse .stock.icon-wool,
 #planConstruction-view .building-cost .cost-wool{
     background: no-repeat url("../assets/images/wool-icon.png");
@@ -1629,6 +1653,7 @@ div#buildings-box-tabs::before {
     background-position: center 8px;
     background-size: 32px;
 }
+.production-cost .cost-tobacco,
 #townhall-view-warehouse .stock.icon-tobacco,
 #planConstruction-view .building-cost .cost-tobacco{
     background: no-repeat url("../assets/images/tobacco-icon-4.png");
@@ -1921,32 +1946,49 @@ div#buildings-box-tabs::before {
     border: 1px solid #222;
     border-radius: 2px;
 }
+.production-cost .cost-wood,
 #planConstruction-view .building-cost .cost-wood{
     background: no-repeat url("../assets/images/wood-icon-7.png");
     background-position: center;
 }
+.production-cost .cost-stone,
 #planConstruction-view .building-cost .cost-stone{
     background: no-repeat url("../assets/images/stone-icon-3.png");
     background-position: center;
 }
+.production-cost .cost-cereals,
 #planConstruction-view .building-cost .cost-cereals{
     background: no-repeat url("../assets/images/cereals-icon.png");
     background-position: center;
 }
+.production-cost .cost-fabric,
 #planConstruction-view .building-cost .cost-fabric{
     background: no-repeat url("../assets/images/fabric-icon-3.png");
     background-position: center;
 }
+.production-cost .cost-coffee,
 #planConstruction-view .building-cost .cost-coffee{
     background: no-repeat url("../assets/images/coffee-bag-icon-8.png");
     background-position: center;
 }
+.production-cost .cost-cacao,
 #planConstruction-view .building-cost .cost-cacao{
     background: no-repeat url("../assets/images/cacao-icon-3.png");
     background-position: center;
 }
+.production-cost .cost-tobacco,
 #planConstruction-view .building-cost .cost-tobacco{
     background: no-repeat url("../assets/images/tobacco-icon.png");
+    background-position: center;
+}
+.production-cost .cost-sugar_cane,
+#planConstruction-view .building-cost .cost-sugar_cane{
+    background: no-repeat url("../assets/images/sugar_cane-icon-1.png");
+    background-position: center;
+}
+.production-cost .cost-vine,
+#planConstruction-view .building-cost .cost-vine{
+    background: no-repeat url("../assets/images/vine-icon.png");
     background-position: center;
 }
 #planConstruction-view,
@@ -2040,6 +2082,7 @@ div#buildings-box-tabs::before {
     text-transform: uppercase;
     display: inline;
 }
+.production-cost-list,
 .building-planConstruction-cost-list {
     width: 100%;
     margin-bottom: 3px;
@@ -2048,6 +2091,7 @@ div#buildings-box-tabs::before {
     gap: 5px 15px;
     align-items: center;
 }
+.production-cost,
 #planConstruction-view .building-cost{
     position: relative;
     display: flex;
@@ -2055,10 +2099,12 @@ div#buildings-box-tabs::before {
     align-items: center;
     cursor: pointer;
 }
-#planConstruction-view .building-cost:hover .info-text{
+#planConstruction-view .building-cost:hover .info-text,
+.production-cost:hover .info-text{
     display: block;
 }
-#planConstruction-view .building-cost .cost-icon{
+#planConstruction-view .building-cost .cost-icon,
+.production-cost .cost-icon{
     background-size: contain;
     background-position: center;
     width: 22px;
