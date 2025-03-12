@@ -288,7 +288,7 @@ const workshopProduction = {
 };
 
 const torn_Kingdom_maps = {
-    Kingdom:[
+    kingdom:[
         [{x:2, y: 26},{x:2, y: 27},{x:2, y: 28},{x:2, y: 29},{x:3, y: 30}],
         [{x:6, y: 20},{x:6, y: 21}],
         [{x:6, y: 25},{x:6, y: 26},{x:6, y: 27},{x:7, y: 25},{x:8, y: 25}],
@@ -326,7 +326,7 @@ const torn_Kingdom_maps = {
         [{x:40, y: 45}],
         [{x:44, y: 41},{x:45, y: 42},{x:44, y: 43},{x:45, y: 43},{x:46, y: 43},{x:46, y: 44},{x:47, y: 44}]
     ],
-    Empire:[
+    empire:[
         [
             {x:36, y: 2},{x:35, y: 3},{x:36, y: 4},{x:36, y: 5},{x:36, y: 6},
             {x:35, y: 7},{x:36, y: 8}

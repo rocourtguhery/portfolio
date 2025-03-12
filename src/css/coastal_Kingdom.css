@@ -762,6 +762,7 @@ input#map-name:focus-visible{
 .map_name{
     width: 100%;
     text-align: left;
+    text-transform: capitalize;
 }
 .map_num_island{
     width: 100%;
