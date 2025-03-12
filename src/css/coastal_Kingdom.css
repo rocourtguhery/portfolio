@@ -175,13 +175,37 @@ html, body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    animation: scale-animation 2s infinite;
+    -webkit-animation: scaleAnimation 2s infinite;
+    -moz-animation: scaleAnimation 2s infinite;
+    -ms-animation: scaleAnimation 2s infinite;
+    -o-animation: scaleAnimation 2s infinite;
+    animation: scaleAnimation 2s infinite;
     z-index: 105;
 }
-@keyframes scale-animation {
+@keyframes scaleAnimation {
     0% {transform: scale(1) translate(-50%, -50%);}
     50% {transform: scale(1.1) translate(-45%, -45%);}
     100% {transform: scale(1) translate(-50%, -50%);}
+}
+@-webkit-keyframes scaleAnimation{
+    0% {-webkit-transform: scale(1) translate(-50%, -50%);}
+    50% {-webkit-transform: scale(1.1) translate(-45%, -45%);}
+    100% {-webkit-transform: scale(1) translate(-50%, -50%);}
+}
+@-moz-keyframes scaleAnimation{
+    0% {-moz-transform: scale(1) translate(-50%, -50%);}
+    50% {-moz-transform: scale(1.1) translate(-45%, -45%);}
+    100% {-moz-transform: scale(1) translate(-50%, -50%);}
+}
+@-ms-keyframes scaleAnimation{
+    0% {-ms-transform: scale(1) translate(-50%, -50%);}
+    50% {-ms-transform: scale(1.1) translate(-45%, -45%);}
+    100% {-ms-transform: scale(1) translate(-50%, -50%);}
+}
+@-o-keyframes scaleAnimation{
+    0% {-o-transform: scale(1) translate(-50%, -50%);}
+    50% {-o-transform: scale(1.1) translate(-45%, -45%);}
+    100% {-o-transform: scale(1) translate(-50%, -50%);}
 }
 #pc-only,
 #pc-only-fr{
