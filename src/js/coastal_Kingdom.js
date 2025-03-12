@@ -96,11 +96,11 @@ $(document).ready(function () {
 
     $("#map-size-conf .map-size-numberX").css({
         "background": `no-repeat url("./src/assets/images/map-size-number-box.png") 0px 0px / 60px 60px,
-                    no-repeat url("./src/assets/images/num_10-100.png") ${mapSizeValue[gridSize.x]} / 540px 50px`,
+                    no-repeat url("./src/assets/images/num_10-100.png") ${mapSizeValue[gridSize.y]} / 540px 50px`,
     });
     $("#map-size-conf .map-size-numberY").css({
         "background": `no-repeat url("./src/assets/images/map-size-number-box.png") 0px 0px / 60px 60px,
-                    no-repeat url("./src/assets/images/num_10-100.png") ${mapSizeValue[gridSize.y]} / 540px 50px`,
+                    no-repeat url("./src/assets/images/num_10-100.png") ${mapSizeValue[gridSize.x]} / 540px 50px`,
     });
     $(document).on("mouseover",".number-plus, .number-minus", function() {
         $(this).addClass("number-plus-minus-mouseenter");
@@ -108,23 +108,23 @@ $(document).ready(function () {
     $(document).on("mouseout",".number-plus, .number-minus", function(e) {
         $(this).removeClass("number-plus-minus-mouseenter");
     });
-    $(document).on("mousedown",".number-plus, .number-minus", function(e) {
-        if ($(this).hasClass("plusX") && gridSize.x < 100) {
-            gridSize.x += 10;
-        }else if ($(this).hasClass("minusX") && gridSize.x > 20){
-            gridSize.x -= 10;
-        }else if ($(this).hasClass("plusY") && gridSize.y < 100) {
+    $(document).on("click",".number-plus, .number-minus", function(e) {
+        if ($(this).hasClass("plusX") && gridSize.y < 100) {
             gridSize.y += 10;
-        }else if ($(this).hasClass("minusY") && gridSize.y > 20){
+        }else if ($(this).hasClass("minusX") && gridSize.y > 20){
             gridSize.y -= 10;
+        }else if ($(this).hasClass("plusY") && gridSize.x < 100) {
+            gridSize.x += 10;
+        }else if ($(this).hasClass("minusY") && gridSize.x > 20){
+            gridSize.x -= 10;
         }
         $("#map-size-conf .map-size-numberX").css({
             "background": `no-repeat url("./src/assets/images/map-size-number-box.png") 0px 0px / 60px 60px,
-                        no-repeat url("./src/assets/images/num_10-100.png") ${mapSizeValue[gridSize.x]} / 540px 50px`,
+                        no-repeat url("./src/assets/images/num_10-100.png") ${mapSizeValue[gridSize.y]} / 540px 50px`,
         });
         $("#map-size-conf .map-size-numberY").css({
             "background": `no-repeat url("./src/assets/images/map-size-number-box.png") 0px 0px / 60px 60px,
-                        no-repeat url("./src/assets/images/num_10-100.png") ${mapSizeValue[gridSize.y]} / 540px 50px`,
+                        no-repeat url("./src/assets/images/num_10-100.png") ${mapSizeValue[gridSize.x]} / 540px 50px`,
         });
         $(this).addClass("number-plus-minus-mousedown");
     });
@@ -191,6 +191,21 @@ $(document).ready(function () {
             });
         }); */
     });
+    $(document).on("click","#backToHome", function() {
+        $("#game-box").fadeOut(1500,()=>{
+            $("#game-box").empty();
+        });
+        $("#mini-map").fadeOut(250);
+        $("#islandsOption-backdrop").remove();
+        $("#load-map-panel-back-btn").click();
+        $("#new-map-generator-back-btn").click();
+        $("#game-loading").fadeIn(100,()=>{
+            $("#new-map-generator-box").fadeTo(2500, 1);
+            $("#game-loading").fadeOut(2000);
+
+        });
+        $(this).fadeOut(250).remove();
+    });
     let animStart = false;
     $(document).on("click","#save-map", function() {
         let pos = 100;
@@ -217,6 +232,7 @@ $(document).ready(function () {
                     clearInterval(signItnval);
                     goGame();
                     animStart = false;
+                    $(`#save-map, #save-map-text, #save-signature`).removeAttr(`style`);
                 }
                 $("#save-signature").css({
                     "background-position-y": `${pos}px`,
@@ -319,6 +335,7 @@ $(document).ready(function () {
         miniMap(()=>{
             $("#mini-map .mapCase").fadeTo(50,1);
             $("#mini-map").fadeIn(2500);
+            $("#backToHome").fadeIn(2500);
         });
         $("#islandsOption-backdrop").fadeOut(1500);
         $("#islandsOption-popup").fadeOut(1000, ()=>{
@@ -401,6 +418,7 @@ $(document).ready(function () {
         miniMap(()=>{
             $("#mini-map .mapCase").fadeTo(250,1);
             $("#mini-map").fadeIn(750);
+            $("#backToHome").fadeIn(750);
         });
         $("#islandsOption-backdrop").fadeOut(1500);
         $("#islandsOption-popup").fadeOut(1000, ()=>{
@@ -447,7 +465,8 @@ function supMapById(id){
 }
 function goGame(){
     addVillageToMap(islands, ()=>{
-        $("#game-box .mapCase").fadeTo(20, 0);
+        $("#game-box .mapCase").fadeTo(10, 0);        
+
         $("#game-box").after('<div id="islandsOption-backdrop"></div>');
         $("#game-loading").fadeIn(1000);
         $("#new-map-generator-box").fadeTo(500, 0,()=>{$("#new-map-generator-box").fadeOut(100)})
@@ -464,7 +483,6 @@ function goGame(){
 }
 function addVillageToMap(islands, callback){
     islands.forEach(island => {
-        let addIslandName = false;
         const currentIslandVillages = generateVillages(island);
         island.villages = currentIslandVillages;
     });
@@ -602,10 +620,17 @@ function miniMap(callback){
     let vw = parseInt($("#game-box").css("width"));
     let vh = parseInt($("#game-box").css("height"));
     const scaleFactor = cellSize * 0.05;
-    
-    $("#mini-map").css({
-        "width": `${scaleFactor * gridSize.y + 8}px`,
-        "height": `${scaleFactor * gridSize.x + 8}px`,
+    const miniMap_width = scaleFactor * gridSize.y + 8;
+    const miniMap_height = scaleFactor * gridSize.x + 8;
+    const mini_map = $("#mini-map");
+    mini_map.after(`<div id="backToHome"><i class='fas fa-home'></i><span class="info-text">Accueil</span></div>`);
+    mini_map.css({
+        "width": `${miniMap_width}px`,
+        "height": `${miniMap_height}px`,
+    });
+    $("#backToHome").css({
+        "left": `${miniMap_width + 4}px`,
+        "bottom": `${miniMap_height - 25}px`,
     });
 
     const mapCase = $("#game-box .mapCase").clone();
