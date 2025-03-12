@@ -67,7 +67,10 @@
                     <div id="new-map-btn"></div>
                     <span class="label-new-map">Lancer une nouvelle carte</span>
                 </div>
-                <div id="readMe-link"><span>README</span></div>
+                <div id="readMe-link">
+                    <div class="readMe-img"></div>
+                </div>
+                <span class="readMe-text">README</span>
             </div>
             <div id="load-map-panel">
                 
@@ -113,6 +116,7 @@
     </div>
     <div id="game-box">
     </div>
+    <div id="game-loading"></div>
     <div id="mini-map"></div>
 
     <svg>
@@ -153,6 +157,14 @@
         let isDragging = false;
         let startX, startY;
         let isAnimating = false;
+
+        
+        $(document).on("mouseover","#readMe-link, .readMe-text", function() {
+            $("#readMe-link").addClass("hover");
+        });
+        $(document).on("mouseout","#readMe-link, .readMe-text", function() {
+            $("#readMe-link").removeClass("hover");
+        });
 
         const gameBox = document.getElementById('game-box');
 
