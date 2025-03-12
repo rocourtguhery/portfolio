@@ -449,9 +449,12 @@ function goGame(){
     addVillageToMap(islands, ()=>{
         $("#game-box .mapCase").fadeTo(20, 0);
         $("#game-box").after('<div id="islandsOption-backdrop"></div>');
-        $("#islandsOption-backdrop").fadeTo(250, 0.7);
-        $("#game-box").fadeIn(250,()=>{
-            $("#new-map-generator-box").fadeOut(250);
+        $("#game-loading").fadeIn(1000);
+        $("#new-map-generator-box").fadeTo(500, 0,()=>{$("#new-map-generator-box").fadeOut(100)})
+        $("#islandsOption-backdrop").fadeTo(6500, 0.7,()=>{
+            $("#game-loading").fadeOut(1000);
+        });
+        $("#game-box").fadeTo(7500, 1,()=>{
             console.log(getIslandStats(islands));
             const allIslandOption = getIslandStats(islands);
             const islandOption = allIslandOption.filter(island => island.land >= 3 && Object.keys(island.totalFreeResources).length > 2);

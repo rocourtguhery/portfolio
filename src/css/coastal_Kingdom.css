@@ -114,32 +114,75 @@ html, body {
 #close-readMe{
 
 }
-#readMe-link{
-    background: no-repeat url(../assets/images/readMe.png);
-    background-size: contain;
-    background-position: top center;
+#readMe-link,
+.readMe-text{
     position: absolute;
-    bottom: 60px;
+    bottom: 45px;
     right: 70px;
+    height: 64px;
+    width: 64px;
     font-size: 12px;
     font-weight: 500;
-    height: 75px;
-    width: 64px;
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: center;
     filter: drop-shadow(0px -20px 10px blue) drop-shadow(0px 20px 10px red);
     cursor: pointer;
 }
-#readMe-link span{
+#readMe-link .readMe-img{
+    background: no-repeat url(../assets/images/readMe.png);
+    background-size: contain;
+    height: 32px;
+    width: 32px;
+    filter: invert(1);
+}
+.readMe-text{
     cursor: pointer;
-    color: #fff;
-    text-shadow: 1px 1px black, -1px 1px black, 1px -1px black, -1px -1px black;
+    color: #333;
+    filter: unset;
+    bottom: 50px;
+    right: 70px;
+    font-size: 7px;
+    letter-spacing: 5px;
+    height: auto;
+    width: auto;
 }
-#readMe-link:hover{
-    transform: scale(1.05);
-    bottom: 61px;
+#readMe-link.hover{
+    transform: scale(1.5);
+    bottom: 50px;
 }
+#readMe-link.hover .readMe-img{
+    transform: scale(1.1);
+    filter: invert(0);
+}
+#readMe-link.hover ~ .readMe-text{
+    display: block;
+    /* text-shadow: 1px 1px black, -1px 1px black, 1px -1px black, -1px -1px black; */
+    /* color: #fff; */
+    font-size: 12px;
+    letter-spacing: 2px;
+    bottom: 45px;
+    right: 70px;
+}
+#game-loading{
+    display: none;
+    background: no-repeat url(../assets/images/readMe.png);
+    background-size: contain;
+    position: absolute;
+    height: 100px;
+    width: 100px;
+    filter: drop-shadow(0px -20px 10px #e3a72c) drop-shadow(0px 20px 10px #3cebfa) invert(1);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: scale-animation 2s infinite;
+    z-index: 105;
+}
+@keyframes scale-animation {
+    0% {transform: scale(1) translate(-50%, -50%);}
+    50% {transform: scale(1.1) translate(-45%, -45%);}
+    100% {transform: scale(1) translate(-50%, -50%);}
+  }
 #intro-panel{
     position: relative;
     background: no-repeat url("../assets/images/parchemin_1.png") !important;
