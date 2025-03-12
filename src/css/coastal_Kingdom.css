@@ -777,9 +777,40 @@ input#map-name:focus-visible{
     background: url("../assets/images/ocean_50x50.png");
     z-index: 100;
     border-radius: 7px;
+    border-top-right-radius: unset;
     display: none;
     overflow: hidden;
 }
+#backToHome{
+    position: absolute;
+    bottom: 140px;
+    left: 175px;
+    color: #fff;
+    width: 30px;
+    height: 30px;
+    border-top-left-radius: unset;
+    border-bottom-left-radius: unset;
+    display: none;
+    opacity: 0.5;
+    z-index: 100;
+    text-align: center;
+}
+#backToHome i{
+    border: 2px solid;
+    border-radius: 3px;
+    padding: 5px 4px;
+}
+#backToHome:hover i{
+    border-left-color: transparent;
+}
+#backToHome:hover,
+#backToHome:hover .info-text{
+    cursor: pointer;
+    opacity: 1;
+    color: #333;
+    display: block;
+}
+
 #mini-map .human-village-cell::before{
     content: '\1F3F2';
     font-size: 12px;
@@ -1191,6 +1222,12 @@ input#edit-village-name:focus-visible{
 #village-info .currency:hover{
     transform: scale(1.2);
     cursor: pointer;
+}
+#village-info .population:hover .info-text,
+#village-info .building:hover .info-text,
+#village-info .happiness:hover .info-text,
+#village-info .currency:hover .info-text{
+    display: block;
 }
 #village-info .currency .gourdes{
     background: no-repeat url("../assets/images/village-gold-2.png");

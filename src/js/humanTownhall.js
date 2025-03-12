@@ -27,12 +27,12 @@ $(document).ready(function () {
         });
     });
     
-    $(document).on("mouseenter","#village-info .population, #village-info .building, #village-info .happiness, #village-info .currency", function() {
+    /* $(document).on("mouseenter","#village-info .population, #village-info .building, #village-info .happiness, #village-info .currency", function() {
         $(this).find(".info-text").fadeIn(100);
     });
     $(document).on("mouseleave","#village-info .population, #village-info .building, #village-info .happiness, #village-info .currency", function(e) {
         $(this).find(".info-text").fadeOut(100);
-    });
+    }); */
     $(document).on("click",`.buildings-box-btn`, function() {
         if($(this).hasClass("active") || $(this).hasClass("market-btn") || $(this).hasClass("port-btn") ) return;
         $(".buildings-box-btn").animate({
