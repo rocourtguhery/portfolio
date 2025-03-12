@@ -182,8 +182,29 @@ html, body {
     0% {transform: scale(1) translate(-50%, -50%);}
     50% {transform: scale(1.1) translate(-45%, -45%);}
     100% {transform: scale(1) translate(-50%, -50%);}
-  }
+}
+#pc-only,
+#pc-only-fr{
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 65px);
+    color: #fff;
+    font-weight: 700;
+    font-size: 22px;
+    text-transform: uppercase;
+    -webkit-text-stroke: 1px #333;
+}
+#pc-only{
+    color: #333;
+    font-size: 18px;
+    font-weight: 500;
+    transform: translate(-50%, 100px);
+    -webkit-text-stroke: unset;
+}
 #intro-panel{
+    display: none;
     position: relative;
     background: no-repeat url("../assets/images/parchemin_1.png") !important;
     background-size: 450px 100% !important;

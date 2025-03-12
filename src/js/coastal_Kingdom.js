@@ -195,7 +195,9 @@ $(document).ready(function () {
         $("#game-box").fadeOut(1500,()=>{
             $("#game-box").empty();
         });
-        $("#mini-map").fadeOut(250);
+        $("#mini-map").fadeOut(250,()=>{
+            $("#mini-map").empty();
+        })
         $("#islandsOption-backdrop").remove();
         $("#load-map-panel-back-btn").click();
         $("#new-map-generator-back-btn").click();
