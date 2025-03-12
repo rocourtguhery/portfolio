@@ -2230,4 +2230,5 @@ div#buildings-box-tabs::before {
 svg{
     position: absolute;
     top: 0;
+    z-index: -1;
 }
