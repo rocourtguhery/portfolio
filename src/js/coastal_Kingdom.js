@@ -78,6 +78,7 @@ const chooseIslandView = {
     "hill1mountain1": islandhill1mountain1(),
     "hillsmountains": islandhillsmountains(),
 }
+let laodingMap = false;
 $(document).ready(function () {
     tornKingdomMap();
     maps = JSON.parse(localStorage.getItem("maps")) || {};
@@ -192,10 +193,11 @@ $(document).ready(function () {
         }); */
     });
     $(document).on("click","#backToHome", function() {
-        $("#game-box").fadeOut(1500,()=>{
+        $("#game-box").fadeTo(1500, 0,()=>{
             $("#game-box").empty();
         });
-        $("#mini-map").fadeOut(250);
+        $("#mini-map").fadeOut(10);
+        $("#mini-map").empty();
         $("#islandsOption-backdrop").remove();
         $("#load-map-panel-back-btn").click();
         $("#new-map-generator-back-btn").click();
@@ -204,7 +206,7 @@ $(document).ready(function () {
             $("#game-loading").fadeOut(2000);
 
         });
-        $(this).fadeOut(250).remove();
+        $(this).fadeOut(100).remove();
     });
     let animStart = false;
     $(document).on("click","#save-map", function() {
@@ -271,6 +273,8 @@ $(document).ready(function () {
         });
     });
     $(document).on("click",".map-list-element .map_name, .map-list-element .map_num_island", function() {
+        if (laodingMap) return;
+        laodingMap = true;
         const id = $(this).parent().attr("id");
         const map = maps[id];
         grid = map.grid;
@@ -278,7 +282,6 @@ $(document).ready(function () {
         gridSize.x = map.gridSize.x;
         gridSize.y = map.gridSize.y;
         goGame();
-        $(document).off("click", ".map-list-element .map_name, .map-list-element .map_num_island");
     });
     
     $(document).on("click",".chooseIsland-select", function() { // off("click",".chooseIsland-select").
@@ -470,15 +473,16 @@ function goGame(){
         $("#game-box").after('<div id="islandsOption-backdrop"></div>');
         $("#game-loading").fadeIn(1000);
         $("#new-map-generator-box").fadeTo(500, 0,()=>{$("#new-map-generator-box").fadeOut(100)})
-        $("#islandsOption-backdrop").fadeTo(6500, 0.7,()=>{
+        $("#islandsOption-backdrop").fadeTo(5000, 0.7,()=>{
             $("#game-loading").fadeOut(1000);
         });
-        $("#game-box").fadeTo(7500, 1,()=>{
+        $("#game-box").fadeTo(5500, 1,()=>{
             console.log(getIslandStats(islands));
             const allIslandOption = getIslandStats(islands);
             const islandOption = allIslandOption.filter(island => island.land >= 3 && Object.keys(island.totalFreeResources).length > 2);
             chooseIsland(islandOption);
         });
+        laodingMap = false;
     })
 }
 function addVillageToMap(islands, callback){
