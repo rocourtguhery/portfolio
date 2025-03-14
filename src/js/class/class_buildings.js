@@ -19,6 +19,7 @@ class Buildings{
         this.capacity = 600;
         this.stock = []; 
         this.baseProduction = this.buildingBaseProduction(); // Production de base par tick
+        this.workshopProduction = {};
         this.nextLevelProgress = 0;
     }
     buildingBaseProduction() {
@@ -106,7 +107,7 @@ class Buildings{
             }
         } 
     }
-    calculateBuildingProduction() {
+    calculateBuildingProduction(xp = true) {
         const baseProduction = this.production || 1; // Production de base
         const workers = this.workers;
         const workerContribution = workers.reduce((total, worker) => total + worker.laborforce, 0);
@@ -129,7 +130,9 @@ class Buildings{
                     const millers = mill.workers;
                     const millerContribution = millers.reduce((sum, worker) => {
 
-                        worker.gainExperience(0.05);
+                        if (xp) {
+                            worker.gainExperience(0.05);
+                        }
                         return sum + worker.laborforce;
 
                     }, 0);
@@ -139,11 +142,13 @@ class Buildings{
             }, 1);
         }
 
-        workers.forEach(w => {
-            w.gainExperience(0.05);
-        });
-
-        this.buildingGainExperience(0.5);
+        if (xp) {
+            workers.forEach(w => {
+                w.gainExperience(0.05);
+            });
+    
+            this.buildingGainExperience(0.5);
+        }
 
         return baseProduction * workerContribution * toolMultiplier * millMultiplier;
     }

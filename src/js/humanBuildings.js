@@ -1,5 +1,5 @@
 $(document).on("click",`.buildings-btn`, function() {
-    const villageId = $(this).parents(`#village-management`).attr(`villageId`);
+    const villageId = $(this).parents(`#village-management`).attr("data-villageid");
     const village = villages.find(village => village.id === villageId);
     const parents = $(this).parents(`#village-management-box.village-${villageId}`);
     parents.find(`.display-village-components`).fadeOut(100).remove();
@@ -10,7 +10,7 @@ $(document).on("click",`.buildings-btn`, function() {
 });
 
 $(document).on("click",`.townhall-btn`, function() {
-    const villageId = $(this).parents(`#village-management`).attr(`villageId`);
+    const villageId = $(this).parents(`#village-management`).attr("data-villageid");
     const village = villages.find(village => village.id === villageId);
     const parents = $(this).parents(`#village-management-box.village-${villageId}`);
     parents.find(`.display-village-components`).fadeOut(100).remove();
@@ -22,11 +22,7 @@ $(document).on("click",`.townhall-btn`, function() {
 $(document).on("click",`.amenagements-view .worker-img .workers-type-option .workers-type-minus`, function(e) {
     // Enlever un travailleur d'un amenagement
     const $this = $(this);
-    const parents = $this.parents(`.building`);
-    const buildingId = parents.attr("data-buildingid");
-    const villageId = parents.attr("data-buildingvillageid");
-    const village = villages.find(village => village.id === villageId);
-    const building = village.amenagements.find(building => building.id === buildingId);
+    const {building} = getThisBuilding($this);
     const workerType = $this.parents(`.worker`).attr("data-workertype");
 
     const workerIndex = building.workers.findIndex(worker => worker.type === workerType);
@@ -45,14 +41,11 @@ $(document).on("click",`.amenagements-view .worker-img .workers-type-option .wor
 $(document).on("click",`.amenagements-view .add-worker`, function() {
     // Ajouter un travailleur dans un amenagement
     const $this = $(this);
-    const parents = $this.parents(`.building`);
-    const buildingId = parents.attr("data-buildingid");
-    const villageId = parents.attr("data-buildingvillageid");
-    const village = villages.find(village => village.id === villageId);
-    const building = village.amenagements.find(building => building.id === buildingId);
+    const {village, building} = getThisBuilding($this);
+
     const unemployed = village.workers.filter(worker => !worker.workPlaceType || !worker.buildingID);
     if (unemployed.length <= 0) {
-        const msg = $this.parents(`.village-buildings`).find(`.msg`);
+        const msg = $this.parents(`.village-building-list`).siblings(`.msg`);
         msg.empty().text(`Aucun sans emploi disponible!`).fadeIn(50,()=>{
             setTimeout(() => {
                 msg.fadeOut(50);
@@ -66,11 +59,8 @@ $(document).on("click",`.amenagements-view .add-worker`, function() {
 });
 $(document).on("click",`.amenagements-view .worker-img`, function() {
     const $this = $(this);
-    const parents = $this.parents(`.building`);
-    const buildingId = parents.attr("data-buildingid");
-    const villageId = parents.attr("data-buildingvillageid");
-    const village = villages.find(village => village.id === villageId);
-    const building = village.amenagements.find(building => building.id === buildingId);
+    const {village, building} = getThisBuilding($this);
+    const villageId = village.id;
     const workerType = $this.parents(`.worker`).attr("data-workertype");
     const showBuildingWorkersDiv = document.createElement('div');
     showBuildingWorkersDiv.className = `village-buildings-show-workers`;
@@ -93,15 +83,11 @@ $(document).on("click",`.close-show-bBuilding-workers`, function() {
 });
 $(document).on("click",`.upgrade-btn`, function() {
     const $this = $(this);
-    const parents = $this.parents(`.building`);
-    const buildingId = parents.attr("data-buildingid");
-    const villageId = parents.attr("data-buildingvillageid");
-    const village = villages.find(village => village.id === villageId);
-    const building = village.amenagements.find(building => building.id === buildingId);
+    const {village, building} = getThisBuilding($this);
     const market = building.getBuildingVillage().market;
     const hasInsufficientPopulation = village.workers.length < (building.level / 0.25) + building.minPopulation;
     if (hasInsufficientPopulation ){
-        const msg = $this.parents(`.village-buildings .village-workshops`).find(`.msg`);
+        const msg = $this.parents(`.village-building-list`).siblings(`.msg`);
         msg.empty().text(`Démographie insuffisantes!`).fadeIn(50,()=>{
             setTimeout(() => {
                 msg.fadeOut(50);
@@ -113,7 +99,72 @@ $(document).on("click",`.upgrade-btn`, function() {
     const updatedCost = building.calculateCostForNextLevel();
     const goldCost = calculatePrice(updatedCost, market) * ((100 - pourcentageProgress) + 1);
 });
+$(document).on("click",`.select-prod`, function() {
+    const $this = $(this);
+    const productionOptions = JSON.parse($this.attr("data-prodOptions"));
+    const {building} = getThisBuilding($this);
 
+    $(`.select-option-container`).fadeOut(250).remove();
+
+    $this.parents(`.village-building-list`).addClass('no-Overflow-Scroll');
+
+    let html = `<div class="select-option-container">`;
+    html += `<div class="btn-close close-select-option"></div>`
+    html += `<div class="select-option-header">Options</div>`;
+        html += `<div class="production-option">`;
+            html += `<ul>`;
+            const options = productionOptions.filter(options => building.level >= options.minLevel);
+            options.forEach(option => {
+                // if (building.level < option.minLevel) return;
+                const { type, quantity } = option.result;
+                const isSelected = JSON.stringify(building.workshopProduction.resources) === JSON.stringify(option.resources);
+                console.log(`isSelected : ${JSON.stringify(isSelected)}`);
+
+                html += `<li class="resource production">`; //.production-cost-list
+                    Object.entries(option.resources).forEach(([resource, quantity], index, arr) => {
+                        html += `<div class="production-cost"><div class="cost-icon cost-${resource}"></div>x${quantity}<span  class="info-text" style="color:#333;">${quantity} ${ressourceFrName(resource)||""}</span></div>`;
+                        if (arr.length > 1 && index !== (arr.length -1)) {
+                            html += `<span class="production-cost-plus"> <i class='fas fa-plus'></i> </span>`;
+                        }
+                    })
+                    html += `<i class='fas fa-long-arrow-alt-right'></i>`;
+                    html += `<div class="production-result production-cost">`;
+                        html += `<div class="cost-icon cost-${type}"></div>x${Math.round(quantity)}`;
+                        html += `<span  class="info-text" style="color:#333;">${ressourceFrName(type)||""}</span>`;
+                    html += `</div>`;
+                    html += `<label class="prod-select">`;
+                        html += `<input class="prodSelect" data-option='${JSON.stringify(option)}' ${isSelected?"checked":""} type="${options.length > 1 ? "radio" : "checkbox"}" name="prodSelect">`;
+                        html += `<span class="input-checked"></span>`
+                    html += `</label>`;
+                html += `</li>`;
+            })
+            html += `</ul>`;
+        html += `</div>`;
+    html += `</div>`;
+    
+    $(`#building-${building.id} .building-production.production`).append(html);
+
+});
+$(document).on("click",`.close-select-option`, function() {
+    const $this = $(this);
+    $this.parents(`.village-building-list`).removeClass('no-Overflow-Scroll');
+    const {building} = getThisBuilding($this);
+    displayBuildingProduction(building);
+    $this.parent().fadeOut(250).remove();
+});
+$(document).on("click",`.prodSelect`, function() {
+    const $this = $(this);
+    const {building} = getThisBuilding($this);
+    const checked = $this.is(':checked');
+    if (checked) {
+        console.log( $(this).is(':checked'));
+        const option = JSON.parse($this.attr("data-option"));
+        building.workshopProduction = option;
+    }else{
+        building.workshopProduction = {};
+    }
+    console.log(`building.workshopProduction: ${JSON.stringify(building.workshopProduction)}`);
+});
 function displayAmenagementsBuildings(village){
     const fragment = document.createDocumentFragment();
     const amenagements = village.amenagements.filter(a => a.category === "amenagement");
@@ -121,22 +172,26 @@ function displayAmenagementsBuildings(village){
     const buildingsBox = document.createElement('div');
     buildingsBox.className = `amenagements-view display-village-components`;
 
-    const villageBuildings = document.createElement('div');
+    const villageBuildings = document.createElement('div')
     villageBuildings.className = `village-buildings`;
-    
+
+    if (villageHasBuilding(village, false, "amenagement" )){
         const amenagementsDiv = document.createElement('div');
         amenagementsDiv.className = `village-amenagements`;
-        amenagementsDiv.innerHTML = `<h6 class="village-buildings-list-title">Amenagements</h6><span class="village-buildings-msg msg"></span><div class="village-amenagements-list"></div>`;
+        amenagementsDiv.innerHTML = `<h6 class="village-buildings-list-title">Amenagements</h6><span class="village-buildings-msg msg"></span><div class="village-amenagements-list village-building-list"></div>`;
         
         villageBuildings.appendChild(amenagementsDiv);
-    
+    }
+
+    if (villageHasBuilding(village, false, "workshop" )){
         const workshopsDiv = document.createElement('div');
         workshopsDiv.className = `village-workshops`;
-        workshopsDiv.innerHTML = `<h6 class="village-buildings-list-title">Ateliers</h6><span class="village-buildings-msg msg"></span><div class="village-workshops-list"></div>`;
-        
-        villageBuildings.appendChild(workshopsDiv);
+        workshopsDiv.innerHTML = `<h6 class="village-buildings-list-title">Ateliers</h6><span class="village-buildings-msg msg"></span><div class="village-workshops-list village-building-list"></div>`;
 
-        buildingsBox.appendChild(villageBuildings);
+        villageBuildings.appendChild(workshopsDiv);
+    }
+
+    buildingsBox.appendChild(villageBuildings);
     fragment.appendChild(buildingsBox);
     document.querySelector('#buildings-box').appendChild(fragment);
 
@@ -242,31 +297,35 @@ function displayBuildingProduction(building){
     }
     if (building.category === "workshop") {
         const productionOptions = workshopProduction[building.type];
-        const production = building.calculateBuildingProduction();
+        const production = building.calculateBuildingProduction(false);
         let html = ``;
-        html += `<div class="production-title">Production de ${ressourceFrName(productionOptions[0].result.type)||""}</div>`;
-        productionOptions.forEach(option => {
-            if (building.level !== option.minLevel) return;
-            const { type, quantity } = option.result;
-            html += `<div class="production-option">`;
-                html += `<div class="resource production-cost-list">`;
-                    Object.entries(option.resources).forEach(([resource, quantity], index, arr) => {
-                        html += `<div class="production-cost"><div class="cost-icon cost-${resource}"></div>x${quantity}<span  class="info-text" style="color:#333;">${quantity} ${ressourceFrName(resource)||""}</span></div>`;
+        const selectedProd = building.workshopProduction; // productionOptions.find(option => option.selected && building.level >= option.minLevel);
+        if (Object.keys(selectedProd).length > 0) {
+            html += `<div class="production-title"><span>Production</span> <span class="select-prod" data-prodOptions='${JSON.stringify(productionOptions)}'><i class='far fa-edit'></i></div></span></div>`; // de ${ressourceFrName(productionOptions[0].result.type)||""}
+            const { type, quantity } = selectedProd.result;
+            console.log(`selectedProd : ${JSON.stringify(selectedProd)}`);
+            // selectedProd : {"resources":{"cotton":3},"minLevel":1,"result":{"type":"fabric","quantity":2.1},"selected":true}
+            html += `<div class="production-option" >`;
+                html += `<div class="resource production">`;
+                    Object.entries(selectedProd.resources).forEach(([resource, quantity], index, arr) => {
+                        html += `<div class="production-cost"><div class="cost-icon cost-${resource}"></div>x${quantity}<span class="info-text" style="color:#333;">${quantity} ${ressourceFrName(resource)||""}</span></div>`;
                         if (arr.length > 1 && index !== (arr.length -1)) {
                             html += `<span class="production-cost-plus"> <i class='fas fa-plus'></i> </span>`;
                         }
                     })
                     html += `<i class='fas fa-long-arrow-alt-right'></i>`;
                     html += `<div class="quantity">`;
-                    html += `<div class="production-result production-cost">`;
-                    html += `${Math.round(quantity)} <div class="cost-icon cost-${type}"></div>`;
-                    html += `<span  class="info-text" style="color:#333;">${ressourceFrName(type)||""}</span>`;
-                    html += `</div>`;
-
+                        html += `<div class="production-result production-cost">`;
+                            html += `${Math.round(quantity)}<div class="cost-icon cost-${type}"></div>`;
+                            html += `<span  class="info-text" style="color:#333;">${ressourceFrName(type)||""}</span>`;
+                        html += `</div>`;
+                        html += `x <span class="worker-labor" style="height: 22px;width: 22px;">${Math.round(production)} <i class="fas fa-hammer"></i> <span class="info-text" style="color:#333;">Force de Travail</span></span>`;
                     html += `</div>`;
                 html += `</div>`;
             html += `</div>`;
-        })
+        }else{
+            html += `<div class="production-title"><span>Choisir la production.</span><span class="select-prod" data-prodOptions='${JSON.stringify(productionOptions)}'><i class='far fa-edit'></i></div></span>`;
+        }
         buildingProduction.innerHTML = html;
     }
 }

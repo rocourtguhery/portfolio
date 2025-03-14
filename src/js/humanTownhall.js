@@ -5,7 +5,7 @@ $(document).ready(function () {
         $("#game-box .mapCase").fadeTo(20, 0);
         $("#islandsOption-backdrop").fadeTo(250, 0.7);
         let html = `<div id="village-management-box" class="village-${villageId}">`;
-        html += `<div id="village-management" villageId="${villageId}">`;
+        html += `<div id="village-management" data-villageid="${villageId}">`;
             html += `<div id="village-management-drop"></div>`;
             html += `<div class="btn-close close-page"></div>`;
         html += `</div>`;
@@ -52,6 +52,8 @@ $(document).ready(function () {
             $(this).removeClass("disabled");
             activeWorker--;
             workerLeft += 80;
+            $(`#new-workers-box .worker`).removeClass("first-free-worker");
+            $(`#new-workers-box .worker`).eq(activeWorker).addClass("first-free-worker");
             $("#new-workers-box").animate({
                 left: `${workerLeft}px`,
             },()=>{
@@ -69,6 +71,8 @@ $(document).ready(function () {
             $(this).removeClass("disabled");
             activeWorker++;
             workerLeft -= 80;
+            $(`#new-workers-box .worker`).removeClass("first-free-worker");
+            $(`#new-workers-box .worker`).eq(activeWorker).addClass("first-free-worker");
             $("#new-workers-box").animate({
                 left: `${workerLeft}px`,
             },()=>{
@@ -97,7 +101,7 @@ $(document).ready(function () {
     });
     $(document).on("click",`.assign-worker`, function() {
         const assign = $(this);
-        const villageId = assign.parents(".worker").attr("villageId");
+        const villageId = assign.parents(".worker").attr("data-villageid");
         const worker = JSON.parse(assign.parents(`.worker-info-option`).attr("data-worker"));
         $(".worker-info").fadeOut(50).remove();
         $(".assign-worker-buildings").fadeOut(50).remove();
@@ -211,7 +215,7 @@ function displayVillage(villageId){
     $(document).on("keyup",`#edit-village-name`, function(event) {
         if (event.keyCode === 13) {
             village.name = event.target.value;
-            const villageId = $(this).parents("#village-management").attr("villageId");
+            const villageId = $(this).parents("#village-management").attr("data-villageid");
             $(`#village-${villageId}`).find(".village-name").text(village.name);
             $("input[type=text]#edit-village-name").val(event.target.value);
             $("#village-name").text(village.name);
@@ -226,7 +230,7 @@ function displayVillage(villageId){
     });
     $(document).on("blur",`#edit-village-name`, function(event) {
         village.name = event.target.value;
-        const villageId = $(this).parents("#village-management").attr("villageId");
+        const villageId = $(this).parents("#village-management").attr("data-villageid");
         $(`#village-${villageId}`).find(".village-name").text(village.name);
         $("input[type=text]#edit-village-name").val(event.target.value);
         $("#village-name").text(village.name);
@@ -288,7 +292,7 @@ function displayWorkers(workers, village, selector){
         const amenagementsForWorkers = village.amenagements.filter(amenagement => !noNeedWorkersPlace.includes(amenagement.type) && amenagement.maxLabors > amenagement.workers.length);
         let html = ``;
             workers.forEach(worker => {
-                html += `<div id="worker-${worker.id}" villageId="${village.id}" class="worker">`;
+                html += `<div id="worker-${worker.id}" data-villageid="${village.id}" class="worker">`;
                     html += displayWorkerAvatarAndOption(worker, amenagementsForWorkers);
                 html += `</div>`;
             });
@@ -378,7 +382,7 @@ function displayWarehouse(village){
 }
 function displayPlanConstructionBuildings(village){
             
-    const vId = $(`#village-management`).attr(`villageId`);
+    const vId = $(`#village-management`).attr("data-villageid");
     const villageIdCheck = (village.id === vId);
 
     if (!villageIdCheck)  return;
@@ -386,6 +390,7 @@ function displayPlanConstructionBuildings(village){
     const planConstructionBuildings = document.getElementById(`planConstruction-building-list`);
 
     if (!planConstructionBuildings) return;
+    
     planConstructionBuildings.innerHTML = ``;
     for (const [priority, buildings] of Object.entries(constructionPriorities)) {
         buildings.forEach(building => {

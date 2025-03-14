@@ -61,7 +61,7 @@ class Villages {
         }
         baseBuildings.forEach(building => {
             newBuildingData.type = building;
-            newBuildingData.category = "infrastructure";
+            newBuildingData.category = !["market", "port","townhall","warehouse"].includes(building)?"workshop":"infrastructure";
             newBuildingData.cost = getBuildingInfo(building, "cost");
             newBuildingData.constructionTime = getBuildingInfo(building, "constructionTime");
             newBuildingData.minPopulation = getBuildingInfo(building, "minPopulation");
@@ -567,7 +567,8 @@ class Villages {
         // }
 
         // if(this.specializationCompleted){
-            for (const [priority, buildings] of Object.entries(constructionPriorities)) {
+            const constructions = structuredClone(constructionPriorities);
+            for (const [priority, buildings] of Object.entries(constructions)) {
                 buildings.forEach(building => {
                     if (this.checkPrerequisites(building)) {
 
