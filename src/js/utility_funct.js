@@ -1139,7 +1139,7 @@ function showTabsBtn(village){
     const marketBtn = document.querySelector(`.village-${village.id} .market-btn`);
     const portBtn = document.querySelector(`.village-${village.id} .port-btn`);
 
-    if (isBtnHidden(buildingsBtn) && villageHasBuilding(village, false, "amenagement" )) {
+    if (isBtnHidden(buildingsBtn) && (villageHasBuilding(village, false, "amenagement" ) || villageHasBuilding(village, false, "workshop" ))) {
         buildingsBtn.style.display = 'block';
     }
     if (isBtnHidden(marketBtn) && villageHasBuilding(village, "market", false )) {
@@ -1163,4 +1163,12 @@ function villageHasBuilding(village, buildingType = false, buildingCategory = fa
         return village.amenagements.some(building => building.category === buildingCategory);
     }
     return false;
+}
+function getThisBuilding(ThisBuilding){
+    const parents = ThisBuilding.parents(`.building`);
+    const buildingId = parents.attr("data-buildingid");
+    const villageId = parents.attr("data-buildingvillageid");
+    const village = villages.find(village => village.id === villageId);
+    const building = village.amenagements.find(building => building.id === buildingId);
+    return {village, building};
 }
