@@ -144,7 +144,7 @@ $(document).ready(function () {
         const resourceStats = getResourceStats(islands);
         const mapInfoDiv = document.getElementById('map-info');
         mapInfoDiv.innerHTML = '';
-        let html = '<h6>Catalogue de resources sur la carte</h6>';
+        let html = '<h6>Catalogue des ressources sur la carte</h6>';
         html += '<div class="resource-catalog">';
         Object.entries(resourceStats).forEach(element => {
             html += `<div class="resource ${element[0]}-box">`;
