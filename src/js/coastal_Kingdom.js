@@ -627,7 +627,9 @@ function miniMap(callback){
     const miniMap_width = scaleFactor * gridSize.y + 8;
     const miniMap_height = scaleFactor * gridSize.x + 8;
     const mini_map = $("#mini-map");
-    mini_map.after(`<div id="backToHome"><i class='fas fa-home'></i><span class="info-text">Accueil</span></div>`);
+    if (!document.getElementById(`backToHome`)) {
+        mini_map.after(`<div id="backToHome"><i class='fas fa-home'></i><span class="info-text">Accueil</span></div>`);
+    }
     mini_map.css({
         "width": `${miniMap_width}px`,
         "height": `${miniMap_height}px`,
