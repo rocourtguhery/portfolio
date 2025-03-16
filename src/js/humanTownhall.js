@@ -200,7 +200,7 @@ function displayVillage(villageId){
 
         body += `<div id="buildings-box-tabs">`;
             body += `<div class="buildings-box-btn townhall-btn active"><span class="info-text">${amenagementFrName("townhall")||""}</span></div>`;
-            body += `<div class="buildings-box-btn buildings-btn"><span class="info-text">Amenagements</span></div>`;
+            body += `<div class="buildings-box-btn productions-btn"><span class="info-text">Productions</span></div>`;
             body += `<div class="buildings-box-btn market-btn"><span class="info-text">${amenagementFrName("market")||""} | interface en dev</span></div>`;
             body += `<div class="buildings-box-btn port-btn"><span class="info-text">${amenagementFrName("port")||""} | interface en dev</span></div>`;
         body += `</div>`;
@@ -513,7 +513,7 @@ function getBuildingOptions(village, building, priority){
     const buildingInfo = document.createElement('div');
     buildingInfo.className = `building-planConstruction-info`;
     buildingInfo.innerHTML = `<div class="btn-close close-building-planConstruction-info"></div>`;
-    buildingInfo.innerHTML += `<i class='fas fa-info-circle'></i> <div class="building-planConstruction-type">${amenagementFrName(building.type)||""}</div> Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.`;
+    buildingInfo.innerHTML += `<i class='fas fa-info-circle'></i> <div class="building-planConstruction-type">${amenagementFrName(building.type)||""}</div> Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.`;
 
     return {buildingAction, buildingInfo};
 }

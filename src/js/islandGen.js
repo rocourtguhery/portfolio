@@ -1,18 +1,8 @@
-
     let winW = window.innerWidth;
     let winH = window.innerHeight;
     let cellSize = 64;
     const allBeaches = [];
     const allLand = [];
-
-    const resources = [
-        "gems_purple","gems_green","gems_blue","gold","silver","iron","copper","coal","cotton","wool","banana","orchards","meat","cereals","fish",
-    ];
-    const resourcesUnavailable = [ "gems_purple","gems_green","gems_blue","gold","silver","iron","copper","coal" ];
-
-    const agriFoodResources = [ "banana","orchards","meat","cereals","fish" ];
-    const strategicResources = [ "iron","copper","coal","stone","wood","cotton","wool" ];
-    const luxuryResources = [ "gems_purple","gems_green","gems_blue","gold","silver","sugar_cane","vine","tobacco","coffee","cacao"];
 
     const prefixes = [
         "Aru", "Kelo", "Nimu", "Bena", "Moza", "Fika", "Soro", "Vana", "Luma", "Duni", 
