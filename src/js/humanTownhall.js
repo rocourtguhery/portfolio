@@ -13,6 +13,7 @@ $(document).ready(function () {
         html += `</div>`;
         $("#game-box").after(html);
         $("#mini-map").fadeOut(150);
+        $("#backToHome").fadeOut(150);
         displayVillage(villageId);
     });
     $(document).on("click",`#village-management .btn-close.close-page`, function() {
@@ -20,6 +21,7 @@ $(document).ready(function () {
         $("#islandsOption-backdrop").fadeTo(500, 0).fadeOut(500);
         $("#village-management-box").fadeOut(500).remove();
         $("#mini-map").fadeIn(500);
+        $("#backToHome").fadeIn(500);
     });
     $(document).on("click",`#village-name-banner`, function() {
         $("#village-name").fadeOut(50, ()=>{
