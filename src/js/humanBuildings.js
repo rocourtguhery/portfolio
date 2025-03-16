@@ -1,4 +1,4 @@
-$(document).on("click",`.buildings-btn`, function() {
+$(document).on("click",`.productions-btn`, function() {
     const villageId = $(this).parents(`#village-management`).attr("data-villageid");
     const village = villages.find(village => village.id === villageId);
     const parents = $(this).parents(`#village-management-box.village-${villageId}`);
@@ -69,8 +69,9 @@ $(document).on("click",`.amenagements-view .worker-img`, function() {
 
     const backdropClone = document.querySelector(`.village-${villageId} #village-management-drop`).cloneNode(true);
     backdropClone.setAttribute(`id`,`backdropClone`);
-    $(`.village-${villageId} #village-management > div:not(#village-management-drop)`).fadeOut(50);
-    document.querySelector(`.village-${villageId} #village-management`).append(backdropClone, showBuildingWorkersDiv);
+    $(`.village-${villageId} #village-management > div:not(#village-management-drop)`).fadeOut(250,()=>{
+        document.querySelector(`.village-${villageId} #village-management`).append(backdropClone, showBuildingWorkersDiv);
+    });
 
 });
 $(document).on("click",`.close-show-bBuilding-workers`, function() {
@@ -103,6 +104,7 @@ $(document).on("click",`.select-prod`, function() {
     const $this = $(this);
     const productionOptions = JSON.parse($this.attr("data-prodOptions"));
     const {building} = getThisBuilding($this);
+    displayBuildingProduction(building);
 
     $(`.select-option-container`).fadeOut(250).remove();
 
@@ -114,13 +116,12 @@ $(document).on("click",`.select-prod`, function() {
         html += `<div class="production-option">`;
             html += `<ul>`;
             const options = productionOptions.filter(options => building.level >= options.minLevel);
-            options.forEach(option => {
-                // if (building.level < option.minLevel) return;
-                const { type, quantity } = option.result;
-                const isSelected = JSON.stringify(building.workshopProduction.resources) === JSON.stringify(option.resources);
-                console.log(`isSelected : ${JSON.stringify(isSelected)}`);
 
-                html += `<li class="resource production">`; //.production-cost-list
+            options.forEach(option => {
+                const { type, quantity } = option.result;
+                const isSelected = JSON.stringify(building.workshopProduction[0]?.resources) === JSON.stringify(option.resources);
+
+                html += `<li class="resource production">`;
                     Object.entries(option.resources).forEach(([resource, quantity], index, arr) => {
                         html += `<div class="production-cost"><div class="cost-icon cost-${resource}"></div>x${quantity}<span  class="info-text" style="color:#333;">${quantity} ${ressourceFrName(resource)||""}</span></div>`;
                         if (arr.length > 1 && index !== (arr.length -1)) {
@@ -129,13 +130,47 @@ $(document).on("click",`.select-prod`, function() {
                     })
                     html += `<i class='fas fa-long-arrow-alt-right'></i>`;
                     html += `<div class="production-result production-cost">`;
-                        html += `<div class="cost-icon cost-${type}"></div>x${Math.round(quantity)}`;
+                        html += `<div class="cost-icon cost-${type}"></div>x${Math.round((quantity + Number.EPSILON) * 100) / 100}`;
                         html += `<span  class="info-text" style="color:#333;">${ressourceFrName(type)||""}</span>`;
                     html += `</div>`;
                     html += `<label class="prod-select">`;
                         html += `<input class="prodSelect" data-option='${JSON.stringify(option)}' ${isSelected?"checked":""} type="${options.length > 1 ? "radio" : "checkbox"}" name="prodSelect">`;
                         html += `<span class="input-checked"></span>`
                     html += `</label>`;
+                html += `</li>`;
+            })
+            html += `</ul>`;
+        html += `</div>`;
+    html += `</div>`;
+    
+    $(`#building-${building.id} .building-production.production`).append(html);
+
+});
+$(document).on("click",`.select-granary-stock`, function() {
+    const $this = $(this);
+    const options = structuredClone(agriFoodResources);
+    const {building} = getThisBuilding($this);
+    displayBuildingProduction(building);
+
+    $(`.select-option-container`).fadeOut(250).remove();
+
+    $this.parents(`.village-building-list`).addClass('no-Overflow-Scroll');
+
+    let html = `<div class="select-option-container">`;
+    html += `<div class="btn-close close-select-option"></div>`
+    html += `<div class="select-option-header">Options</div>`;
+        html += `<div class="production-option">`;
+            html += `<ul>`;
+            options.forEach(option => {
+                const isSelected = building.allowedResources.includes(option);
+                html += `<li class="resource production">`;
+                    html += `<div class="production-cost"><div class="cost-icon cost-${option}"></div> </div>`;
+                    
+                    html += `<label class="prod-select">`;
+                        html += `<input class="selectStock" data-option="${option}" ${isSelected?"checked":""} type="checkbox" name="${option}">`;
+                        html += `<span class="input-checked"></span>`
+                    html += `</label>`;
+                    html += `<span  class="info-text" style="color:#333;">${ressourceFrName(option)||""}</span>`;
                 html += `</li>`;
             })
             html += `</ul>`;
@@ -157,22 +192,35 @@ $(document).on("click",`.prodSelect`, function() {
     const {building} = getThisBuilding($this);
     const checked = $this.is(':checked');
     if (checked) {
-        console.log( $(this).is(':checked'));
         const option = JSON.parse($this.attr("data-option"));
-        building.workshopProduction = option;
+        building.workshopProduction.push(option);
     }else{
-        building.workshopProduction = {};
+        building.workshopProduction = [];
     }
-    console.log(`building.workshopProduction: ${JSON.stringify(building.workshopProduction)}`);
+});
+$(document).on("click",`.selectStock`, function() {
+    const $this = $(this);
+    const {building} = getThisBuilding($this);
+    const option = $this.attr("data-option");
+    const checked = $this.is(':checked');
+    if (checked) {
+        building.selectAllowedResources(option);
+    }else{
+        building.removeAllowedResources(option);
+    }
+    if($this.hasClass("select-granary-stock-off")){
+        displayBuildingProduction(building);
+    }
 });
 function displayAmenagementsBuildings(village){
     const fragment = document.createDocumentFragment();
     const amenagements = village.amenagements.filter(a => a.category === "amenagement");
     const workshops = village.amenagements.filter(a => a.category === "workshop");
+    const bonusBuildins = village.amenagements.filter(a => ["mill", "granary", "theater"].includes(a.type));
     const buildingsBox = document.createElement('div');
     buildingsBox.className = `amenagements-view display-village-components`;
 
-    const villageBuildings = document.createElement('div')
+    const villageBuildings = document.createElement('div');
     villageBuildings.className = `village-buildings`;
 
     if (villageHasBuilding(village, false, "amenagement" )){
@@ -182,13 +230,19 @@ function displayAmenagementsBuildings(village){
         
         villageBuildings.appendChild(amenagementsDiv);
     }
-
     if (villageHasBuilding(village, false, "workshop" )){
         const workshopsDiv = document.createElement('div');
         workshopsDiv.className = `village-workshops`;
         workshopsDiv.innerHTML = `<h6 class="village-buildings-list-title">Ateliers</h6><span class="village-buildings-msg msg"></span><div class="village-workshops-list village-building-list"></div>`;
 
         villageBuildings.appendChild(workshopsDiv);
+    }
+    if (villageHasBuilding(village)){
+        const bonusBuildinsgDiv = document.createElement('div');
+        bonusBuildinsgDiv.className = `village-bonus-building`;
+        bonusBuildinsgDiv.innerHTML = `<h6 class="village-buildings-list-title"></h6><span class="village-buildings-msg msg"></span><div class="village-bonus-building-list village-building-list"></div>`;
+
+        villageBuildings.appendChild(bonusBuildinsgDiv);
     }
 
     buildingsBox.appendChild(villageBuildings);
@@ -201,16 +255,32 @@ function displayAmenagementsBuildings(village){
     workshops.forEach(building => {
         amenagementsBuilding(building);
     });
+    bonusBuildins.forEach(building => {
+        amenagementsBuilding(building);
+    });
 }
 
 function amenagementsBuilding(building) {
     const villageId = building.getBuildingVillage().id;
-    let targetClass = `village-amenagements-list`;
-    if (building.category === `workshop`) {
-        targetClass = `village-workshops-list`;
-    }
-    const listDiv = document.querySelector(`.village-${villageId} .amenagements-view .village-buildings .${targetClass}`);
-    if (!listDiv) return;
+    let targetClass = (building.category === `workshop`) ? `village-workshops-list` :
+                    ["mill", "granary", "theater"].includes(building.type) ? `village-bonus-building-list` : `village-amenagements-list`;
+    
+    const villageBuildings = document.querySelector(`.village-${villageId} .amenagements-view .village-buildings`);
+
+    if (!villageBuildings) return;
+
+    let listDiv = villageBuildings.querySelector(`.${targetClass}`);
+    if (!listDiv) {
+        const newDiv = document.createElement('div');
+        newDiv.className = `village-amenagements`;
+        const listTitle = (building.category === `amenagement`) ? `Amenagements` :
+                        (building.category === `workshop`) ? `Ateliers` : "";
+        newDiv.innerHTML = `<h6 class="village-buildings-list-title">${listTitle}</h6><span class="village-buildings-msg msg"></span><div class="${targetClass} village-building-list"></div>`;
+        
+        villageBuildings.appendChild(newDiv);
+
+        listDiv = villageBuildings.querySelector(`.${targetClass}`);
+    };
     
     const pourcentageProgress = (building.nextLevelProgress * 100) / building.getLevelUpThreshold();
 
@@ -273,11 +343,15 @@ function displayBuildingWorkers(building) {
             WorkerDiv.innerHTML = html;
         buildingWorkers.appendChild(WorkerDiv);
     });
-    if (building.workers.length >= building.maxLabors) {
+    if (building.maxLabors > 0 && building.workers.length >= building.maxLabors) {
         buildingWorkersMax.innerHTML = `<span class="total-workers">${building.workers.length}/${building.maxLabors}</span>`;
         return;
+    }else if (building.maxLabors > 0 && building.workers.length < building.maxLabors) {
+        buildingWorkersMax.innerHTML = `<span class="total-workers">${building.workers.length}/${building.maxLabors}</span><span class="add-worker"><i class='far fa-plus-square'></i></span>`;
     }
-    buildingWorkersMax.innerHTML = `<span class="total-workers">${building.workers.length}/${building.maxLabors}</span><span class="add-worker"><i class='far fa-plus-square'></i></span>`;
+    if (building.type === "theater") {
+        buildingWorkers.innerHTML = "<div style='position: absolute;top: 40px;font-size: 13px;padding-right: 20px;'> Lorem Ipsum is simply dummy text of the printing and typesetting industry.</div>";
+    }
 }
 function displayBuildingProduction(building){
     const buildingProduction = document.querySelector(`#building-${building.id} .building-production.production`);
@@ -285,7 +359,7 @@ function displayBuildingProduction(building){
     if (building.category === "amenagement") {
         let html = ``;
         html += `<div class="production-title">Production</div>`;
-        html += `<div class="resource">${ressourceFrName(building?.resource.type)} :<span class="quantity">+${Math.floor(building.showBuildingProd().prod)}/j</span></div>`;
+        html += `<div class="resource">${ressourceFrName(building?.resource.type)} :<span class="quantity">+${Math.round((building.showBuildingProd().prod + Number.EPSILON) * 100) / 100}/j</span></div>`;
         const bonusFactor = building.showBuildingProd().bonus;
         html += `<div class="production-bonus-title">Bonus de production</div>`;
         html += `<div class="production-bonus">`;
@@ -299,15 +373,13 @@ function displayBuildingProduction(building){
         const productionOptions = workshopProduction[building.type];
         const production = building.calculateBuildingProduction(false);
         let html = ``;
-        const selectedProd = building.workshopProduction; // productionOptions.find(option => option.selected && building.level >= option.minLevel);
-        if (Object.keys(selectedProd).length > 0) {
-            html += `<div class="production-title"><span>Production</span> <span class="select-prod" data-prodOptions='${JSON.stringify(productionOptions)}'><i class='far fa-edit'></i></div></span></div>`; // de ${ressourceFrName(productionOptions[0].result.type)||""}
-            const { type, quantity } = selectedProd.result;
-            console.log(`selectedProd : ${JSON.stringify(selectedProd)}`);
-            // selectedProd : {"resources":{"cotton":3},"minLevel":1,"result":{"type":"fabric","quantity":2.1},"selected":true}
+        const selectedProd = building.workshopProduction;
+        if (selectedProd.length > 0) {
+            html += `<div class="production-title"> <span>Production</span> <span class="select-prod" data-prodOptions='${JSON.stringify(productionOptions)}'> <i class='far fa-edit'></i> </span> </div>`; // de ${ressourceFrName(productionOptions[0].result.type)||""}
+            const { type, quantity } = selectedProd[0].result;
             html += `<div class="production-option" >`;
                 html += `<div class="resource production">`;
-                    Object.entries(selectedProd.resources).forEach(([resource, quantity], index, arr) => {
+                    Object.entries(selectedProd[0].resources).forEach(([resource, quantity], index, arr) => {
                         html += `<div class="production-cost"><div class="cost-icon cost-${resource}"></div>x${quantity}<span class="info-text" style="color:#333;">${quantity} ${ressourceFrName(resource)||""}</span></div>`;
                         if (arr.length > 1 && index !== (arr.length -1)) {
                             html += `<span class="production-cost-plus"> <i class='fas fa-plus'></i> </span>`;
@@ -316,17 +388,47 @@ function displayBuildingProduction(building){
                     html += `<i class='fas fa-long-arrow-alt-right'></i>`;
                     html += `<div class="quantity">`;
                         html += `<div class="production-result production-cost">`;
-                            html += `${Math.round(quantity)}<div class="cost-icon cost-${type}"></div>`;
+                            html += `<div class="cost-icon cost-${type}"></div>${Math.round((quantity + Number.EPSILON) * 100) / 100}`;
                             html += `<span  class="info-text" style="color:#333;">${ressourceFrName(type)||""}</span>`;
                         html += `</div>`;
-                        html += `x <span class="worker-labor" style="height: 22px;width: 22px;">${Math.round(production)} <i class="fas fa-hammer"></i> <span class="info-text" style="color:#333;">Force de Travail</span></span>`;
+                        html += `x <div class="worker-labor"><div style="height: 22px;width: 22px;padding: 5px;"><i class="fas fa-hammer"></i></div> ${Math.round((production + Number.EPSILON) * 100) / 100} <span class="info-text" style="color:#333;">Force de Travail</span> </div>`;
                     html += `</div>`;
                 html += `</div>`;
             html += `</div>`;
         }else{
-            html += `<div class="production-title"><span>Choisir la production.</span><span class="select-prod" data-prodOptions='${JSON.stringify(productionOptions)}'><i class='far fa-edit'></i></div></span>`;
+            html += `<div class="production-title"> <span>Choisir la production.</span> <span class="select-prod" data-prodOptions='${JSON.stringify(productionOptions)}'><i class='far fa-edit'></i></span> </div>`;
         }
         buildingProduction.innerHTML = html;
+    }
+    if (building.type === "granary") {
+        if (building.allowedResources.length > 0) {
+            
+            const options = structuredClone(building.allowedResources);
+
+        let html = `<div class="production-title"> <span>Stockage</span> <span class="select-granary-stock"><i class='far fa-edit'></i></span> </div>`;
+            html += `<div class="production-option">`;
+                html += `<ul>`;
+                options.forEach(option => {
+                    const isSelected = building.allowedResources.includes(option);
+                    html += `<li class="resource production">`;
+                        html += `<div class="production-cost"><div class="cost-icon cost-${option}"></div> </div>`;
+                        if (option !== "food") {
+                            html += `<label class="prod-select">`;
+                                html += `<input class="selectStock select-granary-stock-off" data-option="${option}" ${isSelected?"checked":""} type="checkbox" name="${option}">`;
+                                html += `<span class="input-checked"></span>`
+                            html += `</label>`;
+                        }
+                        html += `<span  class="info-text" style="color:#333;">${ressourceFrName(option)||""}</span>`;
+                    html += `</li>`;
+                })
+                html += `</ul>`;
+            html += `</div>`;
+            buildingProduction.innerHTML = html;
+        }else{
+            let html = `<div class="production-title"> <span>Stockage</span></div>`;
+            html += `<div class="production-title"> <span>Choisir les ressources.</span> <span class="select-granary-stock"><i class='far fa-edit'></i></span> </div>`;
+            buildingProduction.innerHTML = html;
+        }
     }
 }
 

@@ -1,4 +1,3 @@
-
 class Buildings{
     constructor(data) {
         this.id = `${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
@@ -19,7 +18,7 @@ class Buildings{
         this.capacity = 600;
         this.stock = []; 
         this.baseProduction = this.buildingBaseProduction(); // Production de base par tick
-        this.workshopProduction = {};
+        this.workshopProduction = [];
         this.nextLevelProgress = 0;
     }
     buildingBaseProduction() {
@@ -71,7 +70,7 @@ class Buildings{
         const shipyard = amenagements.find(a => a.type === "shipyard");
         return {village, id, name, position, amenagements, resources, workers, granary, warehouse, market, port, dockyard, shipyard };
     }
-    calculateProduction(category) {
+    calculateProduction() {
         const granary = this.getBuildingVillage().granary;
         const warehouse = this.getBuildingVillage().warehouse;
         const depotCapacity = warehouse.capacity;
@@ -79,7 +78,7 @@ class Buildings{
 
         if (depotStock >= depotCapacity || this.workers.length <= 0) return;
 
-        if (category === "amenagement") {
+        if (this.category === "amenagement") {
 
             const resourceType = this.resource.type;
 
@@ -94,7 +93,7 @@ class Buildings{
             }
         }
         // Production avancée : bâtiments de type atelier
-        if (category === "workshop"){
+        if (this.category === "workshop"){
 
             const production = workshopProduction[this.type][0].result.type;
             
@@ -179,11 +178,12 @@ class Buildings{
     }
 
     handleWorkshopProduction() {
+        const village = this.getBuildingVillage().village;
 
-        const productionOptions = workshopProduction[this.type];
+        const productionOptions = village.owner ? this.workshopProduction : workshopProduction[this.type];
 
         const production = this.calculateBuildingProduction();
-
+        
         const productionOption = productionOptions.find(option => {
 
             return Object.entries(option.resources).every(([resource, quantity]) => {
@@ -208,7 +208,6 @@ class Buildings{
             // console.log(`${this.village.name} a produit ${quantity} unités de ${type} dans ${this.type}.`);
             return { type, quantity: (quantity * production) };
         } else {
-            const village = this.getBuildingVillage().village;
             const supplyNeeds = village.otherSupplyNeeds;
 
             const resourceShortages = {};

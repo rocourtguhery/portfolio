@@ -224,8 +224,8 @@ const constructionPrerequisites = {
 }
 const workshopProduction = {
     "lumber_mill": [ // wood: 10, tools: 15, lumber: 20
-        { resources: { wood: 4 }, minLevel: 1, result: { type: "lumber", quantity: 2.1 }},  // Profit: +8
-        { resources: { wood: 2, tools: 1 }, minLevel: 2, result: { type: "lumber", quantity: 2.8 }},  // Profit: +24
+        { resources: { wood: 4 }, minLevel: 1, result: { type: "lumber", quantity: 2.1 }},
+        { resources: { wood: 2, tools: 1 }, minLevel: 2, result: { type: "lumber", quantity: 2.8 }},
     ],
     "forge": [ // iron: 25, copper: 25, coal: 20, wood: 10, tools: 15
         { resources: { iron: 1, wood: 3 }, minLevel: 1, result: { type: "tools", quantity: 4.5 }},
@@ -240,16 +240,16 @@ const workshopProduction = {
     "textile_mill": [ // cotton: 15, fabric: 25, tools: 15 
         { resources: { cotton: 3 }, minLevel: 1, result: { type: "fabric", quantity: 2.1 }},
         { resources: { cotton: 2, tools: 1 }, minLevel: 2, result: { type: "fabric", quantity: 3.5 }},
-        { resources: { cotton: 2, tools: 3 }, minLevel: 3, result: { type: "fabric", quantity: 8.7 }},  // Nerf de 15 → 9
+        { resources: { cotton: 2, tools: 3 }, minLevel: 3, result: { type: "fabric", quantity: 8.7 }},
     ],
     "clothing_workshop" : [ // wool: 15, cotton: 15, fabric: 25, tools: 15,  clothes: 30,
-        { resources: { wool: 2, tools: 1 }, minLevel:1, result: { type: "clothes", quantity: 5 }}, // 45 (9) +21(+12)
-        { resources: { wool: 3 }, minLevel:1, result: { type: "clothes", quantity: 3.6 }}, // 45 (12.5) +17.5(+5)
-        { resources: { cotton: 2, tools: 1 }, minLevel:1, result: { type: "clothes", quantity: 5 }}, // 45 (9) +21(+12)
-        { resources: { cotton: 3 }, minLevel:1, result: { type: "clothes", quantity: 3.6 }}, // 45 (12.5) +17.5(+5)
-        { resources: { wool: 1, cotton: 1, tools: 2 }, minLevel:2, result: { type: "clothes", quantity: 7.2 }}, // 60 (8.3) +21.6(+13.36)
-        { resources: { fabric: 1 }, minLevel:2, result: { type: "clothes", quantity: 5 }}, // 25 (5) +25(+20)
-        { resources: { fabric: 1, tools: 1 }, minLevel:3, result: { type: "clothes", quantity: 10 }}, // 40 (4) +26(+22)
+        { resources: { wool: 3 }, minLevel:1, result: { type: "clothes", quantity: 3.6 }},
+        { resources: { cotton: 3 }, minLevel:1, result: { type: "clothes", quantity: 3.6 }},
+        { resources: { wool: 2, tools: 1 }, minLevel:2, result: { type: "clothes", quantity: 5 }},
+        { resources: { cotton: 2, tools: 1 }, minLevel:2, result: { type: "clothes", quantity: 5 }},
+        { resources: { wool: 1, cotton: 1, tools: 2 }, minLevel:2, result: { type: "clothes", quantity: 7.2 }},
+        { resources: { fabric: 1 }, minLevel:3, result: { type: "clothes", quantity: 5 }},
+        { resources: { fabric: 1, tools: 1 }, minLevel:3, result: { type: "clothes", quantity: 10 }},
     ],
     "armory": [ // iron: 25, coal: 20, wood: 10, tools: 15
         { resources: { iron: 6, coal: 4, wood: 2 }, minLevel: 1, result: { type: "rifle", quantity: 7.6 }},
@@ -258,31 +258,31 @@ const workshopProduction = {
         { resources: { iron: 10, coal: 8, wood: 4, tools: 4 }, minLevel: 3, result: { type: "artillery", quantity: 11.7 }},
     ],
     "brewery": [ // sugar_cane: 20, vine: 20, liquor: 30, tools: 15
-        { resources: { sugar_cane: 3, tools: 3 }, minLevel: 3, result: { type: "liquor", quantity: 7.6 }},  // Nerf de 10 → 8
-        { resources: { vine: 3, tools: 3 }, minLevel: 3, result: { type: "liquor", quantity: 7.6 }},
-        { resources: { sugar_cane: 2, vine: 2, tools: 1 }, minLevel: 2, result: { type: "liquor", quantity: 4.3 }},
         { resources: { sugar_cane: 2, vine: 2}, minLevel: 1, result: { type: "liquor", quantity: 3.8 }},
+        { resources: { sugar_cane: 2, vine: 2, tools: 1 }, minLevel: 2, result: { type: "liquor", quantity: 4.3 }},
         { resources: { sugar_cane: 1, vine: 1, tools: 2}, minLevel: 2, result: { type: "liquor", quantity: 4.3 }},
+        { resources: { sugar_cane: 3, tools: 3 }, minLevel: 3, result: { type: "liquor", quantity: 7.6 }},
+        { resources: { vine: 3, tools: 3 }, minLevel: 3, result: { type: "liquor", quantity: 7.6 }},
     ],
     "tobacco_workshop" : [ // tobacco: 20, tools: 15, cigars: 40
+        { resources: { tobacco: 4}, minLevel:1, result: { type: "cigars", quantity: 4.4 }},
         { resources: { tobacco: 2, tools: 2 }, minLevel:2, result: { type: "cigars", quantity: 5 }},
-        { resources: { tobacco: 4}, result: { type: "cigars", quantity: 4.4 }}
     ],
     "cacao_workshop" : [ // cacao: 20, tools: 15, chocolate: 35
+        { resources: { cacao: 4}, minLevel:1, result: { type: "chocolate", quantity: 4.8 }},
         { resources: { cacao: 2, tools: 2 }, minLevel:2, result: { type: "chocolate", quantity: 5.6 }},
-        { resources: { cacao: 4}, result: { type: "chocolate", quantity: 4.8 }},
     ],
     "coffee_workshop" : [ // coffee: 20, tools: 15, ground_coffee: 30
-        { resources: { coffee: 2, tools: 2 }, minLevel:2, result: { type: "ground_coffee", quantity: 6.1 }},
         { resources: { coffee: 4}, minLevel:1, result: { type: "ground_coffee", quantity: 5.8 }},
+        { resources: { coffee: 2, tools: 2 }, minLevel:2, result: { type: "ground_coffee", quantity: 6.1 }},
     ],
     "jewelry_workshop": [ // gems_purple: 120, gems_green: 90, gold: 100, silver: 40, tools: 15
-        { resources: { gold: 2, tools: 1 }, minLevel: 1, result: { type: "jewelry", quantity: 3.5 }},
         { resources: { gold: 2 }, minLevel: 1, result: { type: "jewelry", quantity: 3.2 }},
-        { resources: { gold: 2, silver: 1, tools: 2 }, minLevel: 1, result: { type: "jewelry", quantity: 4.6 }},
+        { resources: { gold: 2, tools: 1 }, minLevel: 1, result: { type: "jewelry", quantity: 3.5 }},
         { resources: { gold: 2, silver: 1}, minLevel: 1, result: { type: "jewelry", quantity: 3.9 }},
+        { resources: { gold: 2, silver: 1, tools: 2 }, minLevel: 2, result: { type: "jewelry", quantity: 4.6 }},
         { resources: { gold: 2, gems_blue: 1, tools: 3 }, minLevel: 2, result: { type: "jewelry", quantity: 5.8 }},
-        { resources: { gold: 2, gems_green: 1, tools: 3 }, minLevel: 2, result: { type: "jewelry", quantity: 6.5 }},
+        { resources: { gold: 2, gems_green: 1, tools: 3 }, minLevel: 3, result: { type: "jewelry", quantity: 6.5 }},
         { resources: { gold: 1, gems_purple: 1, tools: 5 }, minLevel: 3, result: { type: "jewelry", quantity: 6.9 }},
     ],
 };
@@ -427,3 +427,11 @@ const noNeedWorkersPlace = ["townhall", "warehouse", "granary", "barracks", "the
 const resourcesFacilities = ["farm", "livestock_ranches", "quarry", "lumberjack_hut", "fishing_hut", "mine"];
 
 const stableResources = ["gold", "silver", "gems_blue", "gems_green", "gems_purple"];
+const resources = [
+    "gems_purple","gems_green","gems_blue","gold","silver","iron","copper","coal","cotton","wool","banana","orchards","meat","cereals","fish",
+];
+const resourcesUnavailable = [ "gems_purple","gems_green","gems_blue","gold","silver","iron","copper","coal" ];
+
+const agriFoodResources = [ "banana","orchards","meat","cereals","fish" ];
+const strategicResources = [ "iron","copper","coal","stone","wood","cotton","wool" ];
+const luxuryResources = [ "gems_purple","gems_green","gems_blue","gold","silver","sugar_cane","vine","tobacco","coffee","cacao"];

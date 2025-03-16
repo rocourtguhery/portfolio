@@ -1365,7 +1365,7 @@ input#edit-village-name:focus-visible{
     background-size: contain;
     background-position-x: 20px;
 } 
-.buildings-btn{
+.productions-btn{
     background: no-repeat url("../assets/images/buildings-tabs.png");
     background-size: contain;
     background-position-x: 20px;
@@ -1380,7 +1380,7 @@ input#edit-village-name:focus-visible{
     background-size: contain;
     background-position-x: 20px;
 }
-.buildings-btn, .market-btn, .port-btn{
+.productions-btn, .market-btn, .port-btn{
     display: none;
 }
 div#buildings-box-tabs::before {
@@ -1445,7 +1445,9 @@ div#buildings-box-tabs::before {
     display: block;
 }
 #new-workers-box .worker:first-child .info-text,
-#new-workers-box .worker.first-free-worker .info-text{
+#new-workers-box .worker.first-free-worker .info-text,
+.production-cost:first-child .info-text,
+.production-cost:first-child ~ .info-text{
     transform: translateX(-25%);
 }
 .worker-info,
@@ -1578,9 +1580,12 @@ div#buildings-box-tabs::before {
     font-weight: 500;
 }
 .conso:hover .info-text,
-.worker-happiness:hover .info-text,
+.worker-happiness:hover .info-text{
+    display: block;
+}
 .worker-labor:hover .info-text{
     display: block;
+    transform: translateX(-65%);
 }
 .worker-img{
     background: no-repeat url("../assets/images/workman-avatar.png");
@@ -2149,6 +2154,26 @@ div#buildings-box-tabs::before {
     background: no-repeat url("../assets/images/lumber-icon.png");
     background-position: center;
 }
+.production-cost .cost-banana{
+    background: no-repeat url("../assets/images/banana-icon.png");
+    background-position: center;
+}
+.production-cost .cost-orchards{
+    background: no-repeat url("../assets/images/orchards-icon-1.png");
+    background-position: center;
+}
+.production-cost .cost-meat{
+    background: no-repeat url("../assets/images/meat-icon.png");
+    background-position: center;
+}
+.production-cost .cost-fish{
+    background: no-repeat url("../assets/images/fish-icon-2.png");
+    background-position: center;
+}
+.production-cost .cost-food{
+    background: no-repeat url("../assets/images/canned-food-icon.png");
+    background-position: center;
+}
 #planConstruction-view,
 #constructionQueue{
     padding: 7px 0px 25px;
@@ -2258,11 +2283,16 @@ div#buildings-box-tabs::before {
     align-items: center;
     cursor: pointer;
 }
+.building-production .production-cost,
+.building-production .production-option .worker-labor{
+    flex-direction: column;
+}
 .production-cost{
     position: relative;
 }
 #planConstruction-view .building-cost:hover .info-text,
-.production-cost:hover .info-text{
+.production-cost:hover .info-text,
+.production-cost:hover ~ .info-text{
     display: block;
 }
 #planConstruction-view .building-cost .cost-icon,

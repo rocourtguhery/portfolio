@@ -1,4 +1,3 @@
-
 function calculateDistanceFromCenter(x, y) {
     const centerX = gridSize.x / 2;
     const centerY = gridSize.y / 2;
@@ -142,10 +141,11 @@ function buildingCategory(building){
     const buildings = {
         amenagement : ["mine", "fishing_hut", "lumberjack_hut", "livestock_ranches","sheep_ranches","quarry","farm"],
         workshop : ["forge", "textile_mill", "lumber_mill", "clothing_workshop", "brewery", "coffee_workshop", "cacao_workshop", "tobacco_workshop", "jewelry_workshop", "perfume_workshop"],
-        infrastructure : ["townhall", "market", "port", "mill", "granary", "warehouse", "barracks", "watchtower", "armory", "dockyard", "shipyard", "theater"] }
-    
-        for (const [key, value] of Object.entries(buildings)) { if(value.includes(building)){ return key; } }
-        return false;
+        infrastructure : ["townhall", "market", "port", "warehouse", "barracks", "watchtower", "armory", "dockyard", "shipyard"],
+        bonus : ["mill", "granary", "theater"] 
+    }
+    for (const [key, value] of Object.entries(buildings)) { if(value.includes(building)){ return key; } }
+    return false;
 }
 function amenagementProduction(type){
     const amenagements = { 
@@ -550,7 +550,6 @@ function getFoodCombination(){
         { ingredients: { meat: 1}, result: { type: "food", quantity: 1 }},
         { ingredients: { fish: 1}, result: { type: "food", quantity: 1 }},
         { ingredients: { orchards: 1}, result: { type: "food", quantity: 1 }},
-
     ];
     return combinations;
 }
@@ -899,8 +898,7 @@ function startGlobalTimer(villages, interval = 60000) {
         villages.forEach(village => {
             if (village.workers.length <= 0) return;
 
-            village.amenagementsProduction();
-            village.workshopsProduction();
+            village.productions();
         });
 
     }, 15000); 
@@ -1135,7 +1133,7 @@ function tornKingdomMap(){
     });
 }
 function showTabsBtn(village){
-    const buildingsBtn = document.querySelector(`.village-${village.id} .buildings-btn`);
+    const buildingsBtn = document.querySelector(`.village-${village.id} .productions-btn`);
     const marketBtn = document.querySelector(`.village-${village.id} .market-btn`);
     const portBtn = document.querySelector(`.village-${village.id} .port-btn`);
 
@@ -1158,11 +1156,13 @@ function isBtnHidden(el) {
 function villageHasBuilding(village, buildingType = false, buildingCategory = false) {
     if (buildingType) {
         return village.amenagements.some(building => building.type === buildingType);
-    }
-    if (buildingCategory) {
+    }else if (buildingCategory) {
         return village.amenagements.some(building => building.category === buildingCategory);
+    }else if (!buildingType && !buildingCategory){
+        return village.amenagements.some(building => ["mill", "granary", "theater"].includes(building.type));
+    }else{
+        return false;
     }
-    return false;
 }
 function getThisBuilding(ThisBuilding){
     const parents = ThisBuilding.parents(`.building`);
