@@ -61,7 +61,7 @@ class Villages {
         }
         baseBuildings.forEach(building => {
             newBuildingData.type = building;
-            newBuildingData.category = !["market", "port","townhall","warehouse"].includes(building)?"workshop":"infrastructure";
+            newBuildingData.category = buildingCategory(building);
             newBuildingData.cost = getBuildingInfo(building, "cost");
             newBuildingData.constructionTime = getBuildingInfo(building, "constructionTime");
             newBuildingData.minPopulation = getBuildingInfo(building, "minPopulation");
@@ -158,6 +158,9 @@ class Villages {
                 let foodStock = warehouse.stock?.find(item => item.type === "food");
                 granary.addToStock(foodStock.type, foodStock.quantity);
                 foodStock.quantity = 0;
+                if (this.owner) {
+                    amenagementsBuilding(granary);
+                }
                 break;
         
             default:
@@ -201,18 +204,12 @@ class Villages {
         
         return category;
     }
-    amenagementsProduction(){
-        const resourceProductionBuilding = this.amenagements.filter( building => building.category === "amenagement" );
-        resourceProductionBuilding.forEach(building => {
-            building.calculateProduction("amenagement");
+    productions(){
+        const productionBuildings = this.amenagements.filter( building => building.category === "amenagement" ||  building.category === "workshop");
+        productionBuildings.forEach(building => {
+            building.calculateProduction();
         });
         this.produceFood();
-    }
-    workshopsProduction(){
-        const resourceProductionBuilding = this.amenagements.filter( building => building.category === "workshop" );
-        resourceProductionBuilding.forEach(building => {
-            building.calculateProduction("workshop");
-        });
     }
     produceFood(){
         const warehouse = this.amenagements.find(a => a.type === "warehouse");
@@ -298,7 +295,7 @@ class Villages {
         let foodStock = warehouse.pickFromStorage("food", null, "quantity");
         const housingCapacity = this.houses * 5;
         const unemployed = this.workers.filter(worker => worker.type === "peasant" && !worker.workPlaceType);
-        const totalNeededLabors = this.amenagements.reduce((sum, building) => sum + (building.maxLabors - building.labors), 0);
+        const totalNeededLabors = this.amenagements.reduce((sum, building) => sum + (building.maxLabors - building.workers.length), 0);
         
         // Vérification de population
         if (foodStock && foodStock > this.workers.length * 1.3 && this.workers.length < housingCapacity) {
@@ -327,8 +324,18 @@ class Villages {
         if (foodStock && foodStock < this.workers.length * 0.8 && this.workers.length > 1) {
             const workerToRemove = this.workers.sort((a, b) => a.level - b.level).pop();
             const buildingRemovedWorker = this.amenagements.find(b => b.id === workerToRemove.buildingID);
-            buildingRemovedWorker.workers = buildingRemovedWorker.workers.filter(worker => worker.id !== workerToRemove.id)
+            
             this.workers = this.workers.filter(worker => worker.id !== workerToRemove.id);
+
+            if (!workerToRemove.workPlaceType || !workerToRemove.buildingID) return;
+            
+            buildingRemovedWorker.workers = buildingRemovedWorker.workers.filter(worker => worker.id !== workerToRemove.id);
+
+            displayVillagePopulation(this.id, this.workers.length);
+
+            const unemployeds = this.workers.filter(worker => !worker.workPlaceType || !worker.buildingID );
+            displayWorkers(unemployeds, this, `#new-workers-box`);
+            displayPlanConstructionBuildings(this);
         }
         this.checkAndBuildHouse();
     }
@@ -670,6 +677,7 @@ class Villages {
                     displayConstructionQueue(this, `#constructionQueue-list`);
                     const unemployeds = this.workers.filter(worker => worker.type === "peasant" || !worker.buildingID );
                     displayWorkers(unemployeds, this, `#new-workers-box`);
+                    amenagementsBuilding(existingBuilding);
                 }
 
             }, time * 1000);
@@ -686,7 +694,6 @@ class Villages {
                 this.build(nextBuilding);
                 this.underConstruction = false;
                 this.constructionSite = [];
-
                 if (this.owner) {
                     displayConstructionQueue(this, `#constructionQueue-list`);
                     displayVillageAmenagements(this.id, this.amenagements.length);

@@ -1,9 +1,8 @@
-
 class Granaries extends Buildings {
     constructor(data) { 
         super(data);
         this.capacity = this.calculateCapacity();
-        this.allowedResources = ["cereals","food"];
+        this.allowedResources = this.granaryAllowedResources() || [];
     }
     calculateCapacity() {
         return this.level * 1000;
@@ -21,6 +20,19 @@ class Granaries extends Buildings {
             this.stock.push({ type: resourceType, quantity: qtyToAdd });
         }
         this.buildingGainExperience(0.2);
+    }
+    granaryAllowedResources(){
+        const village = this.getBuildingVillage().village;
+        if (village.owner) return ["food"];
+
+        return ["food","cereals"];
+    }
+    selectAllowedResources(resource){
+        this.allowedResources.push(resource);
+    }
+    removeAllowedResources(resource){
+        const index = this.allowedResources.indexOf(resource);
+        this.allowedResources.splice(index, 1);
     }
     upgrade() {
         super.upgrade();
