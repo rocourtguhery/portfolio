@@ -10,6 +10,7 @@
 .amenagements-view .village-bonus-building{
     padding-top: 18px;
 }
+.market-view .village-market,
 .amenagements-view .village-buildings,
 .amenagements-view .village-amenagements-list,
 .amenagements-view .village-bonus-building-list,
@@ -19,9 +20,10 @@
     gap: 10px;
     padding: 10px;
 }
-.amenagements-view .village-buildings{
+.amenagements-view .village-buildings,
+.market-view .village-market{
     width: 100%;
-    margin-top: 30px;
+    height: 100%;
 }
 .amenagements-view .village-amenagements-list,
 .amenagements-view .village-bonus-building-list,
@@ -223,15 +225,19 @@
     color: #444;
     font-weight: 500;
 }
+.select-option-container .trade-option,
 .select-option-container .production-option{
     height: calc(100% - 25px);
     overflow-y: overlay;
     padding: 12px 5px 0;
 }
+.trade-agreement-terms ul,
 .production-option ul{
     padding: 0;
     margin: 0;
+    list-style: none;
 }
+.select-option-container .trade-option li,
 .select-option-container .production-option li{
     color: #333;
     font-size: 14px;
@@ -250,12 +256,14 @@
 .building-granary li:first-child .info-text{
     transform: translateX(-30%);
 }
+.trade-agreement-terms ul li.resource,
 .production-option ul li.resource,
 .production-option .resource{
     justify-content: space-between;
     align-items: center;
     padding: 7px 15px;
 }
+.trade-agreement-terms ul li:not(:first-child),
 .production-option ul li:not(:first-child){
     margin: 10px 0;
 }
@@ -264,6 +272,7 @@
     display: flex;
     gap: 5px;
 } */
+.terms-select,
 .prod-select{
     display: block !important;
     position: relative;
@@ -277,6 +286,7 @@
     -ms-user-select: none;
     user-select: none;
 }
+.terms-select input,
 .prod-select input {
     position: absolute;
     opacity: 0;
@@ -295,9 +305,11 @@
     align-items: center;
     justify-content: center;
 }
+.terms-select:hover input ~ .input-checked,
 .prod-select:hover input ~ .input-checked {
     background-color: #fffef0;
 }
+.terms-select input:checked ~ .input-checked,
 .prod-select input:checked ~ .input-checked {
     background-color: #fffef0;
 }
@@ -306,9 +318,11 @@
     position: absolute;
     display: none;
 }
+.terms-select input:checked ~ .input-checked:after,
 .prod-select input:checked ~ .input-checked:after {
     display: block;
 }
+.terms-select .input-checked:after,
 .prod-select .input-checked:after {
     width: 7px;
     height: 7px;
@@ -399,7 +413,7 @@
     background-size: contain;
 }
 
-.close-show-bBuilding-workers{
+.close-show-Building-workers{
     top: 0;
     right: 20px;
 }

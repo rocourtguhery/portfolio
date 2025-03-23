@@ -1,7 +1,6 @@
-
 class Ships{
     constructor(data) {
-        this.id = `${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+        this.id = `${Date.now()}-${Math.random().toString(36).substring(2, 5)}`;
         this.name = this.getShipName();
         this.villageID = data.villageID;
         this.villageName = data.villageName;
@@ -123,55 +122,58 @@ class Ships{
         const pathBack = `${villageSeller.villagePos.x},${villageSeller.villagePos.y}-${villageBuyer.villagePos.x},${villageBuyer.villagePos.y}`;
         const marketBuyer = villageBuyer.amenagements.find(building => building.type === "market");
         const marketSeller = villageSeller.amenagements.find(building => building.type === "market");
-        if(pathCache.has(pathGo) && pathCache.has(pathBack)){
 
+        if(pathCache.has(pathGo) && pathCache.has(pathBack)){
             // Déplacement du navire
             $(`#${transportUnit.id}`).fadeIn(1000);
             animatePath(transportUnit, pathCache.get(pathGo), () => {
 
-                completeTheTransaction(villageBuyer, marketBuyer, villageSeller, marketSeller, transportUnit);
-
-                const portSeller = villageSeller.amenagements.find(building => building.type === "port");
-                const dockerContribution = portSeller.workers.length > 0 ? portSeller.workers.reduce((total, worker) => total + worker.laborforce, 0) : 1;
-                const preparationTime = Math.floor(5000 / dockerContribution);
-                
-                setTimeout(() => {
-                    transportUnit.from = villageSeller.name;
-                    transportUnit.to = villageBuyer.name;
-
-                    animatePath(transportUnit, pathCache.get(pathBack), () => {
-                        transportUnit.from = "-";
-                        transportUnit.to = "-";
-                        port.unloadGoods(transportUnit);
-                        this.gainExperience(0.25);
+                completeTheTransaction(villageBuyer, marketBuyer, villageSeller, marketSeller, transportUnit, ()=>{
+                    const portSeller = villageSeller.amenagements.find(building => building.type === "port");
+                    const dockerContribution = portSeller.workers.length > 0 ? portSeller.workers.reduce((total, worker) => total + worker.laborforce, 0) : 1;
+                    const preparationTime = Math.floor(5000 / dockerContribution);
+                    setTimeout(() => {
+                        transportUnit.from = villageSeller.name;
+                        transportUnit.to = villageBuyer.name;
                         portSeller.portsGainExperience(0.2);
-                    });
+    
+                        animatePath(transportUnit, pathCache.get(pathBack), () => {
+                            transportUnit.from = "-";
+                            transportUnit.to = "-";
+                            port.unloadGoods(transportUnit);
+                            this.gainExperience(0.25);
+                        });
+    
+                    }, preparationTime);
 
-                }, preparationTime);
+                });
 
             });
         }else{
             simulateTravel(villageBuyer.villagePos, villageBuyer.name, villageSeller.villagePos, villageSeller.name, transportUnit, () => {
                 
-                completeTheTransaction(villageBuyer, marketBuyer, villageSeller, marketSeller, transportUnit);
-                
-                const portSeller = villageSeller.amenagements.find(building => building.type === "port");
-                const dockerContribution = portSeller.workers.length > 0 ? portSeller.workers.reduce((total, worker) => total + worker.laborforce, 0) : 1;
-                const preparationTime = Math.floor(5000 / dockerContribution);
-                
-                setTimeout(() => {
-                    transportUnit.from = villageSeller.name;
-                    transportUnit.to = villageBuyer.name;
+                completeTheTransaction(villageBuyer, marketBuyer, villageSeller, marketSeller, transportUnit, ()=>{
+
+                    const portSeller = villageSeller.amenagements.find(building => building.type === "port");
+                    const dockerContribution = portSeller.workers.length > 0 ? portSeller.workers.reduce((total, worker) => total + worker.laborforce, 0) : 1;
+                    const preparationTime = Math.floor(5000 / dockerContribution);
                     
-                    simulateTravel(villageSeller.villagePos, villageSeller.name, villageBuyer.villagePos, villageBuyer.name, transportUnit, () => {
-                        transportUnit.from = "-";
-                        transportUnit.to = "-";
-                        port.unloadGoods(transportUnit);
-                        this.gainExperience(0.25);
+                    setTimeout(() => {
+                        transportUnit.from = villageSeller.name;
+                        transportUnit.to = villageBuyer.name;
                         portSeller.portsGainExperience(0.2);
-                    })
-                
-                }, preparationTime);
+                        
+                        simulateTravel(villageSeller.villagePos, villageSeller.name, villageBuyer.villagePos, villageBuyer.name, transportUnit, () => {
+                            transportUnit.from = "-";
+                            transportUnit.to = "-";
+                            port.unloadGoods(transportUnit);
+                            this.gainExperience(0.25);
+                        })
+                    
+                    }, preparationTime);
+
+                });
+
             });
         }
     }

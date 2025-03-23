@@ -230,7 +230,7 @@ html, body {
 #intro-panel{
     display: none;
     position: relative;
-    background: no-repeat url("../assets/images/parchemin_1.png") !important;
+    background: no-repeat url("../assets/images/parchemin_2.png") !important;
     background-size: 450px 100% !important;
     background-position: center !important;
     width: 450px;
@@ -422,10 +422,10 @@ html, body {
 }
 #save-map{
     position: absolute;
-    bottom: -15px;
-    right: 0px;
-    width: 100px;
-    height: 100px;
+    bottom: 0px;
+    right: 10px;
+    width: 80px;
+    height: 80px;
     background: no-repeat url("../assets/images/red-sceau.png");
     background-size: contain !important;
     display: none;
@@ -436,10 +436,10 @@ html, body {
 }
 #save-map-text{
     position: absolute;
-    right: 30px;
+    right: 23px;
     text-transform: uppercase;
     font-family: cursive;
-    font-size: 17px;
+    font-size: 14px;
     font-weight: 600;
     color: #c17577;
     text-shadow: 2px 1px 0 #610305, 1px 3px 0 #610305, -1px -1px indianred, 0px -2px 0 indianred;
@@ -492,6 +492,7 @@ input#map-name:focus-visible{
     width: 22px;
     height: 22px;
 }
+.island-resource .icon-fish,
 #islandsOption-box .resource .icon-fish, 
 #townhall-box-1 .resource .icon-fish, 
 #map-info .resource .icon-fish{
@@ -502,6 +503,7 @@ input#map-name:focus-visible{
     position: absolute;
     filter: drop-shadow(0px 0px -1px black);
 }
+.island-resource .icon-wool,
 #islandsOption-box .resource .icon-wool, 
 #townhall-box-1 .resource .icon-wool, 
 #map-info .resource .icon-wool{
@@ -518,6 +520,7 @@ input#map-name:focus-visible{
     width: 22px;
     height: 22px;
 }
+.island-resource .icon-coffee,
 #islandsOption-box .resource .icon-coffee, 
 #townhall-box-1 .resource .icon-coffee, 
 #map-info .resource .icon-coffee{
@@ -543,6 +546,7 @@ input#map-name:focus-visible{
     height: 38px;
     transform: none;
 }
+.island-resource .icon-meat,
 #islandsOption-box .resource .icon-meat, 
 #townhall-box-1 .resource .icon-meat, 
 #map-info .resource .icon-meat{
@@ -560,6 +564,7 @@ input#map-name:focus-visible{
     width: 22px;
     height: 22px;
 }
+.island-resource .icon-orchards,
 #islandsOption-box .resource .icon-orchards, 
 #townhall-box-1 .resource .icon-orchards, 
 #map-info .resource .icon-orchards{
@@ -601,6 +606,7 @@ input#map-name:focus-visible{
     width: 22px;
     height: 22px;
 }
+.island-resource .icon-gold,
 #islandsOption-box .resource .icon-gold, 
 #townhall-box-1 .resource .icon-gold, 
 #map-info .resource .icon-gold{
@@ -627,6 +633,7 @@ input#map-name:focus-visible{
     top: -2px;
     left: -7px;
 }
+.island-resource .icon-cereals,
 #islandsOption-box .resource .icon-cereals, 
 #townhall-box-1 .resource .icon-cereals, 
 #map-info .resource .icon-cereals{
@@ -653,6 +660,7 @@ input#map-name:focus-visible{
     left: -7px;
     top: -3px;
 }
+.island-resource .icon-vine,
 #islandsOption-box .resource .icon-vine, 
 #townhall-box-1 .resource .icon-vine, 
 #map-info .resource .icon-vine{
@@ -664,6 +672,7 @@ input#map-name:focus-visible{
     top: 0px;
     left: -5px;
 }
+.island-resource .icon-tobacco,
 #islandsOption-box .resource .icon-tobacco, 
 #townhall-box-1 .resource .icon-tobacco, 
 #map-info .resource .icon-tobacco{
@@ -673,6 +682,7 @@ input#map-name:focus-visible{
     left: -3px;
     top: 3px;
 }
+.island-resource .icon-cacao,
 #islandsOption-box .resource .icon-cacao, 
 #townhall-box-1 .resource .icon-cacao, 
 #map-info .resource .icon-cacao{
@@ -756,7 +766,7 @@ input#map-name:focus-visible{
     width: 90%;
     height: 300px;
     overflow-y: overlay;
-    background: #e0c89e;
+    background: #dab377;
     border-radius: 5px;
     display: flex;
     flex-direction: column;
@@ -1681,11 +1691,13 @@ div#buildings-box-tabs::before {
     background-position: 1px 7px;
     background-size: 42px;
 }
+.island-resource .icon-stone,
 #townhall-view-warehouse .stock.icon-stone{  /* #planConstruction-view .building-cost .cost-stone */
     background: no-repeat url("../assets/images/stone-icon.png");
     background-position: bottom;
     background-size: 32px;
 }
+.island-resource .icon-iron,
 .production-cost .cost-iron,
 #townhall-view-warehouse .stock.icon-iron,
 #planConstruction-view .building-cost .cost-iron{
@@ -1701,18 +1713,20 @@ div#buildings-box-tabs::before {
     background-size: 32px;
 }
 
-
+.island-resource .icon-gems_purple,
 #townhall-view-warehouse .stock.icon-gems_purple{
     background: no-repeat url("../assets/images/gems-purple-icon.png");
     background-position: center 8px;
     background-size: 32px;
 }
+.island-resource .icon-gems_green,
 #townhall-view-warehouse .stock.icon-gems_green{
     background: no-repeat url("../assets/images/gems-green-icon-3.png");
     background-position: center 8px;
     background-size: 32px;
     filter: brightness(1.1) contrast(1.2)
 }
+.island-resource .icon-gems_blue,
 #townhall-view-warehouse .stock.icon-gems_blue{
     background: no-repeat url("../assets/images/gems-blue-icon.png");
     background-position: center;
@@ -1725,24 +1739,28 @@ div#buildings-box-tabs::before {
     background-size: 32px;
     filter: brightness(1.15);
 }
+.island-resource .icon-silver,
 #townhall-view-warehouse .stock.icon-silver{
     background: no-repeat url("../assets/images/silver-bar-icon-2.png");
     background-position: center 8px;
     background-size: 32px;
     filter: brightness(1) contrast(1.5);
 }
+.island-resource .icon-copper,
 #townhall-view-warehouse .stock.icon-copper{
     background: no-repeat url("../assets/images/copper-4.png");
     background-position: center;
     background-size: 24px;
-    filter: brightness(1) contrast(1.5);
+    /* filter: brightness(1) contrast(1.5); */
 }
+.island-resource .icon-coal,
 #townhall-view-warehouse .stock.icon-coal{
     background: no-repeat url("../assets/images/coal-icon-1.png");
     background-position: center 8px;
     background-size: 32px;
     filter: contrast(1.2) brightness(1.2);
 }
+.island-resource .icon-cotton,
 .production-cost .cost-cotton,
 #townhall-view-warehouse .stock.icon-cotton,
 #planConstruction-view .building-cost .cost-cotton{
@@ -1757,6 +1775,7 @@ div#buildings-box-tabs::before {
     background-position: center 8px;
     background-size: 32px;
 }
+.island-resource .icon-banana,
 #townhall-view-warehouse .stock.icon-banana{
     background: no-repeat url("../assets/images/banana-icon.png");
     background-position: center 8px;
@@ -1777,6 +1796,7 @@ div#buildings-box-tabs::before {
     background-position: center 8px;
     background-size: 32px;
 }
+.island-resource .icon-sugar_cane,
 #townhall-view-warehouse .stock.icon-sugar_cane{
     background: no-repeat url("../assets/images/sugar_cane-icon-1.png");
     background-position: bottom;
@@ -2080,6 +2100,7 @@ div#buildings-box-tabs::before {
     border: 1px solid #222;
     border-radius: 2px;
 }
+.island-resource .icon-wood,
 .production-cost .cost-wood,
 #planConstruction-view .building-cost .cost-wood{
     background: no-repeat url("../assets/images/wood-icon-7.png");

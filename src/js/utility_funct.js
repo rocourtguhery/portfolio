@@ -208,7 +208,7 @@ function getBuildingInfo(buildingType, info) {
 function determinePrice(resourceType) {
     return basePrices[resourceType] || 10; // Prix par défaut
 }
-/* function findNearbyMarket(village) {
+function findNearbyMarket(village) {
     const port = village.amenagements.find(a => a.type === "port");
     const range = port ? port.range : 10;
 
@@ -218,29 +218,29 @@ function determinePrice(resourceType) {
             (port && market.villageID !== village.id && distance <= range);
     });
     return localMarkets.sort((a, b) => calculateTravelTime(village.villagePos, a.place) - calculateTravelTime(village.villagePos, b.place));
-} */
-function findNearbyMarket(village, priceFluctuation = false) {
+}
+function findNearbyMarketWrapAround(village, priceFluctuation = false) {
     const port = village.amenagements.find(a => a.type === "port");
     const range = priceFluctuation? (gridSize.y / 4):
                 port ? port.range : 10;
-    const worldHeight = gridSize.y;
+    const worldWidth = gridSize.y;
 
     const localMarkets = allMarkets.filter(market => {
-        let distance = calculateTravelTime(village.villagePos, market.place);
+        let distance = calculateTravelTimeWrapAround(village.villagePos, market.place);
 
         // Vérification avec le wrap-around
-        const distanceWrapY = calculateTravelTime({ x: village.villagePos.x, y: (village.villagePos.y + worldHeight) % worldHeight }, market.place);
+        const distanceWrapY = calculateTravelTimeWrapAround({ x: village.villagePos.x, y: (village.villagePos.y + worldWidth) % worldWidth }, market.place);
 
         return (market.islandID === village.islandID && market.villageID !== village.id) ||
                 (port && market.villageID !== village.id && (distance <= range || distanceWrapY <= range));
     });
 
-    return localMarkets.sort((a, b) => calculateTravelTime(village.villagePos, a.place) - calculateTravelTime(village.villagePos, b.place));
+    return localMarkets.sort((a, b) => calculateTravelTimeWrapAround(village.villagePos, a.place) - calculateTravelTimeWrapAround(village.villagePos, b.place));
 }
 const pathCache = new Map();
 function simulateTravel(startPort, buyerName, endPort, sellerName, ship, onCompletion) {
     if (ship.underRepair) return;
-    const worldHeight = gridSize.y;
+    const worldWidth = gridSize.y;
     const cardinaux = {
         "nord": 0,
         "sud": 180,
@@ -258,11 +258,11 @@ function simulateTravel(startPort, buyerName, endPort, sellerName, ship, onCompl
     const key = `${start.x},${start.y}-${end.x},${end.y}`;
 
     // Vérifie si le wrap-around est plus court
-    const normalDistance = calculateTravelTime(start, end);
-    const wrapDistanceY = calculateTravelTime({ x: start.x, y: (start.y + worldHeight) % worldHeight }, end);
+    const normalDistance = calculateTravelTimeWrapAround(start, end);
+    const wrapDistanceY = calculateTravelTimeWrapAround({ x: start.x, y: (start.y + worldWidth) % worldWidth }, end);
     
     if (wrapDistanceY < normalDistance) {
-        start.y = (start.y + worldHeight) % worldHeight;
+        start.y = (start.y + worldWidth) % worldWidth;
     }
 
     const path = [];
@@ -278,7 +278,7 @@ function simulateTravel(startPort, buyerName, endPort, sellerName, ship, onCompl
         let captainManeuverTime = 0;
         directions.forEach(({ dx, dy, type }) => {
             // let newX = (currentPos.x + dx + worldWidth) % worldWidth;
-            let newY = (currentPos.y + dy + worldHeight) % worldHeight;
+            let newY = (currentPos.y + dy + worldWidth) % worldWidth;
 
             const nStep = { x: currentPos.x + dx, y: newY };
             
@@ -286,7 +286,7 @@ function simulateTravel(startPort, buyerName, endPort, sellerName, ship, onCompl
             (nStep.x === end.x && nStep.y === end.y) || 
             (nStep.x === start.x && nStep.y === start.y)
             ) {
-                const distance = calculateTravelTime(nStep, end);
+                const distance = calculateTravelTimeWrapAround(nStep, end);
                 possibleSteps.push({ x:nStep.x, y:nStep.y, distance, type: type});
                 possibleSteps = possibleSteps.filter(possi => !path.some(pa => pa.x === possi.x && pa.y === possi.y));
             }
@@ -312,9 +312,9 @@ function simulateTravel(startPort, buyerName, endPort, sellerName, ship, onCompl
                 $(`#${ship.id}`)
                 .css({
                     "display": wrap? "none": "block", 
-                    "transition": `transform ${captainManeuverTime}ms ease-out`,
+                    "transition": `transform 1s ease-out`,
                     "transform-origin": "center center", 
-                    "transform": `rotate(${start.orientation}deg) translate(0%, 20%)`
+                    "transform": `rotate(${start.orientation}deg)`
                 });
                 if (wrap) {
                     $(`#${ship.id}`).fadeTo(100, 0);
@@ -322,10 +322,10 @@ function simulateTravel(startPort, buyerName, endPort, sellerName, ship, onCompl
 
                 $(`#${ship.id}`)
                     .animate({
-                        top: `${start.x * cellSize}px`,
-                        left: `${start.y * cellSize}px`,
+                        top: `${(start.x * cellSize) + (cellSize/3)}px`,
+                        left: `${(start.y * cellSize) + (cellSize/3)}px`,
                     },
-                    2500,
+                    5000,
                     'linear',
                     () => {
                         
@@ -351,7 +351,6 @@ function simulateTravel(startPort, buyerName, endPort, sellerName, ship, onCompl
     moveStep(start);
 }
 function isShipInsideCell(ship, cell) {
-    // const shipId = $(`#${ship.id}`).attr
     const ship_ = document.getElementById(`${ship.id}`);
     const shipRect = ship_.getBoundingClientRect();
     const cellRect = cell.getBoundingClientRect();
@@ -373,12 +372,12 @@ async function animatePath(ship, path, onCompletion) {
         await new Promise(resolve => {
             $(`#${ship.id}`).fadeIn(1500).css({
                 "display": wrap? "none": "block",
-                "transition": `transform 100ms ease-out`,
+                "transition": `transform 1s ease-out`,
                 "transform-origin": "center center", 
-                "transform":`translate(0%, 20%) rotate(${step.orientation}deg)`
+                "transform":`rotate(${step.orientation}deg)`
             }).animate(
-                { top: `${step.x * cellSize}px`, left: `${step.y * cellSize}px` },
-                2500,
+                { top: `${(step.x * cellSize) + (cellSize/3)}px`, left: `${(step.y * cellSize) + (cellSize/3)}px` },
+                5000,
                 "linear",
                 resolve
             );
@@ -390,7 +389,7 @@ async function animatePath(ship, path, onCompletion) {
         onCompletion();
     }
 }
-function completeTheTransaction(villageBuyer, marketBuyer, villageSeller, marketSeller, transportUnit){
+function completeTheTransaction(villageBuyer, marketBuyer, villageSeller, marketSeller, transportUnit, callback){
     marketBuyer.buyOrders.forEach(buyOrder => {
         marketSeller.sellOrders.forEach(salesOffer => {
             if (buyOrder.type === salesOffer.type && buyOrder.quantity > 0 && salesOffer.quantity > 0 && salesOffer.soldTo === villageBuyer.id) {
@@ -407,41 +406,64 @@ function completeTheTransaction(villageBuyer, marketBuyer, villageSeller, market
                     buyOrder.quantity -= qtyToBuy;
                     salesOffer.quantity -= qtyToBuy;
 
+                    displayVillageGold(villageBuyer.id, villageBuyer.gold);
+                    displayVillageGold(villageSeller.id, villageSeller.gold);
+
                     if (salesOffer.quantity > 0) salesOffer.soldTo = null;
                     if (buyOrder.quantity > 0) buyOrder.buyFrom = null;
+
+                    const marketCanSell = marketSeller.marketCanSell.find(canSell => canSell.type === salesOffer.type);
+                    if (marketCanSell) {
+                        marketCanSell.quantity = Math.max(0, (marketCanSell.quantity - qtyToBuy) );
+                        marketSeller.marketCanSell.filter(canSell => canSell.quantity > 0);
+                    }
                     if (salesOffer.quantity <= 0) marketSeller.sellOrders = marketSeller.sellOrders.filter(order => order.quantity > 0);
                     if (buyOrder.quantity <= 0) marketBuyer.buyOrders = marketBuyer.buyOrders.filter(order => order.quantity > 0);
                 }else{
                     salesOffer.soldTo = null;
+                    buyOrder.buyFrom = null;
                 }
             }
         });
     });
+    callback(transportUnit);
 }
 function returnTransport(villageBuyer, transportUnit) {
     const warehouse = villageBuyer.amenagements.find(a => a.type === "warehouse");
-    transportUnit?.cargo?.stock.forEach(resource => {
+    transportUnit.cargo.stock.forEach(resource => {
         warehouse.addToStock(resource.type, resource.quantity);
+
+        const otherSupplyNeeds = villageBuyer.otherSupplyNeeds.find(need => need.type === resource.type);
+        if (otherSupplyNeeds) {
+            otherSupplyNeeds.quantity = Math.max(0, (otherSupplyNeeds.quantity - resource.quantity) );
+            villageBuyer.otherSupplyNeeds = villageBuyer.otherSupplyNeeds.filter(need => need.quantity > 0);
+        }
+        const agriFoodNeeds = villageBuyer.agriFoodNeeds.find(need => need.type === resource.type);
+        if (agriFoodNeeds) {
+            agriFoodNeeds.quantity = Math.max(0, (agriFoodNeeds.quantity - resource.quantity) );
+            villageBuyer.agriFoodNeeds = villageBuyer.agriFoodNeeds.filter(need => need.quantity > 0);
+        }
+
     });
-    transportUnit?.clearCargo(); // Vide le cargo et réinitialise l'état du navire
+    transportUnit?.clearCargo(); // Vide le cargo et réinitialise l'état du transport
     transportUnit.busy = false;
 }
-/* function calculateTravelTime(startPos, endPos) {
+function calculateTravelTime(startPos, endPos) {
     const dx = Math.abs(startPos.x - endPos.x);
     const dy = Math.abs(startPos.y - endPos.y);
-    return (dx + dy) * 1; // 1 heure par cellule
-} */
-function calculateTravelTime(start, end) {
+    return (dx + dy);
+}
+function calculateTravelTimeWrapAround(start, end) {
     const dx = Math.abs(start.x - end.x);
     const dy = Math.abs(start.y - end.y);
-    // const worldWidth = gridSize.x; // Largeur de la carte
-    const worldHeight = gridSize.y; // Hauteur de la carte
+    // const worldHeight = gridSize.x; // Hauteur de la carte
+    const worldWidth = gridSize.y; // Largeur de la carte
 
     // Vérifier si le wrap-around est plus court
-    // const dxWrap = Math.min(dx, worldWidth - dx);
-    const dyWrap = Math.min(dy, worldHeight - dy);
+    // const dxWrap = Math.min(dx, worldHeight - dx);
+    const dyWrap = Math.min(dy, worldWidth - dy);
 
-    return (dx + dyWrap) * 1; // Distance avec le wrap-around pris en compte
+    return (dx + dyWrap); // Distance avec le wrap-around pris en compte
 }
 function calculateToricDistance(start, end) {
     let dx = Math.abs(end.x - start.x);
@@ -454,8 +476,8 @@ function calculateToricDistance(start, end) {
     return dx + minDy;
 }
 function addBuildingToQueue(village, building, priority, specialization = false) {
-    const urgentNeeds = village.agriFoodNeeds;
     const warehouse = village.amenagements.find(a => a.type === "warehouse");
+    const market = village.amenagements.find(a => a.type === "market");
     // Vérifie si le bâtiment est déjà dans la file d'attente
     if (village.constructionQueue.some(q => q.type === building.type && q?.resourceId === building?.resourceId)) {
         // console.warn(`${building.type} est déjà dans la file d'attente pour ${this.name}.`);
@@ -499,16 +521,25 @@ function addBuildingToQueue(village, building, priority, specialization = false)
                 const neededQty = Math.max(0, quantity - availableStock); // Besoin réel
 
                 const supplyNeeds = village.otherSupplyNeeds;
+
                 const existingNeed = supplyNeeds.find(need => need.type === resource);
+                const overload = existingNeed && existingNeed.quantity >= 150;
 
-                if (!supplyNeeds) return;
-
-                supplyNeeds.push({
-                    id: `${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
-                    type: resource,
-                    quantity: neededQty,
-                    priority: "high",
-                });
+                if (!overload){
+                    if (existingNeed){
+    
+                        existingNeed.quantity += Math.floor(neededQty);
+    
+                    }else{
+                        supplyNeeds.push({
+                            id: `${Date.now()}-${Math.random().toString(36).substring(2, 5)}`,
+                            type: resource,
+                            quantity: Math.floor(neededQty),
+                            priority: "high",
+                        });
+                        market.marketCanSell.filter(canSell => canSell.type !== resource && canSell.quantity > 0);
+                    }
+                }
             });
         }
     }
@@ -754,8 +785,8 @@ function amenagementFrName(amenagement){
         mine : `Mine`,
         fishing_hut : `Cabane de pêche`, 
         lumberjack_hut : `Cabane de bûcheron`, 
-        livestock_ranches : `Ranchs de bétail`, 
-        sheep_ranches : `Ranchs de moutons`, 
+        livestock_ranches : `Élevage bovin`, 
+        sheep_ranches : `Bergerie`, 
         quarry : `Carrière de pierre`,
         farm : `Plantation`, //Ferme
         market : `Marché`,
@@ -784,43 +815,43 @@ function amenagementFrName(amenagement){
 }
 function ressourceFrName(resource){
     const ressourcesFr = {
-        food: "Nourritures | Foods",
+        food: "Nourritures",
         gems_purple: "Saphir", //Diamant violet, Améthyste, Kunzite violette, Saphir Violet, Tanzanite violette, Spinelle violette
-        gold: "Or | Gold",
-        silver: "Argent | Silver",
+        gold: "Or",
+        silver: "Argent",
         gems_green: "Émeraude", //Diamant vert, Saphir vert, Émeraude, Tourmaline verte, Péridot, Chrome Diopside, Tourmaline chromée, Zircon vert, Grenat Tsavorite
         gems_blue: "Topaz", //Diamant bleu, Topaz bleu, Tourmaline bleue, Cyanite, Apatite bleue, Zircon Bleu, Spinelle Bleu, Benitoïte, Lazulite,
-        iron: "Fer | Iron",
-        copper: "Cuivre | Copper",
-        sugar_cane: "Cannes à Sucres | Sugar canes",
-        vine: "Vignes | Vines",
-        tobacco: "Tabacs | Tobaccos",
-        coffee: "Café | Coffee",
-        cacao: "Cacaos | Cocoas",
-        coal: "Charbons | Coals",
-        wool: "Laines | Wools",
-        orchards: "Fruits | Fruits", // "Vergers | Orchards"
-        meat: "Viandes | Meats",
-        cotton: "Cotons | Cottons",
-        banana: "Bananes | Bananas",
-        cereals: "Céréales | Cereals",
-        stone: "Pierres | Stones",
-        wood: "Bois | Woods",
-        fish: "Poissons | Fishs",
+        iron: "Fer",
+        copper: "Cuivre",
+        sugar_cane: "Cannes à Sucres",
+        vine: "Vignes",
+        tobacco: "Tabacs",
+        coffee: "Café",
+        cacao: "Cacaos",
+        coal: "Charbons",
+        wool: "Laines",
+        orchards: "Fruits",
+        meat: "Viandes",
+        cotton: "Cotons",
+        banana: "Bananes",
+        cereals: "Céréales",
+        stone: "Pierres",
+        wood: "Bois",
+        fish: "Poissons",
 
-        lumber: "Bois d'oeuvre | Lumber",
-        tools: "Outils | Tools",
-        fabric: "Tissus | Fabrics",
-        clothes: "Vêtements | Clothes",
-        liquor: "Alcool | Liquor",
-        cigars: "Cigares | Cigars",
-        chocolate: "Chocolat | Chocolate",
-        ground_coffee: "Café moulu | Fine coffee",
-        jewelry: "Bijoux | Jewelry",
-        rifle: "Fusil | Gun",
-        artillery: "Artillerie | Artillery",
-        spear: "Lance | Spear",
-        shield: "Bouclier | shield",
+        lumber: "Bois d'oeuvre",
+        tools: "Outils",
+        fabric: "Tissus",
+        clothes: "Vêtements",
+        liquor: "Alcool",
+        cigars: "Cigares",
+        chocolate: "Chocolat",
+        ground_coffee: "Café moulu",
+        jewelry: "Bijoux",
+        rifle: "Fusil",
+        artillery: "Artillerie",
+        spear: "Lance",
+        shield: "Bouclier",
 
     }
     return ressourcesFr[resource] || false;
@@ -868,31 +899,31 @@ function workersFrType(type){
     return workersType[type];
 }
 function startGlobalTimer(villages, interval = 60000) {
-    // Managing population growth, worker consumption, production management
-    setInterval(() => {
-        villages.forEach(village => {
-            if (village.workers.length <= 0) return;
-            const port = village.amenagements.find(building => building.type === "port");
-            village.managePopulation();
-            if (village.owner) return;
-            port.planShipConstruction();
-        });
-    }, interval); 
-
+    
     // Taxes management, trade Management and Plan Construction management
     setInterval(() => {
         villages.forEach(village => {
             if (village.workers.length <= 0) return;
             village.generateTaxes();
+            const port = village.amenagements.find(building => building.type === "port");
+            const market = village.amenagements.find(building => building.type === "market");
+            market?.maintainMarket(village);
 
             if (village.owner) return;
-            const market = village.amenagements.find(building => building.type === "market");
-            market.maintainMarket();
-
             village.planConstruction();
-            
+            port?.planShipConstruction();
+        });
+    }, interval); 
+
+    // Managing population growth, worker consumption
+    setInterval(() => {
+        villages.forEach(village => {
+            if (village.workers.length <= 0) return;
+            village.managePopulation();
         });
     }, 30000);
+
+    // Production management
     setInterval(() => {
 
         villages.forEach(village => {
@@ -994,8 +1025,8 @@ function showMap(grid, islands, callback){
     function createResourceHTML(resource) {
         return `
             <div class="ress-info">
-                <span class="ress-icon ${resource.type}-icon"></span>
-                <span class="ress-name">${resource.type}</span>
+                <span class="ress-icon icon-${resource.type}"></span>
+                <span class="ress-name">${ressourceFrName(resource.type)}</span>
             </div>
         `;
     }
@@ -1142,9 +1173,15 @@ function showTabsBtn(village){
     }
     if (isBtnHidden(marketBtn) && villageHasBuilding(village, "market", false )) {
         marketBtn.style.display = 'block';
+        const market = village.amenagements.find(building => building.type === "market");
+        marketBtn.dataset.buildingid = `${market.id}`;
+        marketBtn.dataset.buildingvillageid = `${village.id}`;
     }
     if (isBtnHidden(portBtn) && villageHasBuilding(village, "port", false )) {
         portBtn.style.display = 'block';
+        const port = village.amenagements.find(building => building.type === "port");
+        portBtn.dataset.buildingid = `${port.id}`;
+        portBtn.dataset.buildingvillageid = `${village.id}`;
     }
 }
 function isBtnHidden(el) {
@@ -1164,10 +1201,10 @@ function villageHasBuilding(village, buildingType = false, buildingCategory = fa
         return false;
     }
 }
-function getThisBuilding(ThisBuilding){
-    const parents = ThisBuilding.parents(`.building`);
-    const buildingId = parents.attr("data-buildingid");
-    const villageId = parents.attr("data-buildingvillageid");
+function getThisBuilding(thisBuilding, tabBtn = false){
+    const parents = thisBuilding.parents(`.building`);
+    const buildingId = !tabBtn? parents.attr("data-buildingid") : thisBuilding.attr("data-buildingid");
+    const villageId = !tabBtn? parents.attr("data-buildingvillageid") : thisBuilding.attr("data-buildingvillageid");
     const village = villages.find(village => village.id === villageId);
     const building = village.amenagements.find(building => building.id === buildingId);
     return {village, building};

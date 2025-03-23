@@ -1,6 +1,6 @@
 class Buildings{
     constructor(data) {
-        this.id = `${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+        this.id = `${Date.now()}-${Math.random().toString(36).substring(2, 5)}`;
         this.islandID = data.islandID;
         this.villageID = data.villageID;
         this.type = data.type; // Type de bâtiment (mine, ferme, etc.)
@@ -179,6 +179,7 @@ class Buildings{
 
     handleWorkshopProduction() {
         const village = this.getBuildingVillage().village;
+        const market = this.getBuildingVillage().market;
 
         const productionOptions = village.owner ? this.workshopProduction : workshopProduction[this.type];
 
@@ -222,23 +223,32 @@ class Buildings{
             });
 
             Object.entries(resourceShortages).forEach(([resource, quantity]) => {
+                
                 const existingNeed = supplyNeeds.find(need => need.type === resource);
+                const overload = existingNeed && existingNeed.quantity >= 150;
 
-                if (existingNeed && (existingNeed.quantity + quantity) < 150){
-                    existingNeed.quantity += quantity;
+                if (overload) return;
+
+                if (existingNeed){
+
+                    existingNeed.quantity += Math.floor(quantity);
+
                 }else{
                     supplyNeeds.push({
-                        id: `${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+                        id: `${Date.now()}-${Math.random().toString(36).substring(2, 5)}`,
                         type: resource,
                         quantity: Math.floor(quantity),
                         priority: "medium",
-                    })
+                    });
+                    market.marketCanSell.filter(canSell => canSell.type !== resource && canSell.quantity > 0);
                 }
             });
             return null;
         }
     }
     pickFromStorage(resourceType, quantity = 0, condition = "pick") {
+        const village = this.getBuildingVillage().village;
+        
         const storages = [
             this.getBuildingVillage().granary?.stock,
             this.getBuildingVillage().warehouse?.stock

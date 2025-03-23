@@ -29,6 +29,7 @@ class Shipyards extends Buildings {
         const warehouseFabricStock = this.pickFromStorage("fabric", null, "quantity") || 0;
         const warehouseLumberStock = this.pickFromStorage("lumber", null, "quantity") || 0;
 
+        const shipyardWoodStock = this.stock.find(st => st.type === "wood")?.quantity || 0;
         const shipyardIronStock = this.stock.find(st => st.type === "iron")?.quantity || 0;
         const shipyardToolsStock = this.stock.find(st => st.type === "tools")?.quantity || 0;
         const shipyardFabricStock = this.stock.find(st => st.type === "fabric")?.quantity || 0;
@@ -50,19 +51,23 @@ class Shipyards extends Buildings {
                 this.stock.push({ type, quantity: amount });
             }
         };
-        if (shipyardToolsStock < seuilMin && warehouseWoodStock >= 50) {
+        if (shipyardIronStock < seuilMin && warehouseIronStock >= 50) {
             this.pickFromStorage("iron", 25);
             updateStock("iron", 25);
         }
-        if (shipyardToolsStock < seuilMin && warehouseWoodStock > 100) {
+        if (shipyardWoodStock < seuilMin && warehouseWoodStock > 100) {
             this.pickFromStorage("wood", 25);
             updateStock("wood", 25);
         }
-        if (shipyardFabricStock < seuilMin && warehouseToolsStock > 100) {
+        if (shipyardLumberStock < seuilMin && warehouseLumberStock >= 50) {
+            this.pickFromStorage("lumber", 25);
+            updateStock("lumber", 25);
+        }
+        if (shipyardToolsStock < seuilMin && warehouseToolsStock > 100) {
             this.pickFromStorage("tools", 25);
             updateStock("tools", 25);
         }
-        if (shipyardLumberStock < seuilMin && warehouseFabricStock >= 50) {
+        if (shipyardFabricStock < seuilMin && warehouseFabricStock >= 50) {
             this.pickFromStorage("fabric", 25);
             updateStock("fabric", 25);
         }

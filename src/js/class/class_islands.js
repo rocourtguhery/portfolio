@@ -221,7 +221,7 @@ class Island {
                                             agriFoodResources.includes(resource) ? "agriFood" : "none";
 
                 this.addResource(x, y, {
-                    id: `${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+                    id: `${Date.now()}-${Math.random().toString(36).substring(2, 5)}`,
                     islandID: islandID,
                     type: resource,
                     buildingType:  amenagementForResource(resource),

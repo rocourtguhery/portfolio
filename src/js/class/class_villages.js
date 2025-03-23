@@ -15,7 +15,7 @@ class Villages {
         this.housingCapacity = 5; // Capacité des logements
         this.agriFoodNeeds = [];
         this.otherSupplyNeeds = [];
-        this.tradeRoutes = [];
+        this.tradeAgreement = [];
         this.gold = 10000; // Monnaie pour commercer
         this.baseTaxRate = 0.2; // impots, taxes...
         this.merchants = []; // Liste des marchands
@@ -251,23 +251,32 @@ class Villages {
         this.evaluateAgriFoodNeeds(combinations, warehouse);         
     }
     evaluateAgriFoodNeeds(combinations, warehouse) {
-        if (this.owner) return;
-        const needs = this.agriFoodNeeds;
-        const population = this.workers.length;
+        const market = this.amenagements.find(a => a.type === "market");
+        
         const dailyFoodNeed = this.workers.reduce((sum, worker) => {
             return sum + worker.consumption.food
         }, 0);
 
         // Vérification des besoins alimentaires
         const foodStock = warehouse.pickFromStorage("food", null, "quantity") || 0;
-        if (foodStock < dailyFoodNeed * 15) {
-            const existingNeeds = this.agriFoodNeeds.find(item => item.type === "food");
-            if (!existingNeeds) {
-                this.agriFoodNeeds.push({
-                    type: "food",
-                    quantity: Math.ceil(dailyFoodNeed * 15), // Suffisant pour 15 jours
-                    priority: "high"
-                });
+        if (foodStock < dailyFoodNeed * 7) { // Suffisant pour 7 jours
+
+            const existingNeed = this.agriFoodNeeds.find(item => item.type === "food");
+            const overload = existingNeed && existingNeed.quantity >= 150;
+
+            if (!overload){
+                if (existingNeed){
+
+                    existingNeed.quantity += dailyFoodNeed;
+
+                }else{
+                    this.agriFoodNeeds.push({
+                        type: "food",
+                        quantity: Math.ceil(dailyFoodNeed),
+                        priority: "high"
+                    });
+                    market?.marketCanSell.filter(canSell => canSell.type !== "food" && canSell.quantity > 0);
+                }
             }
         }
 
@@ -277,13 +286,23 @@ class Villages {
             Object.entries(combo.ingredients).forEach(([ingredient, quantity]) => {
                 const stockItem  = warehouse.pickFromStorage(ingredient, null, "quantity") || 0;
                 if (!stockItem || stockItem <= 50) {
-                    const existingNeeds = this.agriFoodNeeds.find(item => item.type === ingredient);
-                    if (!existingNeeds) {
-                        this.agriFoodNeeds.push({
-                            type: ingredient,
-                            quantity: 50,
-                            priority: "medium"
-                        });
+
+                    const existingNeed = this.agriFoodNeeds.find(item => item.type === ingredient);
+                    const overload = existingNeed && existingNeed.quantity >= 150;
+
+                    if (!overload){
+                        if (existingNeed){
+
+                            existingNeed.quantity += quantity;
+
+                        }else{
+                            this.agriFoodNeeds.push({
+                                type: ingredient,
+                                quantity,
+                                priority: "medium"
+                            });
+                            market?.marketCanSell.filter(canSell => canSell.type !== ingredient && canSell.quantity > 0);
+                        }
                     }
                 }
             });
@@ -299,10 +318,11 @@ class Villages {
         
         // Vérification de population
         if (foodStock && foodStock > this.workers.length * 1.3 && this.workers.length < housingCapacity) {
-            if (totalNeededLabors > 0 ) {
+            if (unemployed.length >= 3) return;
+
+            if (totalNeededLabors > 0 || unemployed.length < 3) {
                 if (this.owner){
                     this.peasantPopUp(warehouse);
-                    warehouse.pickFromStorage("food", 10);
                     return;
                 }
 
@@ -314,9 +334,9 @@ class Villages {
                     }
                     building.generateWorkers();
                     warehouse.pickFromStorage("food", 10);
+                }else{
+                    this.peasantPopUp(warehouse);
                 }
-            }else if(unemployed.length < 3){
-                this.peasantPopUp(warehouse);
             }
         }
 
@@ -333,11 +353,11 @@ class Villages {
 
             displayVillagePopulation(this.id, this.workers.length);
 
-            const unemployeds = this.workers.filter(worker => !worker.workPlaceType || !worker.buildingID );
+            const unemployeds = this.workers.filter(worker => !worker.workPlaceType && !worker.buildingID );
             displayWorkers(unemployeds, this, `#new-workers-box`);
             displayPlanConstructionBuildings(this);
         }
-        this.checkAndBuildHouse();
+        this.checkAndBuildHouse(warehouse);
     }
     peasantPopUp(warehouse){
         const workerData = {
@@ -352,7 +372,7 @@ class Villages {
         warehouse.pickFromStorage("food", 10);
 
         // if (!this.owner) return;
-        const unemployeds = this.workers.filter(worker => !worker.workPlaceType || !worker.buildingID );
+        const unemployeds = this.workers.filter(worker => !worker.workPlaceType && !worker.buildingID );
         displayVillagePopulation(this.id, this.workers.length);
         displayWorkers(unemployeds, this, `#new-workers-box`);
         displayPlanConstructionBuildings(this);
@@ -383,20 +403,19 @@ class Villages {
         building.labors += worker.laborforce;
         building.workers.push(worker);
     }
-    checkAndBuildHouse() {
+    checkAndBuildHouse(warehouse) {
         if (this.workers.length >= this.housingCapacity * 0.7 && !this.houseUnderConstruction) {
             this.houseUnderConstruction = true;
 
             const houseCost = { wood: 10, stone: 5 };
             const hasEnoughResources = Object.keys(houseCost).every(resource => {
-                const stockItem = this.amenagements.find(a => a.type === "warehouse").stock.find(item => item.type === resource);
-                return stockItem && stockItem.quantity >= houseCost[resource];
+                const stockItem = warehouse.pickFromStorage(resource, null, "quantity");
+                return stockItem && stockItem >= houseCost[resource];
             });
             if (!hasEnoughResources) return;
 
             Object.keys(houseCost).forEach(resource => {
-                const stockItem = this.amenagements.find(a => a.type === "warehouse").stock.find(item => item.type === resource);
-                stockItem.quantity -= houseCost[resource];
+                warehouse.pickFromStorage(resource, houseCost[resource]);
             });
 
             setTimeout(() => {
@@ -419,20 +438,26 @@ class Villages {
                 if (satisfied) {
                     worker.happiness = Math.min(worker.happiness + 0.25, 100); // Satisfaction max = 100
                 } else {
-                    worker.happiness -= 0.5;
-                    
+                    worker.happiness = Math.max(worker.happiness - 0.5, 0);
+
                     const existingNeed = supplyNeeds.find(need => need.type === resource);
-                    if (!supplyNeeds) return;
-                    
-                    if (existingNeed && (existingNeed.quantity + quantity) < 150){
-                        existingNeed.quantity += quantity;
-                    }else{
-                        supplyNeeds.push({
-                            id: `${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
-                            type: resource,
-                            quantity: Math.floor(quantity),
-                            priority: "medium",
-                        });
+                    const overload = existingNeed && existingNeed.quantity >= 150;
+
+                    if (!overload){
+                        if (existingNeed){
+
+                            existingNeed.quantity += quantity;
+
+                        }else{
+                            quantity = Math.max(quantity, 1);
+                            supplyNeeds.push({
+                                id: `${Date.now()}-${Math.random().toString(36).substring(2, 5)}`,
+                                type: resource,
+                                quantity: Math.floor(quantity * this.workers.length),
+                                priority: "medium",
+                            });
+                            market?.marketCanSell.filter(canSell => canSell.type !== resource && canSell.quantity > 0);
+                        }
                     }
                 }
             });
@@ -515,7 +540,7 @@ class Villages {
     }
     getAverageHappiness() {
         const totalHappiness = this.workers.reduce((sum, worker) => sum + worker.happiness, 0);
-        return totalHappiness / this.workers.length || 0;
+        return this.workers.length > 0 ? totalHappiness / this.workers.length : 0;
     }
     checkVillageEconomy() {
         const minimumGold = 110;
@@ -617,6 +642,9 @@ class Villages {
 
             if (req.resources) {
                 resourcesIsOk = req.resources.some(val => this.resources.find(res => res.type === val));
+                if (this.owner) {
+                    resourcesIsOk = req.resources.some(val => this.resources.find(res => res.type === val && res.discovered));
+                }
             }
             if (req.building) {
                 buildingIsOk = req.building.every(val => {
@@ -675,7 +703,7 @@ class Villages {
                 this.constructionSite = [];
                 if (this.owner) {
                     displayConstructionQueue(this, `#constructionQueue-list`);
-                    const unemployeds = this.workers.filter(worker => worker.type === "peasant" || !worker.buildingID );
+                    const unemployeds = this.workers.filter(worker => !worker.workPlaceType && !worker.buildingID );
                     displayWorkers(unemployeds, this, `#new-workers-box`);
                     amenagementsBuilding(existingBuilding);
                 }
@@ -697,7 +725,7 @@ class Villages {
                 if (this.owner) {
                     displayConstructionQueue(this, `#constructionQueue-list`);
                     displayVillageAmenagements(this.id, this.amenagements.length);
-                    const unemployeds = this.workers.filter(worker => worker.type === "peasant" || !worker.buildingID );
+                    const unemployeds = this.workers.filter(worker => !worker.workPlaceType && !worker.buildingID );
                     displayWorkers(unemployeds, this, `#new-workers-box`);
                     if (this.amenagements.length <= 3 || nextBuilding.type === "market" || nextBuilding.type === "port") {
                         showTabsBtn(this);

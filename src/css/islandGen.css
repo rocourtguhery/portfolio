@@ -21,9 +21,9 @@
 .island-resource{
     width: 31px;
     height: 31px;
-    z-index: 10;
     background-repeat: no-repeat !important;
     background-size: contain !important;
+    z-index: 5;
 }
 .island-name{
     position: absolute;
@@ -49,24 +49,83 @@
     font-weight: bold;
 }
 .ress-icon{
-    width: 100%;
-    height: 100%;
-    background-repeat: no-repeat;
-    background-size: contain;
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    background-position: center !important;
+    background-size: contain !important;
+    bottom: 0px;
+    right: 0px;
 }
 .ress-name{
     display: none;
+    position: absolute;
+    width: max-content;
+    bottom: -0.5px;
+    left: 25px;
+    background: #fff;
+    border: 1px solid #777;
+    border-radius: 15px;
+    padding: 0px 5px;
+    z-index: 10;
+    font-size: 10px;
+    text-transform: capitalize;
+    font-weight: 400;
+    border-top-left-radius: unset;
+    border-bottom-left-radius: unset;
+    border-left-color: #fff;
 }
 .ress-info{
     display: none;
     position: absolute;
-    width: 50px;
-    height: 50px;
-    background: #777;
-    border-radius: 10px;
+    width: 28px;
+    height: 28px;
+    background: #fff;
+    border: 1px solid #777;
+    border-radius: 50%;
+    top: -100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-bottom-right-radius: unset;
+    z-index: 10;
 }
-.insland-resource:hover ~ .ressinfo{
+
+.island-resource.silver .ress-info .icon-silver{
+    filter: drop-shadow(2px 3px 2px black);
+}
+.island-resource.copper .ress-icon{
+    width: 24px;
+    height: 24px;
+}
+.island-resource.cereals .ress-icon,
+.island-resource.orchards .ress-icon,
+.island-resource.banana .ress-icon,
+.island-resource.cacao .ress-icon,
+.island-resource.silver .ress-icon,
+.island-resource.gold .ress-icon{
+    right: 4px;
+    left: unset;
+}
+.island-resource.iron .ress-icon,
+.island-resource.coffee .ress-icon{
+    right: -3px;
+}
+
+.island-resource:hover,
+.island-resource:hover .ress-name,
+.island-resource:hover .ress-info{
     display: block;
+    cursor: pointer !important;
+    z-index: 250;
+}
+.island-resource.copper:hover{
+    filter: unset !important;
+}
+.island-resource.coal:hover{
+    filter: unset !important;
+}
+.island-resource.wool:first-child:hover .ress-info{
+    transform: rotate(45deg);
 }
 
 @keyframes sparkle {
@@ -318,7 +377,10 @@
     top: 20px;
     left: 60px;
 }
-
+.mapCase.est{
+    flex-direction: column;
+    -webkit-flex-direction: column;
+}
 /* OUEST ---- */
 .mapCase.ouest .island-resource{
 }
@@ -362,12 +424,28 @@
 
 
 /* MOUNTAIN ---- */
-.mapCase.mountain .iron{
-    transform: translate(2px, 10px);
+.mapCase.mountain .iron:first-child{
+    position:absolute;
+    top: 10px;
+    left: 5px;
     filter: contrast(1.7) brightness(1.2) grayscale(0.5) drop-shadow(3px 1px 1px #000);
 }
-.mapCase.mountain .silver{
-    transform: translate(18px, 7px);
+.mapCase.mountain .iron:last-child{
+    position:absolute;
+    top: 30px;
+    left: 40px;
+    filter: contrast(1.7) brightness(1.2) grayscale(0.5) drop-shadow(3px 1px 1px #000);
+}
+.mapCase.mountain .silver:first-child{
+    position:absolute;
+    top: 10px;
+    left: 10px;
+    filter: contrast(1.1) drop-shadow(-2px 3px 1px black);
+}
+.mapCase.mountain .silver:last-child{
+    position:absolute;
+    top: 25px;
+    left: 15px;
     filter: contrast(1.1) drop-shadow(-2px 3px 1px black);
 }
 .mapCase.mountain .gold{
@@ -426,16 +504,38 @@
 }
 
 /* HILL ---- */
-.mapCase.hill .copper{
-    transform: translate(15px, 0px);
+.mapCase.hill .copper:first-child{
+    position: absolute;
+    left: 5px;
+    top: 0px;
     filter: contrast(2.7) brightness(1.2)  drop-shadow(-1px 3px 1px #000);
 }
-.mapCase.hill .wool{
-    transform: translate(28px, -6px) rotateZ(-45deg);
+.mapCase.hill .copper:last-child{
+    position: absolute;
+    left: 5px;
+    top: 20px;
+    filter: contrast(2.7) brightness(1.2)  drop-shadow(-1px 3px 1px #000);
 }
-.mapCase.hill .coal{
-    transform: translate(0px, 0px);
-    filter: contrast(1.9) brightness(1.1) drop-shadow(-1px 1px 1px #222);
+.mapCase.hill .wool:first-child{
+    position: absolute;
+    right: 0px;
+    transform: rotateZ(-45deg);
+}
+.mapCase.hill .wool:last-child{
+    position: absolute;
+    bottom: 5px;
+    right: 0px;
+}
+.mapCase.hill .coal:first-child{
+    position: absolute;
+    top: 0;
+    left: 0;
+    filter: contrast(1.5) brightness(0.4) drop-shadow(1px 3px 1px #976824);
+}
+.mapCase.hill .coal:last-child{
+    top: 40px;
+    left: 10px;
+    filter: contrast(1.5) brightness(0.4) drop-shadow(1px 3px 1px #976824);
 }
 
 /* OASIS ---- */
@@ -716,9 +816,6 @@
 .mapCase .vine, .vine{
     background: url("../assets/images/vine-2.png");
 }
-.vine-icon{
-    background: url("../assets/images/vine-icon.png");
-}
 .mapCase .sugar_cane, .sugar_cane{
     background: url("../assets/images/sugar_cane.png");
 }
@@ -753,4 +850,71 @@
 }
 .mapCase .meat, .meat{
     background: url("../assets/images/meat.png");
+}
+
+.island-resource .icon-fish{
+
+}
+.island-resource .icon-wool{
+
+}
+.island-resource .icon-coffee{
+
+}
+.island-resource .icon-meat{
+
+}
+.island-resource .icon-orchards{
+
+}
+.island-resource .icon-gold{
+
+}
+.island-resource .icon-cereals{
+
+}
+.island-resource .icon-vine{
+
+}
+.island-resource .icon-tobacco{
+
+}
+.island-resource .icon-cacao{
+
+}
+.island-resource .icon-stone{
+
+}
+.island-resource .icon-iron{
+
+}
+.island-resource .icon-gems_purple{
+
+}
+.island-resource .icon-gems_green{
+
+}
+.island-resource .icon-gems_blue{
+
+}
+.island-resource .icon-silver{
+
+}
+.island-resource .icon-copper{
+
+}
+.island-resource .icon-coal{
+
+}
+.island-resource .icon-cotton{
+
+}
+.island-resource .icon-banana{
+
+}
+.island-resource .icon-sugar_cane{
+
+}
+.island-resource .icon-wood{
+
 }

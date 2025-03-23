@@ -1,0 +1,642 @@
+.market-view .village-market-header{
+    width: calc(100% - (100% / 3) - 10px);
+    height: 145px;
+    border-radius: 3px;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+}
+.market-view .village-needs,
+.market-view .market-can-sell{
+    position: relative;
+    display: flex;
+    gap: 25px 5px;
+    align-items: center;
+    align-content: baseline;
+    flex-wrap: wrap;
+    width: fit-content;
+    max-width: calc(100% / 2);
+    padding: 0px 10px 10px;
+    font-size: 9px;
+    font-weight: 500;
+}
+.market-view .village-needs .info-text,
+.market-view .market-can-sell .info-text{
+    top: -30px;
+}
+.market-can-sell::before{
+    content: '';
+    border-left: 2px solid #5557;
+    position: absolute;
+    height: 100%;
+    left: -1px;
+    bottom: 0px;
+}
+.market-view .prod-need,
+.village-trade-agreement .prod-canSell,
+.market-view .prod-canSell{
+    position: relative;
+    width: 34px;
+    height: 48px;
+    box-shadow: inset 2px 0px 4px 1px #777;
+    border-radius: 3px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #bea687;
+}
+
+.market-view .prod-need,
+.village-trade-agreement .prod-canSell,
+.market-view .prod-canSell{
+    position: relative;
+    width: 24px;
+    height: 18px;
+    box-shadow: inset 2px 0px 4px 1px #777;
+    border-radius: 3px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #bea687;
+}
+.market-view .prod-canSell{
+    /* height: 34px; */
+}
+.market-view .need-icon,
+.village-trade-agreement .canSell-icon,
+.market-view .canSell-icon{
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    bottom: 17px;
+    background-size: contain !important;
+    background-position: center !important;
+}
+.market-view .village-needs .need-icon,
+.market-view .market-can-sell .canSell-icon{
+    width: 20px;
+    height: 20px;
+}
+.market-view .canSell-icon{
+    /* bottom: unset; */
+}
+.market-view .need-quantity,
+.market-view .canSell-quantity{
+    position: absolute;
+    background: #555;
+    color: #fff;
+    letter-spacing: 1px;
+    text-align: center;
+    /* padding: 0px 7px; */
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    box-shadow: inset 4px 0px 4px 0px #222;
+}
+
+.market-view .need-cotton,
+.village-trade-agreement .canSell-cotton,
+.market-view .canSell-cotton {
+    background: no-repeat url("../assets/images/cotton-icon-1.png");
+}
+.market-view .need-coal,
+.village-trade-agreement .canSell-coal,
+.market-view .canSell-coal{
+    background: no-repeat url("../assets/images/coal-icon-1.png");
+}
+.village-needs .need-coal,
+.market-can-sell .canSell-coal{
+    width: 22px;
+    height: 22px;
+    bottom: 13px;
+}
+.market-view .need-iron,
+.village-trade-agreement .canSell-iron,
+.market-view .canSell-iron{
+    background: no-repeat url("../assets/images/iron-icon.png");
+}
+.village-needs .need-iron,
+.market-can-sell .canSell-iron{
+    width: 22px;
+    height: 22px;
+    bottom: 13px;
+}
+.market-view .need-silver,
+.village-trade-agreement .canSell-silver,
+.market-view .canSell-silver{
+    background: no-repeat url("../assets/images/silver-bar-icon-2.png");
+}
+.market-view .need-gold,
+.village-trade-agreement .canSell-gold,
+.market-view .canSell-gold{
+    background: no-repeat url("../assets/images/gold-bar-icon.png");
+}
+
+.market-view .need-gems_purple,
+.village-trade-agreement .canSell-gems_purple,
+.market-view .canSell-gems_purple{
+    background: no-repeat url("../assets/images/gems-purple-icon.png");
+}
+.market-view .need-gems_green,
+.village-trade-agreement .canSell-gems_green,
+.market-view .canSell-gems_green{
+    background: no-repeat url("../assets/images/gems-green-icon-3.png");
+}
+.market-view .need-gems_blue,
+.village-trade-agreement .canSell-gems_blue,
+.market-view .canSell-gems_blue{
+    background: no-repeat url("../assets/images/gems-blue-icon.png");
+}
+
+.market-view .need-wood,
+.village-trade-agreement .canSell-wood,
+.market-view .canSell-wood{
+    background: no-repeat url("../assets/images/wood-icon-7.png");
+}
+.village-needs .need-wood,
+.market-can-sell .canSell-wood{
+    bottom: 14px;
+}
+.market-view .need-stone,
+.village-trade-agreement .canSell-stone,
+.market-view .canSell-stone{
+    background: no-repeat url("../assets/images/stone-icon-5.png");
+}
+
+.village-trade-agreement .canSell-stone{
+    filter: drop-shadow(0px 2px 3px black);
+}
+.market-view .need-tools,
+.village-trade-agreement .canSell-tools,
+.market-view .canSell-tools{
+    background: no-repeat url("../assets/images/tools-icon-1.png");
+}
+.market-view .need-copper,
+.village-trade-agreement .canSell-copper,
+.market-view .canSell-copper{
+    background: no-repeat url("../assets/images/copper-4.png");
+}
+.market-view .need-cereals,
+.village-trade-agreement .canSell-cereals,
+.market-view .canSell-cereals{
+    background: no-repeat url("../assets/images/cereals-flour-icon.png");
+}
+.village-needs .need-cereals,
+.market-can-sell .canSell-cereals{
+    width: 22px;
+    height: 22px;
+    bottom: 14px;
+}
+.market-view .need-fabric,
+.village-trade-agreement .canSell-fabric,
+.market-view .canSell-fabric{
+    background: no-repeat url("../assets/images/fabric-icon-3.png");
+}
+.market-view .need-coffee,
+.village-trade-agreement .canSell-coffee,
+.market-view .canSell-coffee{
+    background: no-repeat url("../assets/images/coffee-bag-icon-8.png");
+}
+.village-needs .need-coffee,
+.market-can-sell .canSell-coffee{
+    width: 20px;
+    height: 20px;
+    bottom: 15px;
+}
+.market-view .need-cacao,
+.village-trade-agreement .canSell-cacao,
+.market-view .canSell-cacao{
+    background: no-repeat url("../assets/images/cacao-icon-3.png");
+}
+.market-view .need-tobacco,
+.village-trade-agreement .canSell-tobacco,
+.market-view .canSell-tobacco{
+    background: no-repeat url("../assets/images/tobacco-icon.png");
+}
+.market-view .need-sugar_cane,
+.village-trade-agreement .canSell-sugar_cane,
+.market-view .canSell-sugar_cane{
+    background: no-repeat url("../assets/images/sugar_cane-icon-1.png");
+}
+.market-view .need-vine,
+.village-trade-agreement .canSell-vine,
+.market-view .canSell-vine{
+    background: no-repeat url("../assets/images/vine-icon.png");
+}
+.market-view .need-liquor,
+.village-trade-agreement .canSell-liquor,
+.market-view .canSell-liquor{
+    background: no-repeat url("../assets/images/liquor.png");
+}
+.market-view .need-cigars,
+.village-trade-agreement .canSell-cigars,
+.market-view .canSell-cigars{
+    background: no-repeat url("../assets/images/cigar-icon-1.png");
+}
+.market-view .need-chocolate,
+.village-trade-agreement .canSell-chocolate,
+.market-view .canSell-chocolate{
+    background: no-repeat url("../assets/images/chocolate-icon-4.png");
+    filter: brightness(1.2) contrast(1.2);
+}
+.market-view .need-ground_coffee,
+.village-trade-agreement .canSell-ground_coffee,
+.market-view .canSell-ground_coffee{
+    background: no-repeat url("../assets/images/coffee-powder-icon-3.png");
+}
+.village-needs .need-ground_coffee,
+.market-can-sell .canSell-ground_coffee{
+    bottom: 11px;
+    width: 22px;
+    height: 22px;
+}
+.market-view .need-jewelry,
+.village-trade-agreement .canSell-jewelry,
+.market-view .canSell-jewelry{
+    background: no-repeat url("../assets/images/jewelry-icon-1.png");
+}
+.market-view .need-clothes,
+.village-trade-agreement .canSell-clothes,
+.market-view .canSell-clothes{
+    background: no-repeat url("../assets/images/clothes-icon-1.png");
+}
+.village-needs .need-clothes,
+.market-can-sell .canSell-clothes{
+    bottom: 12px;
+    width: 20px;
+    height: 20px;
+}
+.market-view .need-wool,
+.village-trade-agreement .canSell-wool,
+.market-view .canSell-wool{
+    background: no-repeat url("../assets/images/wool-icon.png");
+}
+.market-view .need-lumber,
+.village-trade-agreement .canSell-lumber,
+.market-view .canSell-lumber{
+    background: no-repeat url("../assets/images/lumber-icon.png");
+}
+.market-view .need-banana,
+.village-trade-agreement .canSell-banana,
+.market-view .canSell-banana{
+    background: no-repeat url("../assets/images/banana-icon.png");
+}
+.village-needs .need-banana,
+.market-can-sell .canSell-banana{
+    bottom: 14px;
+}
+.market-view .need-orchards,
+.village-trade-agreement .canSell-orchards,
+.market-view .canSell-orchards{
+    background: no-repeat url("../assets/images/orchards-icon-1.png");
+}
+.market-view .need-meat,
+.village-trade-agreement .canSell-meat,
+.market-view .canSell-meat{
+    background: no-repeat url("../assets/images/meat-icon.png");
+}
+.village-needs .need-meat,
+.market-can-sell .canSell-meat{
+    bottom: 14px;
+}
+.market-view .need-fish,
+.village-trade-agreement .canSell-fish,
+.market-view .canSell-fish{
+    background: no-repeat url("../assets/images/fish-icon-2.png");
+}
+.village-needs .need-fish,
+.market-can-sell .canSell-fish{
+    bottom: 14px;
+}
+.market-view .need-food,
+.village-trade-agreement .canSell-food,
+.market-view .canSell-food{
+    background: no-repeat url("../assets/images/canned-food-icon.png");
+}
+.village-needs .need-food,
+.market-can-sell .canSell-food{
+    bottom: 15px;
+}
+.village-nearby-market{
+    width: calc((100% / 3) - 10px);
+    height: 100%;
+    padding-bottom: 25px;
+}
+.nearby-market-list,
+.market-view .market-village-name{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.nearby-market-list{
+    height: 100%;
+    overflow-y: overlay;
+    padding: 7px 12px 5px 4px;
+}
+.market-view .nearbyMarket-container{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    padding: 10px;
+    border-radius: 3px;
+    box-shadow: 0px 1px 4px #555, 0 0 125px #8f5922 inset;
+    background: #fffef0;
+    background-size: contain;
+    background-image: url(data:image/png;base64,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);
+}
+.market-view .market-village-name{
+    line-height: 1.2;
+    font-size: 14px;
+    font-weight: 600;
+    width: 100%;
+    margin-bottom: 7px;
+    gap: 0px;
+}
+.market-view .market-island-name{
+    font-size: 10px;
+    font-weight: 400;
+}
+.market-exchange{
+    width: 80%;
+}
+.market-exchange-option{
+    position: absolute;
+    top: 20%;
+    right: 15px;
+    transform: translateY(-50%);
+}
+.market-exchange-title{
+    width: 100%;
+}
+.trade-agreement{
+    width: 24px;
+    height: 24px;
+}
+.trade-agreement-btn{
+    background: no-repeat url(../assets/images/map-size-number-box.png) 0px 0px / 24px 24px, 
+    no-repeat url(../assets/images/new-map.png) center center / 18px 18px !important;
+}
+.trade-agreement:hover{
+    transform: scale(1.2);
+    cursor: pointer;
+}
+.trade-agreement{
+
+}
+.this-market-buy,
+.this-market-sells{
+    display: flex;
+    gap: 2px;
+    align-items: center;
+    align-content: baseline;
+    flex-wrap: wrap;
+    padding: 2px;
+    font-size: 10px;
+    font-weight: 500;
+}
+.market-view .this-market-buy .prod-need,
+.village-trade-agreement .prod-canSell,
+.market-view .this-market-sells .prod-canSell{
+    width: 24px;
+    height: 24px;
+    box-shadow: inset 1px -1px 2px 1px #777;
+    background: #fffef0;
+}
+
+.market-view .this-market-buy .need-icon,
+.village-trade-agreement .canSell-icon,
+.market-view .this-market-sells .canSell-icon{
+    width: 16px;
+    height: 16px;
+    bottom: unset;
+}
+.market-view .prod-need:hover .info-text,
+.village-trade-agreement .prod-canSell:hover .info-text,
+.market-view .prod-canSell:hover .info-text{
+    display: block;
+    font-size: 10px;
+}
+.village-trade-agreement{
+    position: absolute;
+    top: 50px;
+    left: 50%; 
+    width: calc(100% / 2);
+    height: calc(100% - 100px);
+    transform: translateX(-50%);
+    padding: 50px;
+    align-content: baseline !important;
+    background: no-repeat url(../assets/images/parchemin_2.png);
+    background-size: 100% 100%;
+}
+.trade-agreement-header{
+    position: relative;
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;
+}
+.close-trade-agreement{
+    right: 0;
+    top: -50px;
+    width: 10px;
+    height: 10px;
+}
+.trade-agreement-terms{
+    position: relative;
+    height: calc(100% - 30px);
+    padding: 10px 0px 10px;
+    width: 300px;
+    overflow-y: overlay;
+}
+.trade-agreement-terms p b{
+    text-transform: uppercase;
+}
+.terms-and-conditions{
+    display: flex    ;
+    flex-direction: column;
+    gap: 2px;
+}
+.trade-agreement-terms .no-resources{
+    position: relative;
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+    box-shadow: inset 0px 0px 4px 1px #777;
+    border-radius: 3px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #dad9cf;
+    opacity: 0.3;
+}
+
+.terms-title{
+}
+.terms-select{
+    position: relative;
+    display: inline-block !important;
+    top: 2px;
+    left: 10px;
+}
+.trade-option .terms-select{
+    left: -5px;
+}
+.trade-option li.resource:hover .info-text{
+    display: block;
+    font-size: 10px;
+}
+.select-option-container .trade-option{
+    padding: 25px 20px 0;
+}
+.tradePriority{
+
+} 
+.freeTradeAgreement{
+
+}
+.marketed-resources{
+    position: relative;
+    margin-top: 15px;
+}
+.marketed-resources .terms-title{
+    margin: 0;
+}
+.add-new-marketed-resources{
+    position: relative;
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+    box-shadow: inset 0px 0px 4px 1px #777;
+    border-radius: 3px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #dad9cf;
+}
+.close-new-marketed-resources{
+    width: 10px;
+    height: 10px;
+}
+.trade-agreement-terms .trade-tax{
+    margin-top: 15px;
+}
+.trade-agreement-terms .select-option-container{
+    height: 150px;
+    top: 25px;
+}
+.trade-agreement-terms ul,
+.trade-agreement-terms ul li{
+    display: flex;
+    list-style: none;
+    gap: 5px;
+}
+.trade-agreement-terms ul{
+    flex-wrap: wrap;
+}
+.trade-agreement-terms ul li{
+    width: fit-content;
+    padding: 0px !important;
+    margin: 0px !important;
+    list-style: none;
+}
+.village-trade-agreement .select-option-container .prod-canSell{
+    background: none;
+    box-shadow: none;
+}
+.village-trade-agreement ul.selected-marketed-resources li{
+    margin-right: 10px !important;
+}
+.village-trade-agreement .selected-marketed-resources{
+    padding: 15px 10px;
+}
+.village-trade-agreement .selected-marketed-resources .prod-canSell{
+    /* width: 32px;
+    height: 32px; */
+    background: transparent;
+    box-shadow: none;
+}
+.village-trade-agreement .selected-marketed-resources .canSell-icon{
+    /* width: 20px;
+    height: 20px; */
+}
+.village-trade-agreement .selected-marketed-resources .terms-select{
+    left: -3px;
+}
+.trade-agreement-terms p:first-child{
+    font-size: 14px;
+}
+.trade-agreement-terms .select-option-header{
+    font-size: 12px;
+}
+.save-trade-agreement{
+    position: relative;
+    bottom: 0px;
+    left: calc(100% - 55px);
+    width: 50px;
+    height: 50px;
+    font-size: 11px;
+    color: #fff;
+    padding-right: 3px;
+    padding-bottom: 3px;
+    display: flex;
+    background: no-repeat url(../assets/images/red-sceau.png);
+    background-size: contain !important;
+    justify-content: center;
+    align-items: center;
+    z-index: 50;
+}
+.save-trade-agreement:hover,
+.add-new-marketed-resources:hover{
+    transform: scale(1.1);
+    cursor: pointer;
+}
+.agreement-duration {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 7px;
+    border-radius: 5px;
+    background: #dab377;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+    position: relative;
+  }
+.agreement-duration::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 0;
+    background: no-repeat url(../assets/images/range-cursor.png);
+    background-size: 20px 20px;
+    cursor: pointer;
+    position: relative;
+    top: -7px;
+}
+.agreement-duration::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
+    border: 0;
+    background: no-repeat url(../assets/images/range-cursor.png);
+    background-size: 20px 20px;
+    cursor: pointer;
+    position: relative;
+    top: -7px;
+}
+.agreement-duration:hover {
+    opacity: 1;
+}
+input[type=range] ~ datalist {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+input[type=range] ~ datalist option {
+    display: block;
+    background: 0 0;
+    padding: 0;
+    text-align: center;
+}

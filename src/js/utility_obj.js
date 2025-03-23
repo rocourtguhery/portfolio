@@ -258,6 +258,8 @@ const workshopProduction = {
         { resources: { iron: 10, coal: 8, wood: 4, tools: 4 }, minLevel: 3, result: { type: "artillery", quantity: 11.7 }},
     ],
     "brewery": [ // sugar_cane: 20, vine: 20, liquor: 30, tools: 15
+        { resources: { vine: 2}, minLevel: 1, result: { type: "liquor", quantity: 2.5 }},
+        { resources: { sugar_cane: 2}, minLevel: 1, result: { type: "liquor", quantity: 2.5 }},
         { resources: { sugar_cane: 2, vine: 2}, minLevel: 1, result: { type: "liquor", quantity: 3.8 }},
         { resources: { sugar_cane: 2, vine: 2, tools: 1 }, minLevel: 2, result: { type: "liquor", quantity: 4.3 }},
         { resources: { sugar_cane: 1, vine: 1, tools: 2}, minLevel: 2, result: { type: "liquor", quantity: 4.3 }},
@@ -435,3 +437,4 @@ const resourcesUnavailable = [ "gems_purple","gems_green","gems_blue","gold","si
 const agriFoodResources = [ "banana","orchards","meat","cereals","fish" ];
 const strategicResources = [ "iron","copper","coal","stone","wood","cotton","wool" ];
 const luxuryResources = [ "gems_purple","gems_green","gems_blue","gold","silver","sugar_cane","vine","tobacco","coffee","cacao"];
+const manufacturedResources = ["lumber", "tools", "fabric", "clothes", "liquor", "cigars", "chocolate", "ground_coffee", "jewelry"];

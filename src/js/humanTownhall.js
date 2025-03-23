@@ -36,7 +36,7 @@ $(document).ready(function () {
         $(this).find(".info-text").fadeOut(100);
     }); */
     $(document).on("click",`.buildings-box-btn`, function() {
-        if($(this).hasClass("active") || $(this).hasClass("market-btn") || $(this).hasClass("port-btn") ) return;
+        if($(this).hasClass("active")) return;
         $(".buildings-box-btn").animate({
             backgroundPositionX: "20px"
         },50 ).removeClass("active");
@@ -53,7 +53,7 @@ $(document).ready(function () {
         if (activeWorker > 0) {
             $(this).removeClass("disabled");
             activeWorker--;
-            workerLeft += 80;
+            workerLeft += 81;
             $(`#new-workers-box .worker`).removeClass("first-free-worker");
             $(`#new-workers-box .worker`).eq(activeWorker).addClass("first-free-worker");
             $("#new-workers-box").animate({
@@ -72,7 +72,7 @@ $(document).ready(function () {
         if (activeWorker < $(`#new-workers-box .worker`).length - 3 ) {
             $(this).removeClass("disabled");
             activeWorker++;
-            workerLeft -= 80;
+            workerLeft -= 81;
             $(`#new-workers-box .worker`).removeClass("first-free-worker");
             $(`#new-workers-box .worker`).eq(activeWorker).addClass("first-free-worker");
             $("#new-workers-box").animate({
@@ -266,7 +266,7 @@ function displayTownhall(village) {
     $("#buildings-box").append(body);
 
     const resources = village.resources.filter(res => res.discovered);
-    const unemployeds = village.workers.filter(worker => worker.type === "peasant" || !worker.buildingID );
+    const unemployeds = village.workers.filter(worker => !worker.workPlaceType && !worker.buildingID );
 
     displayResources(village, resources);
     displayWorkers(unemployeds, village, `#new-workers-box`);
