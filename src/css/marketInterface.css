@@ -101,6 +101,10 @@
 .market-view .canSell-cotton {
     background: no-repeat url("../assets/images/cotton-icon-1.png");
 }
+.village-needs .need-cotton,
+.market-can-sell .canSell-cotton{
+    bottom: 13px;
+}
 .market-view .need-coal,
 .village-trade-agreement .canSell-coal,
 .market-view .canSell-coal{
@@ -164,7 +168,10 @@
 .market-view .canSell-stone{
     background: no-repeat url("../assets/images/stone-icon-5.png");
 }
-
+.village-needs .need-stone,
+.market-can-sell .canSell-stone{
+    bottom: 13px;
+}
 .village-trade-agreement .canSell-stone{
     filter: drop-shadow(0px 2px 3px black);
 }
@@ -219,6 +226,10 @@
 .village-trade-agreement .canSell-sugar_cane,
 .market-view .canSell-sugar_cane{
     background: no-repeat url("../assets/images/sugar_cane-icon-1.png");
+}
+.village-needs .need-sugar_cane,
+.market-can-sell .canSell-sugar_cane{
+    bottom: 13px;
 }
 .market-view .need-vine,
 .village-trade-agreement .canSell-vine,
@@ -383,8 +394,9 @@
     transform: scale(1.2);
     cursor: pointer;
 }
-.trade-agreement{
-
+.trade-agreement.trade-taxe{
+    font-size: 12px;
+    display: inline;
 }
 .this-market-buy,
 .this-market-sells{
@@ -445,9 +457,10 @@
 }
 .trade-agreement-terms{
     position: relative;
-    height: calc(100% - 30px);
-    padding: 10px 0px 10px;
-    width: 300px;
+    left: 15px;
+    height: calc(100% - 50px);
+    width: 310px;
+    padding: 10px 15px 10px 0px;
     overflow-y: overlay;
 }
 .trade-agreement-terms p b{
@@ -572,7 +585,7 @@
 }
 .save-trade-agreement{
     position: relative;
-    bottom: 0px;
+    top: 10%;
     left: calc(100% - 55px);
     width: 50px;
     height: 50px;
@@ -591,6 +604,9 @@
 .add-new-marketed-resources:hover{
     transform: scale(1.1);
     cursor: pointer;
+}
+.select-agreement-duration{
+    margin: 20px 0;
 }
 .agreement-duration {
     -webkit-appearance: none;

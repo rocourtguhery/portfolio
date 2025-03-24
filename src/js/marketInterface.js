@@ -52,23 +52,18 @@ $(document).on("click",`.freeTradeAgreement`, function() {
     if (checked) {
         parent.attr("data-freeTrade", true);
         parent.attr(`data-traderesources`, null );
-        parent.find(`.selected-marketed-resources .resource`).remove();
-        parent.find(`.selected-marketed-resources .li-add-resources`).fadeOut(10);
+        parent.find(`.selected-marketed-resources`).remove();
         parent.find(`.marketed-resources`).fadeOut(10);
     }else{
         parent.attr("data-freeTrade", false);
-        parent.find(`.selected-marketed-resources .li-add-resources`).fadeIn(10);
         parent.find(`.marketed-resources`).fadeIn(10);
+        const villageId = $this.parents(`.village-trade-agreement`).attr(`data-villageid`);
+        const tradeVillageId = $this.parents(`.village-trade-agreement`).attr(`data-tradevillageid`);
+        const marketedResourcesDiv = document.querySelector(`.village-${villageId} .village-trade-agreement .marketed-resources`);
+        tradeAgreementResources(villageId, tradeVillageId, marketedResourcesDiv);
     }
     const selector = $this.parents(`.village-trade-agreement`);
     tradeAgreementCost(selector);
-});
-$(document).on("click",`.add-new-marketed-resources`, function() {
-    const $this = $(this);
-    const parent = $this.parents(`.trade-agreement-terms`);
-    const villageId = $this.attr("data-villageid");
-    const tradeVillageId = $this.attr("data-tradevillageid");
-    tradeAgreementResources(villageId, tradeVillageId, parent);
 });
 $(document).on("click",`.close-new-marketed-resources`, function() {
     const $this = $(this);
@@ -92,14 +87,12 @@ $(document).on("click",`.resourceSelect`, function() {
         const li = $this.parents(`li`);
         const selector = $this.parents(`.village-trade-agreement`);
         tradeAgreementCost(selector);
-        parent.find(`.marketed-resources ul.selected-marketed-resources .li-add-resources`).before(`<li id="${traderesources.id}" class="resource">${li.html()}</li>`);
     }else{
         parentData = parentData.filter(data => data.type !== traderesources.type);
         parent.attr("data-traderesources", JSON.stringify(parentData));
         $this.removeAttr('checked');
         const selector = $this.parents(`.village-trade-agreement`);
         tradeAgreementCost(selector);
-        const li = parent.find(`.marketed-resources li#${traderesources.id}`).fadeOut(50).remove();
     }
 });
 $(document).on("click",`.village-trade-agreement .save-trade-agreement`, function() {
@@ -107,15 +100,17 @@ $(document).on("click",`.village-trade-agreement .save-trade-agreement`, functio
     const parentAgreement = $this.parents(`.village-trade-agreement`);
     const parentTerms = $this.parents(`.trade-agreement-terms`);
     const {villageid, tradevillageid} = parentAgreement.data();
-    const agreementData = JSON.parse(parentTerms.attr(`data-traderesources`));
+    let agreementData = parentTerms.attr(`data-traderesources`); //JSON.parse();
+    agreementData = agreementData? JSON.parse(agreementData) : null;
     const tradePriority = parentTerms.attr(`data-tradePriority`);
     const freeTrade = parentTerms.attr(`data-freeTrade`);
+    const agreementDuration = parentTerms.attr(`data-agreementDuration`) || 90;
     const taxAmount = parentTerms.attr(`data-taxAmount`);
     const tradeVillage = villages.find( village => village.id === tradevillageid);
     const village = villages.find( village => village.id === villageid);
 
-    const existingImportAgreement = village.tradeAgreement.find(a => a.tradeVillageid === tradevillageid);
-    const existingExportAgreement = tradeVillage.tradeAgreement.find(a => a.tradeVillageid === villageid);
+    const existingImportAgreement = village.tradeAgreement.find(agreement => agreement.id === tradevillageid);
+    const existingExportAgreement = tradeVillage.tradeAgreement.find(agreement => agreement.id === villageid);
 
     const selector = $this.parents(`.village-trade-agreement`);
     tradeAgreementCost(selector);
@@ -124,14 +119,16 @@ $(document).on("click",`.village-trade-agreement .save-trade-agreement`, functio
         existingImportAgreement.tradePriority = tradePriority;
         existingImportAgreement.freeTrade = freeTrade;
         existingImportAgreement.taxAmount = taxAmount;
+        existingExportAgreement.expiration = Date.now() + agreementDuration * 60000;
         existingImportAgreement.resourcesToImport = (agreementData && agreementData.length > 0)? agreementData : null;
     }else{
         const importationAgreement = {
-            tradevillageid,
+            id: tradevillageid,
             tradePriority,
             freeTrade,
             taxAmount,
-            resourcesToImport : (agreementData && agreementData.length > 0)? agreementData : null
+            resourcesToImport : (agreementData && agreementData.length > 0)? agreementData : null,
+            expiration: Date.now() + agreementDuration * 60000,
         }
         village.tradeAgreement.push(importationAgreement);
     }
@@ -139,14 +136,16 @@ $(document).on("click",`.village-trade-agreement .save-trade-agreement`, functio
         existingExportAgreement.tradePriority = tradePriority;
         existingExportAgreement.freeTrade = freeTrade;
         existingExportAgreement.taxAmount = taxAmount;
+        existingExportAgreement.expiration = Date.now() + agreementDuration * 60000;
         existingExportAgreement.resourcesToExport =(agreementData && agreementData.length > 0)? agreementData : null;
     }else{
         const exportationAgreement = {
-            tradevillageid : villageid,
+            id : villageid,
             tradePriority,
             freeTrade,
             taxAmount,
-            resourcesToExport : (agreementData && agreementData.length > 0)? agreementData : null
+            resourcesToExport : (agreementData && agreementData.length > 0)? agreementData : null,
+            expiration: Date.now() + agreementDuration * 60000,
         }
         tradeVillage.tradeAgreement.push(exportationAgreement);
     }
@@ -264,12 +263,14 @@ function displayNearbyMarket(village){
                 <div class="this-market-sells"></div>
             </div>`;
 
+            
+        const tradeAgreement = marketVillage.tradeAgreement.find(agreement => agreement.id === village.id);
+        console.log(`tradeAgreement: ${JSON.stringify(tradeAgreement)}`);
         const exchangeOptionDiv = document.createElement('div');
         exchangeOptionDiv.className = `market-exchange-option`;
-        const tradeAgreement = marketVillage.tradeAgreement.find(agreement => agreement.id === village.id);
         
         exchangeOptionDiv.innerHTML = (tradeAgreement)? 
-            `<div class="trade-agreement trade-taxe">${tradeAgreement.tax}</div>` :
+            `<div class="trade-agreement trade-taxe"><b>${tradeAgreement.taxAmount * 100}% taxes</b></div>` :
             `<div class="trade-agreement trade-agreement-btn" data-villageid="${village.id}" data-tradevillageid='${marketVillage.id}'></div>`;
         
         containerDiv.appendChild(exchangeOptionDiv);
@@ -345,23 +346,18 @@ function tradeAgreement(villageId, tradeVillageId, selector){
             </span>`;
         tradeAgreementDiv.appendChild(termsConditionsDiv);
 
-        const addResources = (tradeMarket.marketCanSell.length > 0) ? 
-            `<div class="add-new-marketed-resources" data-villageid="${villageId}" data-tradevillageid="${tradeVillageId}"><i class="fa fa-plus"></i></div>`:
-            `<div class="no-resources"><i class="fa fa-plus"></i></div>`;
-
         const marketedResourcesDiv = document.createElement('div');
         marketedResourcesDiv.className = `marketed-resources`;
-        marketedResourcesDiv.innerHTML = `<h6 class="terms-title">Ressources :</h6>
-            <ul class="selected-marketed-resources">
-                <li class="li-add-resources">${addResources}</li>
-            </ul>`;
+        marketedResourcesDiv.innerHTML = `<h6 class="terms-title">Ressources :</h6>`;
+        tradeAgreementResources(villageId, tradeVillageId, marketedResourcesDiv);
+
         tradeAgreementDiv.appendChild(marketedResourcesDiv);
 
 
         const durationDiv = document.createElement('div');
         durationDiv.className = `select-agreement-duration`;
-        durationDiv.innerHTML = `<label>Expiration :</label><br/>
-            <input type="range" name="durationSelection" min="90" max="360" value="180" step="90" class="agreement-duration" list="agreementDuration" />
+        durationDiv.innerHTML = `<label>Étendue sur :</label><br/>
+            <input type="range" name="durationSelection" min="90" max="360" value="90" step="90" class="agreement-duration" list="agreementDuration" />
             <datalist id="agreementDuration">
                 <option value="90" label="3 mois"></option>
                 <option value="180" label="6 mois"></option>
@@ -385,52 +381,44 @@ function tradeAgreement(villageId, tradeVillageId, selector){
         saveBtnDiv.className = `save-trade-agreement`;
         saveBtnDiv.innerHTML = `Save`;
         tradeAgreementDiv.appendChild(saveBtnDiv);
-        
 
     selector.appendChild(tradeAgreementDiv);
+
 }
 function tradeAgreementResources(villageId, tradeVillageId, selector){
-    const marketedResources = document.querySelector(`.village-${villageId} .trade-agreement-terms .marketed-resources`);
-    if (!marketedResources) return;
 
     const tradeVillage = villages.find( village => village.id === tradeVillageId);
     const tradeMarket = tradeVillage.amenagements.find(amenagement => amenagement.type === "market");
 
-    if (!tradeMarket || tradeMarket.marketCanSell.length === 0) return;
-    selector.find(`.save-trade-agreement`).fadeOut(150);
+    if (!tradeMarket || tradeMarket.marketCanSell.length === 0) {
+        const emptyDiv = document.createElement('div');
+        emptyDiv.innerHTML = `<div class="selected-marketed-resources">Vide!</div>`;
+        selector.appendChild(emptyDiv);
+        return;
+    }
     
     const village = villages.find( village => village.id === villageId);
 
-    const optionsDiv = document.createElement('div');
-    optionsDiv.className = `select-option-container`;
-    optionsDiv.innerHTML = `<div class="select-option-header">Ressources selection</div>
-        <div class="btn-close close-new-marketed-resources"></div>`;
+    const tradeOptionUL = document.createElement('ul');
+    tradeOptionUL.className = `selected-marketed-resources`;
+    const options = tradeMarket.marketCanSell;
+    options.forEach(resource => {
+        const tradeAgreement = village.tradeAgreement.find(agreement => agreement.villageid === tradeVillage.id);
+        const isSelected = tradeAgreement?.resources.find(resource => resource.type === option);
 
-        const tradeOptionDiv = document.createElement('div');
-        tradeOptionDiv.className = `trade-option`;
-            
-            const tradeOptionUL = document.createElement('ul');
-            const options = tradeMarket.marketCanSell;
-            options.forEach(resource => {
-                const tradeAgreement = village.tradeAgreement.find(agreement => agreement.villageid === tradeVillage.id);
-                const isSelected = tradeAgreement?.resources.find(resource => resource.type === option);
-
-                const tradeOptionLI = document.createElement('li');
-                tradeOptionLI.className = `resource`;
-                tradeOptionLI.innerHTML = `<div class="prod-canSell">
-                        <div class="canSell-icon canSell-${resource.type}"></div>
-                        <span  class="info-text" style="color:#333">${ressourceFrName(resource.type)||""}</span>
-                    </div>
-                    <label class="terms-select resource-select">
-                        <input class="resourceSelect" data-resource='${JSON.stringify(resource)}' ${isSelected?"checked":""} type="checkbox" name="resourceSelect">
-                        <span class="input-checked"></span>
-                    </label>`;
-                tradeOptionUL.appendChild(tradeOptionLI);
-            });
-        tradeOptionDiv.appendChild(tradeOptionUL);
-    optionsDiv.appendChild(tradeOptionDiv);
-    
-    marketedResources.append(optionsDiv);
+        const tradeOptionLI = document.createElement('li');
+        tradeOptionLI.className = `resource`;
+        tradeOptionLI.innerHTML = `<div class="prod-canSell">
+                <div class="canSell-icon canSell-${resource.type}"></div>
+                <span  class="info-text" style="color:#333">${ressourceFrName(resource.type)||""}</span>
+            </div>
+            <label class="terms-select resource-select">
+                <input class="resourceSelect" data-resource='${JSON.stringify(resource)}' ${isSelected?"checked":""} type="checkbox" name="resourceSelect">
+                <span class="input-checked"></span>
+            </label>`;
+        tradeOptionUL.appendChild(tradeOptionLI);
+    });
+    selector.appendChild(tradeOptionUL);
 }
 $(document).on("input", ".agreement-duration", function() {
     const $this = $(this);  
@@ -448,7 +436,7 @@ function tradeAgreementCost(selector){
     const tradePriority = selector.find(`.trade-agreement-terms`).attr(`data-tradePriority`);
     const freeTrade = selector.find(`.trade-agreement-terms`).attr(`data-freeTrade`);
     const traderesourcesString = selector.find(`.trade-agreement-terms`).attr(`data-traderesources`);
-    const agreementDuration = selector.find(`.trade-agreement-terms`).attr(`data-agreementDuration`);
+    const agreementDuration = selector.find(`.trade-agreement-terms`).attr(`data-agreementDuration`) || 90;
     const traderesources = traderesourcesString? JSON.parse(traderesourcesString) : [];
     const market = tradeVillage.amenagements.find(a => a.type === "market");
     const marketCanSell = market.marketCanSell || [];
@@ -456,8 +444,6 @@ function tradeAgreementCost(selector){
     const tradePriorityTax = tradePriority === true || tradePriority=== "true" ? 0.07 : 0.02;
     const freeTradeTax = freeTrade === true || freeTrade === "true" ? 0.05 : 0.01;
     const resourceTax = (marketCanSell.length / traderesources.length > 0 ? traderesources.length : 1) / 100;
-
-    const TaxTotal = Math.round(((tradePriorityTax + freeTradeTax + resourceTax) + Number.EPSILON) * 100) / 100 ;
 
     const tradePriority_factor = tradePriority === true || tradePriority === "true" ? 1.2 : 1;
     const freeTrade_factor =  freeTrade === true && tradePriority === true || freeTrade === "true" && tradePriority === "true" ? 2 :
@@ -469,6 +455,21 @@ function tradeAgreementCost(selector){
         luxuryResources: 4,
         manufacturedResources: 3
     };
+    const agreementDurationFactor = {
+        cost90 : 1,
+        cost180 : 0.95,
+        cost270 : 0.8,
+        cost360 : 0.7,
+        tax90 : 0,
+        tax180 : 0.01,
+        tax270 : 0.02,
+        tax360 : 0.03
+    }
+
+    let taxTotal = Math.round(((tradePriorityTax + freeTradeTax + resourceTax) + Number.EPSILON) * 100) / 100 ;
+
+    taxTotal = taxTotal - agreementDurationFactor[`tax${agreementDuration}`];
+
     let resourceCost = 0;
     marketCanSell.forEach(resource => {
         if (agriFoodResources.includes(resource.type)) resourceCost += traderesources.length * resourceCatValues.agriFoodResources;
@@ -476,9 +477,11 @@ function tradeAgreementCost(selector){
         if (luxuryResources.includes(resource.type)) resourceCost += traderesources.length * resourceCatValues.luxuryResources;
         if (manufacturedResources.includes(resource.type)) resourceCost += traderesources.length * resourceCatValues.manufacturedResources;
     });
-
-    const agreementCost = baseCost + (baseCost * tradePriority_factor) + (baseCost * freeTrade_factor) + Math.max((resourceCost * 10), 100);
-    selector.find(`.trade-agreement-terms`).attr(`data-taxAmount`, agreementCost);
-    selector.find(`.trade-agreement-terms`).find(`.trade-tax`).empty().append(`Taxes douanières: <br/><b>${Math.round(TaxTotal * 100)}%</b>.`);
-    selector.find(`.trade-agreement-terms`).find(`.trade-agreement-cost`).empty().append(`Coût de l'accord commercial: <br/><b>${agreementCost}</b> pieces.`);
+    let agreementCost = baseCost + (baseCost * tradePriority_factor) + (baseCost * freeTrade_factor) + Math.max((resourceCost * 10), 100);
+    
+    agreementCost = agreementCost * agreementDurationFactor[`cost${agreementDuration}`];
+    
+    selector.find(`.trade-agreement-terms`).attr(`data-taxAmount`, taxTotal);
+    selector.find(`.trade-agreement-terms`).find(`.trade-tax`).empty().append(`Taxes douanières: <br/><b>${Math.round(taxTotal * 100)}%</b>.`);
+    selector.find(`.trade-agreement-terms`).find(`.trade-agreement-cost`).empty().append(`Coût de l'accord commercial: <br/><b>${Math.round(agreementCost)}</b> pieces.`);
 }
