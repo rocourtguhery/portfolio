@@ -124,10 +124,23 @@ class Ports extends Buildings {
         const dockerContribution = this.workers.length > 0 ? this.workers.reduce((total, worker) => total + worker.laborforce, 0) : 1;
         const unloadTime = Math.floor(5000 / dockerContribution);
         const warehouse = this.getBuildingVillage().warehouse;
+        const village = this.getBuildingVillage().village;
         const dockyard = this.getBuildingVillage().dockyard;
+
         setTimeout(() => {
             ship.cargo.stock.forEach(resource => {
                 warehouse.addToStock(resource.type, resource.quantity);
+                
+                const otherSupplyNeeds = village.otherSupplyNeeds.find(need => need.type === resource.type);
+                if (otherSupplyNeeds) {
+                    otherSupplyNeeds.quantity = Math.max(0, (otherSupplyNeeds.quantity - resource.quantity) );
+                    village.otherSupplyNeeds = village.otherSupplyNeeds.filter(need => need.quantity > 0);
+                }
+                const agriFoodNeeds = village.agriFoodNeeds.find(need => need.type === resource.type);
+                if (agriFoodNeeds) {
+                    agriFoodNeeds.quantity = Math.max(0, (agriFoodNeeds.quantity - resource.quantity) );
+                    village.agriFoodNeeds = village.agriFoodNeeds.filter(need => need.quantity > 0);
+                }
             });
             this.planShipRepair(ship, ( req ) => {
                 ship.clearCargo(); // Vide le cargo et réinitialise l'état du navire
@@ -139,6 +152,7 @@ class Ports extends Buildings {
                 }
             });
         }, unloadTime);
+
         if(dockyard && dockyard.workers.length > 0) {
             dockyard.checkSupplies();
             dockyard.selectShipToRepair();
@@ -246,7 +260,7 @@ class Ports extends Buildings {
     findNearbyDockyard(dockyardsVillages) {
         return dockyardsVillages.map(village => ({
             dockyard: village.amenagements.find(a => a.type === "dockyard" && a.workers.length > 0),
-            distance: calculateTravelTime(this.place, village.villagePos),
+            distance: calculateTravelTimeWrapAround(this.place, village.villagePos),
             queueSize: village.amenagements.find(a => a.type === "dockyard").repairQueue.length
         })).sort((a, b) => (a.queueSize - b.queueSize) || (a.distance - b.distance))[0]?.dockyard;
     }
@@ -256,7 +270,7 @@ class Ports extends Buildings {
             if (!shipyard) return null;
             return {
                 shipyard,
-                distance: calculateTravelTime(this.place, village.villagePos),
+                distance: calculateTravelTimeWrapAround(this.place, village.villagePos),
                 queueSize: shipyard.constructionQueue.length
             }
         })

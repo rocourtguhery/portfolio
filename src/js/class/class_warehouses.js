@@ -3,7 +3,7 @@ class Warehouses extends Buildings {
     constructor(data) {
         super(data);
         this.capacity = this.calculateCapacity();
-        this.foodQuota = 0.1; // Réserve minimum pour "food" (25%)
+        this.foodQuota = 0.1; // Réserve minimum pour "food" (10%)
     }
     calculateCapacity() {
         return this.level * 2000;
@@ -62,7 +62,7 @@ class Warehouses extends Buildings {
                 existingResource.quantity += quantity;
                 updateWarehouseResources(this.villageID, existingResource.stockId, existingResource.quantity);
             } else {
-                let stockId = `${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+                let stockId = `${Date.now()}-${Math.random().toString(36).substring(2, 5)}`;
                 this.stock.push({ stockId, type: resourceType, quantity });
                 newWarehouseResources(this.villageID, stockId, resourceType, quantity)
             }

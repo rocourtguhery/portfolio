@@ -1,7 +1,7 @@
 
 class Workers{
     constructor(data) {
-        this.id = `${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+        this.id = `${Date.now()}-${Math.random().toString(36).substring(2, 5)}`;
         this.villageID = data.villageID;
         this.type = data.type; // Type de travailleur (mineur, fermier, etc.)
         this.buildingID = data.buildingID;

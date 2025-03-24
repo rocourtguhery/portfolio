@@ -84,7 +84,7 @@ $(document).ready(function () {
     maps = JSON.parse(localStorage.getItem("maps")) || {};
 
     
-    $(document).on("click","#readMe-link", function() {
+    $(document).on("click","#readMe-link, .readMe-text", function() {
         $("#intro-panel").fadeOut(()=>{
             $("#readMe").fadeIn();
         });

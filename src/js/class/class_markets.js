@@ -4,6 +4,7 @@ class Markets extends Buildings {
         super(data);
         this.buyOrders = []; // { villageID, resourceType, quantity, price }
         this.sellOrders = []; // { villageID, resourceType, quantity, price }
+        this.marketCanSell = [];
         this.villageName = data.villageName;
         this.priceFluctuation = {};
         this.initializePriceFluctuations();
@@ -43,18 +44,26 @@ class Markets extends Buildings {
     }
 
     // Passer des commandes d'achat
-    placeBuyOrder(villageID, resourceType, price, from = null) {
+    placeBuyOrder(villageID, resourceType, quantity, price) {
         const warehouse = this.getBuildingVillage().warehouse;
-        const fixedQty = 50;
+        const village = this.getBuildingVillage().village;
+        const fixedQty = Math.min(50, quantity);
         const fixedCeiling = warehouse.dynamicCap();
         const stockItem  = this.pickFromStorage(resourceType, null, "quantity") || 0;
-        if(stockItem >= fixedCeiling) return;
-
-        const existingOrder = this.buyOrders.some(order => order.type === resourceType);
         
-        if (existingOrder && (existingOrder.quantity + fixedQty) < 100) {
-            existingOrder.quantity += fixedQty;
-        }else if (!existingOrder){
+        if(stockItem >= fixedCeiling) {
+
+            village.otherSupplyNeeds = village.otherSupplyNeeds.filter(need => need.type !== resourceType && need.quantity > 0);
+            village.agriFoodNeeds = village.agriFoodNeeds.filter(need => need.type !== resourceType && need.quantity > 0);
+
+            return;
+        };
+
+        const existingOrder = this.buyOrders.find(order => order.type === resourceType);
+        
+        if (existingOrder) {
+            existingOrder.quantity = Math.max(existingOrder.quantity + fixedQty, 100);
+        }else{
 
             this.buyOrders.push({ 
                 villageID, 
@@ -99,13 +108,26 @@ class Markets extends Buildings {
             Object.entries(dockyardSupplies).forEach(element => {
                 if (dockyard && dockyardSupplies[element] < seuilMin && warehouseStock[element] < 100) {
                     // Ajoute des ressources a la liste des besoins
+
                     const supplyNeeds = village.otherSupplyNeeds;
-                    supplyNeeds.push({
-                        id: `${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
-                        type: element,
-                        quantity: 100,
-                        priority: "high",
-                    });
+                    const existingNeed = supplyNeeds.find(need => need.type === element);
+                    const overload = existingNeed && existingNeed.quantity >= 150;
+                    
+                    if (overload) return;
+
+                    if (existingNeed){
+
+                        existingNeed.quantity += 50;
+                        
+                    }else{
+                        supplyNeeds.push({
+                            id: `${Date.now()}-${Math.random().toString(36).substring(2, 5)}`,
+                            type: element,
+                            quantity: 50,
+                            priority: "high",
+                        });
+                        this.marketCanSell.filter(canSell => canSell.type !== element && canSell.quantity > 0);
+                    }
                 }
             });
         }
@@ -134,12 +156,25 @@ class Markets extends Buildings {
                 if (shipyard && shipyardSupplies[element] < seuilMin && warehouseStock[element] < 100) {
                     // Ajoute des ressources a la liste des besoins
                     const supplyNeeds = village.otherSupplyNeeds;
-                    supplyNeeds.push({
-                        id: `${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
-                        type: element,
-                        quantity: 100,
-                        priority: "high",
-                    });
+
+                    const existingNeed = supplyNeeds.find(need => need.type === element);
+                    const overload = existingNeed && existingNeed.quantity >= 150;
+
+                    if (overload) return;
+
+                    if (existingNeed){
+
+                        existingNeed.quantity += 50;
+                        
+                    }else{
+                        supplyNeeds.push({
+                            id: `${Date.now()}-${Math.random().toString(36).substring(2, 5)}`,
+                            type: element,
+                            quantity: 50,
+                            priority: "high",
+                        });
+                        this.marketCanSell.filter(canSell => canSell.type !== element && canSell.quantity > 0);
+                    }
                 }
             });
         }
@@ -153,38 +188,31 @@ class Markets extends Buildings {
         });
         needs.forEach(need => {
             // Passer des commandes d'achat
+            
+            this.placeBuyOrder(this.villageID, need.type, need.quantity, null);
 
-            const existingOrder = this.buyOrders.some(order => order.type === need.type);
-            if (!existingOrder || existingOrder.quantity < need.quantity) {
-                this.placeBuyOrder(this.villageID, need.type, null, "evaluateMarketsNeeds");
-            }
-            if (existingOrder && existingOrder.quantity >= 100) {
+            /* if (existingOrder && existingOrder.quantity >= 150) {
                 village.otherSupplyNeeds = village.otherSupplyNeeds.filter(n => n.id !== need.id && need.quantity > 0);
                 village.agriFoodNeeds = village.agriFoodNeeds.filter(n => n.id !== need.id && need.quantity > 0);
+            } */
+        });
+
+        // const nearbyMarkets = findNearbyMarket(village);
+
+        this.marketCanSell.forEach(resource => {
+            // Passer des ordres de vente
+            const itemStock = this.pickFromStorage(resource.type, null, "quantity");
+
+            const fixedCeiling = (resource.type === "food")? warehouse.foodQuotaCap() : warehouse.dynamicCap();
+
+            if (itemStock && itemStock >= fixedCeiling && this.canSell(resource.type) ) {
+                this.placeSellOrder(this.villageID, resource.type, 10, this.getPrice(resource.type));
             }
         });
 
-        const nearbyMarkets = findNearbyMarket(village);
-
-        nearbyMarkets.forEach(market => {
-            // Passer des ordres de vente
-
-            if (market.villageID === this.villageID) return;
-
-            market.buyOrders.forEach(order => {
-
-                const itemStock = this.pickFromStorage(order.type, null, "quantity");
-
-                const fixedCeiling = (order.type === "food")? warehouse.foodQuotaCap() : warehouse.dynamicCap();
-
-                if (itemStock && itemStock >= fixedCeiling && this.canSell(order.type) ) {
-                    this.placeSellOrder(this.villageID, order.type, 50, this.getPrice(order.type));
-                }
-
-            });
-        });
         callback();
     }
+
     canSell(resourceType) {
         const warehouse = this.getBuildingVillage().warehouse;
 
@@ -200,6 +228,7 @@ class Markets extends Buildings {
         
         return true;
     }
+
     planPurchases() {
         const village = this.getBuildingVillage().village;
         const workers = this.getBuildingVillage().workers;
@@ -210,7 +239,7 @@ class Markets extends Buildings {
         let shipTrade = [];
 
         // Recherche de marché à proximité
-        const nearbyMarkets = findNearbyMarket(village).map(market => {
+        const nearbyMarkets = findNearbyMarketWrapAround(village).map(market => {
             market.sellOrders.sort((a, b) => a.price - b.price);
             return market;
         });
@@ -278,26 +307,27 @@ class Markets extends Buildings {
         if (!transportUnit) return;
         transportUnit.busy = true;
 
-        completeTheTransaction(villageBuyer, marketBuyer, villageSeller, marketSeller, transportUnit);
+        const travelTime = calculateTravelTime(villageBuyer.villagePos, villageSeller.villagePos);
 
         setTimeout(() => {
-            const warehouse = villageBuyer.amenagements.find(a => a.type === "warehouse");
-            transportUnit?.cargo?.stock.forEach(resource => {
-                warehouse.addToStock(resource.type, resource.quantity);
+            completeTheTransaction(villageBuyer, marketBuyer, villageSeller, marketSeller, transportUnit, ()=>{
+                setTimeout(() => {
+
+                    returnTransport(villageBuyer, transportUnit);
+
+                    transportUnit.gainExperience(0.1); // L'unité prend de l'expérience
+                    this.buildingGainExperience(0.2); // Le bâtiment prend de l'expérience
+
+                    const dockyard = this.getBuildingVillage().dockyard;
+                    const shipyard = this.getBuildingVillage().shipyard;
+
+                    // Si dockyard, si shipyard vérification disponibilité de ressources requises
+                    if(dockyard && dockyard.workers.length > 0) dockyard.checkSupplies();
+                    if(shipyard && shipyard.workers.length > 0) shipyard.checkSupplies();
+
+                }, travelTime * 20000);
             });
-            transportUnit?.clearCargo(); // Vide le cargo et réinitialise l'état du transport
-            transportUnit.busy = false;
-            transportUnit.gainExperience(0.05); // L'unité prend de l'expérience
-            this.buildingGainExperience(0.2); // Le bâtiment prend de l'expérience
-
-            const dockyard = this.getBuildingVillage().dockyard;
-            const shipyard = this.getBuildingVillage().shipyard;
-
-            // Si dockyard, si shipyard vérification disponibilité de ressources requises
-            if(dockyard && dockyard.workers.length > 0) dockyard.checkSupplies();
-            if(shipyard && shipyard.workers.length > 0) shipyard.checkSupplies();
-
-        }, 5000);
+        }, travelTime * 20000);
     }
     // Vérification et détruction des ordres de vente expirés
     cleanExpiredOrders() {
@@ -317,7 +347,7 @@ class Markets extends Buildings {
         let supply = {};
         let demand = {};
 
-        const nearbyMarketsFactor = findNearbyMarket(village, true);
+        const nearbyMarketsFactor = findNearbyMarketWrapAround(village, true);
         nearbyMarketsFactor.forEach(market => {
             // Calcule de l'offre et de la demande
             market.sellOrders.forEach(order => {
@@ -378,11 +408,61 @@ class Markets extends Buildings {
     getPrice(resourceType) {
         return this.priceFluctuation[resourceType] || basePrices[resourceType];
     }
+
+    updateMarketCanSell(){
+        const warehouse = this.getBuildingVillage().warehouse;
+        const village = this.getBuildingVillage().village;
+        const storages = [
+            ...this.getBuildingVillage().granary?.stock || [],
+            ...warehouse.stock
+        ];
+
+        const sellMap = new Map(this.marketCanSell.map(item => [item.type, item]));
+
+        storages.forEach(element =>{
+            
+            const buildingNeedThis = [];
+            Object.entries(workshopProduction).forEach(([type, attr]) => {
+                const isUsed = attr.some(wk => Object.keys(wk.resources).includes(element.type));
+                if (isUsed ) buildingNeedThis.push(type);
+            });
+            const building = village.amenagements.some(a => buildingNeedThis.includes(a.type));
+            const quota =  building? 0.1 : 0.5;
+            
+            const fixedCeiling = (element.type === "food")? warehouse.foodQuotaCap() : warehouse.dynamicCap() * quota;
+
+            if ( element.quantity < fixedCeiling ) return;
+
+            const existing = sellMap.get(element.type);
+
+            if (existing){
+
+                existing.quantity = Math.min(existing.quantity + 10, warehouse.dynamicCap() * quota);
+                
+            }else{
+                sellMap.set(element.type, {
+                    id: `${Date.now()}-${Math.random().toString(36).substring(2, 5)}`,
+                    type: element.type,
+                    quantity: 10,
+                    priority: null,
+                });
+                village.otherSupplyNeeds = village.otherSupplyNeeds.filter(need => need.type !== element.type && need.quantity > 0);
+                village.agriFoodNeeds = village.agriFoodNeeds.filter(need => need.type !== element.type && need.quantity > 0);
+            }
+        });
+
+        this.marketCanSell = Array.from(sellMap.values());
+    }
+
     // Fonction principale pour maintenir le marché
-    maintainMarket() {
+    maintainMarket(village) {
         this.cleanExpiredOrders(); // Suppression des ordres expirés
+        this.updateMarketCanSell();
         this.evaluateMarketsNeeds(()=>{
-            this.planPurchases();
+
+            if (!village.owner){
+                this.planPurchases();
+            };
             this.updatePrices();
         })
     }

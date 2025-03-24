@@ -64,8 +64,8 @@ $(document).on("click",`.amenagements-view .worker-img`, function() {
     const workerType = $this.parents(`.worker`).attr("data-workertype");
     const showBuildingWorkersDiv = document.createElement('div');
     showBuildingWorkersDiv.className = `village-buildings-show-workers`;
-    showBuildingWorkersDiv.innerHTML = showBuildingWorkers(building, workerType);
     showBuildingWorkersDiv.dataset.villageid = villageId;
+    showBuildingWorkersDiv.innerHTML = showBuildingWorkers(building, workerType);
 
     const backdropClone = document.querySelector(`.village-${villageId} #village-management-drop`).cloneNode(true);
     backdropClone.setAttribute(`id`,`backdropClone`);
@@ -74,7 +74,7 @@ $(document).on("click",`.amenagements-view .worker-img`, function() {
     });
 
 });
-$(document).on("click",`.close-show-bBuilding-workers`, function() {
+$(document).on("click",`.close-show-Building-workers`, function() {
     const $this = $(this);
     const parent = $this.parents(`.village-buildings-show-workers`);
     const villageId = parent.attr("data-villageid");
@@ -434,7 +434,7 @@ function displayBuildingProduction(building){
 
 function showBuildingWorkers(building, workerType){
     const workers = building.workers.filter(worker => worker.type === workerType);
-    let html = `<div class="workers-list-type-name">${workersFrType(workerType)}<div class="btn-close close-show-bBuilding-workers"></div></div>`;
+    let html = `<div class="workers-list-type-name">${workersFrType(workerType)}<div class="btn-close close-show-Building-workers"></div></div>`;
     html += `<div class="workers-list">`;
     workers.forEach(worker => {
         html += displayWorkerInfo(worker);
