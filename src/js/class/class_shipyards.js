@@ -28,6 +28,7 @@ class Shipyards extends Buildings {
         const warehouseToolsStock = this.pickFromStorage("tools", null, "quantity") || 0;
         const warehouseFabricStock = this.pickFromStorage("fabric", null, "quantity") || 0;
         const warehouseLumberStock = this.pickFromStorage("lumber", null, "quantity") || 0;
+        const warehouseWoodStock = this.stock.find(st => st.type === "wood")?.quantity || 0;
 
         const shipyardWoodStock = this.stock.find(st => st.type === "wood")?.quantity || 0;
         const shipyardIronStock = this.stock.find(st => st.type === "iron")?.quantity || 0;

@@ -1,3 +1,4 @@
+let selectedResources = new Set();
 $(document).on("click",`.market-btn`, function() {
     const $this = $(this);
     const {village, building} = getThisBuilding($this, true);
@@ -10,16 +11,13 @@ $(document).on("click",`.market-btn`, function() {
 });
 $(document).on("click",`.trade-agreement-btn`, function() {
     const $this = $(this);
-
     const villageId = $this.attr("data-villageid");
     const tradeVillageId = $this.attr("data-tradevillageid");
-
     const showTradeAgreementDiv = document.createElement('div');
     showTradeAgreementDiv.className = `village-trade-agreement`;
     showTradeAgreementDiv.dataset.villageid = villageId;
     showTradeAgreementDiv.dataset.tradevillageid = tradeVillageId;
     tradeAgreement(villageId, tradeVillageId, showTradeAgreementDiv);
-
     $(`.village-${villageId} #village-management > div:not(#village-management-drop)`).fadeOut(250,()=>{
         document.querySelector(`.village-${villageId} #village-management`).append(showTradeAgreementDiv);
         const selector = $(`.village-trade-agreement`);
@@ -30,6 +28,7 @@ $(document).on("click",`.close-trade-agreement`, function() {
     const $this = $(this);
     const parent = $this.parents(`.village-trade-agreement`);
     const villageId = parent.attr("data-villageid");
+    selectedResources.clear();
     parent.fadeOut(150).remove();
     $(`.village-${villageId} #village-management > div`).fadeIn(250);
 });
@@ -81,6 +80,7 @@ $(document).on("click",`.resourceSelect`, function() {
     }
     const checked = $this.is(':checked');
     if (checked) {
+        selectedResources.add(traderesources.type);
         parentData.push(traderesources);
         parent.attr("data-traderesources", JSON.stringify(parentData));
         $this.attr('checked', 'checked');
@@ -88,6 +88,7 @@ $(document).on("click",`.resourceSelect`, function() {
         const selector = $this.parents(`.village-trade-agreement`);
         tradeAgreementCost(selector);
     }else{
+        selectedResources.delete(traderesources.type);
         parentData = parentData.filter(data => data.type !== traderesources.type);
         parent.attr("data-traderesources", JSON.stringify(parentData));
         $this.removeAttr('checked');
@@ -108,13 +109,10 @@ $(document).on("click",`.village-trade-agreement .save-trade-agreement`, functio
     const taxAmount = parentTerms.attr(`data-taxAmount`);
     const tradeVillage = villages.find( village => village.id === tradevillageid);
     const village = villages.find( village => village.id === villageid);
-
     const existingImportAgreement = village.tradeAgreement.find(agreement => agreement.id === tradevillageid);
     const existingExportAgreement = tradeVillage.tradeAgreement.find(agreement => agreement.id === villageid);
-
     const selector = $this.parents(`.village-trade-agreement`);
     tradeAgreementCost(selector);
-
     if (existingImportAgreement) {
         existingImportAgreement.tradePriority = tradePriority;
         existingImportAgreement.freeTrade = freeTrade;
@@ -151,52 +149,75 @@ $(document).on("click",`.village-trade-agreement .save-trade-agreement`, functio
     }
     $(`.close-trade-agreement`).click();
 });
-
+let marketNeeds = [];
 function displayMarket(village){
     const fragment = document.createDocumentFragment();
     const marketBox = document.createElement('div');
     marketBox.className = `market-view display-village-components`;
-
     const villageMarket = document.createElement('div');
     villageMarket.className = `village-market`;
-
+    const marketSideDiv = document.createElement('div');
+    marketSideDiv.className = `market-side`;
+    marketSideDiv.style.width = `calc((100% / 3) - 10px)`;
+    marketSideDiv.style.height = `100%`;
+    const marketBodyDiv = document.createElement('div');
+    marketBodyDiv.className = `market-body`;
+    marketBodyDiv.style.width = `calc((100% / 1.5) - 10px)`;
+    marketBodyDiv.style.height = `100%`;
     const nearbyMarketDiv = document.createElement('div');
     nearbyMarketDiv.className = `village-nearby-market`;
     let nearbyMarketHtml = `<div>Proximité Commercial</div><div class="nearby-market-list"></div>`;
     nearbyMarketDiv.innerHTML = nearbyMarketHtml;
-    villageMarket.appendChild(nearbyMarketDiv);
-
+    marketSideDiv.appendChild(nearbyMarketDiv);
+    villageMarket.appendChild(marketSideDiv);
     const marketHeaderDiv = document.createElement('div');
     marketHeaderDiv.className = `village-market-header`;
     let marketHeaderHtml = `<div class="village-needs"></div><div class="market-can-sell"></div>`;
     marketHeaderDiv.innerHTML = marketHeaderHtml;
-    villageMarket.appendChild(marketHeaderDiv);
-
-    const currentTradeDiv = document.createElement('div');
+    marketBodyDiv.appendChild(marketHeaderDiv);
+    const marketsOffersDiv = document.createElement('div');
+    marketsOffersDiv.className = `village-market-management`;
+    marketsOffersDiv.innerHTML = `<div class="market-management-title">Ordres d'achats et de ventes</div>
+        <table>
+            <thead>
+                <tr>
+                    <th class="col-resource">Ressource</th>
+                    <th class="col-stock">Stock Actuel</th>
+                    <th class="col-buy">Acheter si &lt;</th>
+                    <th class="col-sell">Vendre si &gt;</th>
+                    <th class="col-action">Actions</th>
+                </tr>
+            </thead>
+        </table>
+        <div class="market-management-table-body">
+            <table>
+                <tbody class="market-management-rules">
+                </tbody>
+            </table>
+        </div>`;
+    marketBodyDiv.appendChild(marketsOffersDiv);
+    villageMarket.appendChild(marketBodyDiv);
+    /* const currentTradeDiv = document.createElement('div');
     currentTradeDiv.className = `village-current-trade`; 
-    villageMarket.appendChild(currentTradeDiv);
-
+    villageMarket.appendChild(currentTradeDiv); */
     marketBox.appendChild(villageMarket);
-
     fragment.appendChild(marketBox);
-
     document.querySelector('#buildings-box').appendChild(fragment);
     displayVillageNeeds(village);
     displayMarketCanSell(village);
-    displayNearbyMarket(village)
-
+    displayNearbyMarket(village);
+    marketNeeds = [...village.otherSupplyNeeds, ...village.agriFoodNeeds];
+    marketsNeeds(marketNeeds);
+    displayMarketsRules(village);
 }
-
 function displayVillageNeeds(village){
     const villageNeeds = document.querySelector(`.village-${village.id} .market-view .village-needs`);
     if (!villageNeeds) return;
-
     villageNeeds.innerHTML = "";
     const needs = [
         ...village.agriFoodNeeds || [],
         ...village.otherSupplyNeeds || [],
     ];
-
     const villageNeedsTitleDiv = document.createElement('div');
     villageNeedsTitleDiv.style.width = `100%`;
     villageNeedsTitleDiv.style.fontSize = `12px`;
@@ -213,15 +234,11 @@ function displayVillageNeeds(village){
         }
     })
 }
-
 function displayMarketCanSell(village){
-
     const marketCanSellWrapper = document.querySelector(`.village-${village.id} .market-view .market-can-sell`);
     if (!marketCanSellWrapper) return;
-
     marketCanSellWrapper.innerHTML = "";
     const market = village.amenagements.find(a => a.type === "market");
-
     const marketCanSellDiv = document.createElement('div');
     marketCanSellDiv.style.width = `100%`;
     marketCanSellDiv.style.fontSize = `12px`;
@@ -238,52 +255,38 @@ function displayMarketCanSell(village){
         }
     })
 }
-
 function displayNearbyMarket(village){
-
     const nearbyMarket = document.querySelector(`.village-${village.id} .market-view .nearby-market-list`);
     if (!nearbyMarket) return;
-
     nearbyMarket.innerHTML = "";
     const port = village.amenagements.find(a => a.type === "port");
-
     const nearbyMarketList = port ? findNearbyMarketWrapAround(village) : findNearbyMarket(village);
-        
     nearbyMarketList.forEach(market => {
         const marketVillage = market.getBuildingVillage().village;
         const island = islands.find(isle => isle.islandID == marketVillage.islandID);
-        
         const containerDiv = document.createElement('div');
         containerDiv.id = `market-${market.id}`;
         containerDiv.className = `nearbyMarket-container`;
-
         containerDiv.innerHTML = `<div class="market-village-name">${marketVillage.name} <span class="market-island-name">${island.name}(${island.islandID})</span></div>
             <div class="market-exchange">
                 <div class="this-market-buy"></div>
                 <div class="this-market-sells"></div>
             </div>`;
-
-            
         const tradeAgreement = marketVillage.tradeAgreement.find(agreement => agreement.id === village.id);
-        console.log(`tradeAgreement: ${JSON.stringify(tradeAgreement)}`);
         const exchangeOptionDiv = document.createElement('div');
         exchangeOptionDiv.className = `market-exchange-option`;
-        
         exchangeOptionDiv.innerHTML = (tradeAgreement)? 
             `<div class="trade-agreement trade-taxe"><b>${tradeAgreement.taxAmount * 100}% taxes</b></div>` :
             `<div class="trade-agreement trade-agreement-btn" data-villageid="${village.id}" data-tradevillageid='${marketVillage.id}'></div>`;
-        
         containerDiv.appendChild(exchangeOptionDiv);
         nearbyMarket.appendChild(containerDiv);
         displayMarketBuy(village.id, marketVillage, market);
         displayMarketSell(village.id, market);
-    })
+    });
 }
-
 function displayMarketBuy(villageId, marketVillage, market){
     const marketBuys = document.querySelector(`.village-${villageId} .market-view .nearby-market-list #market-${market.id} .this-market-buy`);
     if (!marketBuys) return;
-
     marketBuys.innerHTML = "";
     const needs = [
         ...marketVillage.agriFoodNeeds || [],
@@ -303,10 +306,8 @@ function displayMarketBuy(villageId, marketVillage, market){
 function displayMarketSell(villageId, market){
     const marketSells = document.querySelector(`.village-${villageId} .market-view .nearby-market-list #market-${market.id} .this-market-sells`);
     if (!marketSells) return;
-
     marketSells.innerHTML = "";
     marketSells.innerHTML = `<div class="market-exchange-title">VEND</div>`;
-
     market.marketCanSell.forEach(resource => {
         if (Math.floor(resource.quantity) > 0) {
             const prodCanSellDiv = document.createElement('div');
@@ -317,19 +318,15 @@ function displayMarketSell(villageId, market){
         }
     })
 }
-
 function tradeAgreement(villageId, tradeVillageId, selector){
     const tradeVillage = villages.find( village => village.id === tradeVillageId);
     const tradeMarket = tradeVillage.amenagements.find(amenagement => amenagement.type === "market");
-    
     selector.innerHTML = `<div class="trade-agreement-header">ACCORD COMMERCIAL<div class="btn-close close-trade-agreement"></div></div>`;
-
     const tradeAgreementDiv = document.createElement('div');
     tradeAgreementDiv.className = `trade-agreement-terms`;
     tradeAgreementDiv.innerHTML = `<p class="">Accord commercial avec <b>${tradeVillage.name}</b></p>
         <h6 class="">Termes et conditions</h6>
         </div>`;
-
         const termsConditionsDiv = document.createElement('div');
         termsConditionsDiv.className = `terms-and-conditions`;
         termsConditionsDiv.innerHTML = `<span class="terms-title">- Échange commercial prioritaire
@@ -345,15 +342,11 @@ function tradeAgreement(villageId, tradeVillageId, selector){
                 </label>
             </span>`;
         tradeAgreementDiv.appendChild(termsConditionsDiv);
-
         const marketedResourcesDiv = document.createElement('div');
         marketedResourcesDiv.className = `marketed-resources`;
         marketedResourcesDiv.innerHTML = `<h6 class="terms-title">Ressources :</h6>`;
         tradeAgreementResources(villageId, tradeVillageId, marketedResourcesDiv);
-
         tradeAgreementDiv.appendChild(marketedResourcesDiv);
-
-
         const durationDiv = document.createElement('div');
         durationDiv.className = `select-agreement-duration`;
         durationDiv.innerHTML = `<label>Étendue sur :</label><br/>
@@ -364,26 +357,20 @@ function tradeAgreement(villageId, tradeVillageId, selector){
                 <option value="270" label="9 mois"></option>
                 <option value="360" label="12 mois"></option>
             </datalist>`;
-        
         tradeAgreementDiv.appendChild(durationDiv);
-
         const tradeTaxDiv = document.createElement('div');
         tradeTaxDiv.className = `trade-tax`;
         tradeTaxDiv.innerHTML = `Taxes douanières: `;
         tradeAgreementDiv.appendChild(tradeTaxDiv);
-
         const agreementCostDiv = document.createElement('div');
         agreementCostDiv.className = `trade-agreement-cost`;
         agreementCostDiv.innerHTML = `Coût de l'accord commercial: `;
         tradeAgreementDiv.appendChild(agreementCostDiv);
-
         const saveBtnDiv = document.createElement('div');
         saveBtnDiv.className = `save-trade-agreement`;
         saveBtnDiv.innerHTML = `Save`;
         tradeAgreementDiv.appendChild(saveBtnDiv);
-
     selector.appendChild(tradeAgreementDiv);
-
 }
 function tradeAgreementResources(villageId, tradeVillageId, selector){
 
@@ -396,15 +383,13 @@ function tradeAgreementResources(villageId, tradeVillageId, selector){
         selector.appendChild(emptyDiv);
         return;
     }
-    
-    const village = villages.find( village => village.id === villageId);
 
     const tradeOptionUL = document.createElement('ul');
     tradeOptionUL.className = `selected-marketed-resources`;
     const options = tradeMarket.marketCanSell;
     options.forEach(resource => {
-        const tradeAgreement = village.tradeAgreement.find(agreement => agreement.villageid === tradeVillage.id);
-        const isSelected = tradeAgreement?.resources.find(resource => resource.type === option);
+        // const tradeAgreement = village.tradeAgreement.find(agreement => agreement.villageid === tradeVillage.id);
+        const isSelected = selectedResources.has(resource); // tradeAgreement?.resources.find(resource => resource.type === option);
 
         const tradeOptionLI = document.createElement('li');
         tradeOptionLI.className = `resource`;
@@ -485,3 +470,187 @@ function tradeAgreementCost(selector){
     selector.find(`.trade-agreement-terms`).find(`.trade-tax`).empty().append(`Taxes douanières: <br/><b>${Math.round(taxTotal * 100)}%</b>.`);
     selector.find(`.trade-agreement-terms`).find(`.trade-agreement-cost`).empty().append(`Coût de l'accord commercial: <br/><b>${Math.round(agreementCost)}</b> pieces.`);
 }
+let tableBody = null;
+function displayMarketsRules(village){
+    tableBody = document.querySelector(`.village-${village.id} .village-market-management .market-management-rules`);
+    if (!tableBody) return;
+    tableBody.innerHTML = "";
+
+    const market = village.amenagements.find(a => a.type === "market");
+    const warehouse = market.getBuildingVillage().warehouse;
+    const allResources = [...agriFoodResources, ...strategicResources, ...luxuryResources, ...manufacturedResources]; 
+
+    const rules = market.marketRules;
+
+    allResources.forEach(resource => {
+        const isNeed = marketsNeeds(resource);
+        const resourceStock = warehouse.pickFromStorage(resource, null, "quantity") || 0;
+
+        const btnSell = (resourceStock && resourceStock > 0)? `<button class="market-rules-btn btn-sell" data-order="sale" data-villageid="${village.id}" data-type="${resource}">💰</button>` : 
+        `<button class="market-rules-btn" disabled style="opacity:0.5;">💰</button>`;
+        const alreadySet = rules.find(rule => rule.type === resource);
+        const row = document.createElement("tr");
+        row.className = `${alreadySet?.order || ""}`;
+        row.innerHTML = `
+            <td class="col-resource"><div class="resource-column"><div class="need-icon need-${resource}"></div><span>${ressourceFrName(resource)||""}</span></div></td>
+            <td class="col-stock" id="stock-${resource}">${Math.floor(resourceStock)}</td>
+            <td class="col-buy"><input type="number" min="10" step="10" id="buy-${resource}" value="${alreadySet && alreadySet.minStock || ""}" placeholder="--"></td>
+            <td class="col-sell"><input type="number" min="10" step="10" id="sell-${resource}" value="${alreadySet && alreadySet.maxStock || ""}" placeholder="--"></td>
+            <td class="col-action">
+                <button class="market-rules-btn btn-buy" data-villageid="${village.id}" data-order="purchase" data-type="${resource}">🛒</button>
+                ${btnSell}
+                <button class="market-rules-btn btn-clear" data-villageid="${village.id}" data-type="${resource}">❌</button>
+            </td>`;
+            
+        if (isNeed) {
+            row.className += " prioritize";
+            tableBody.prepend(row);
+        }else{
+            tableBody.appendChild(row);
+        }
+    });
+    
+    tableBody.addEventListener("click", function (e) {
+        const type = e.target.dataset.type;
+        const order = e.target.dataset.order;
+        const villageId = e.target.dataset.villageid;
+        
+        if (e.target.classList.contains("btn-buy")) {
+
+            const qty = document.getElementById(`buy-${type}`).value || 0;
+            updateMarketRule(villageId, type, qty, null, order);
+        }
+
+        if (e.target.classList.contains("btn-sell")) {
+             
+            const qty = document.getElementById(`sell-${type}`).value || 0;
+            updateMarketRule(villageId, type, null, qty, order);
+        }
+
+        if (e.target.classList.contains("btn-clear")) {
+            $(`#buy-${type}`).parents(`tr`).removeClass(`sale purchase`);
+            $(`#sell-${type}`).parents(`tr`).removeClass(`sale purchase`);
+            removeMarketRule(villageId, type);
+        }
+    });
+}
+function marketsNeeds(resource) {
+    resourcesNeeds = marketNeeds.map((need) => need.type );
+    return resourcesNeeds.includes(resource);
+}
+
+function updateMarketRule(villageId, type, buyQty, sellQty, order) {
+    const village = villages.find( village => village.id === villageId);
+    const market = village.amenagements.find(a => a.type === "market");
+    const marketRules = market.marketRules;
+    let rule = marketRules.find(r => r.type === type);
+
+    if (!rule && parseInt(buyQty) > 0 || parseInt(sellQty) > 0) {
+        rule = { 
+            type, 
+            minStock: parseInt(buyQty) || null, 
+            maxStock: parseInt(sellQty) || null,
+            order 
+        };
+        marketRules.push(rule);
+        $(`#buy-${type}`).parents(`tr`).removeClass(`sale purchase`).addClass(order);
+        $(`#sell-${type}`).parents(`tr`).removeClass(`sale purchase`).addClass(order);
+        
+        return;
+    }
+    if (parseInt(buyQty) > 0 || parseInt(sellQty) > 0) {
+        rule.minStock = parseInt(buyQty) || null;
+        rule.maxStock = parseInt(sellQty) || null;
+        rule.order = order;
+        $(`#buy-${type}`).parents(`tr`).removeClass(`sale purchase`).addClass(order);
+        $(`#sell-${type}`).parents(`tr`).removeClass(`sale purchase`).addClass(order);
+    }
+}
+
+function removeMarketRule(villageId, type) {
+    const village = villages.find( village => village.id === villageId);
+    const market = village.amenagements.find(a => a.type === "market");
+    const marketRules = market.marketRules;
+
+    const index = marketRules.findIndex(r => r.type === type);
+    if (index !== -1) marketRules.splice(index, 1);
+
+    document.getElementById(`buy-${type}`).value = null;
+    document.getElementById(`sell-${type}`).value = null;
+
+}
+
+/* function populateMarketTable() {
+    const tableBody = document.getElementById("market-rules");
+    tableBody.innerHTML = ""; // Reset
+
+    allResources.forEach(resource => {
+        const isNeed = evaluateMarketsNeeds(resource); // Simule la demande active
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${resource}</td>
+            <td id="stock-${resource}">0</td>
+            <td><input type="number" id="buy-${resource}" placeholder="--"></td>
+            <td><input type="number" id="sell-${resource}" placeholder="--"></td>
+            <td>
+                <button class="btn-buy" data-type="${resource}">🛒</button>
+                <button class="btn-sell" data-type="${resource}">💰</button>
+                <button class="btn-clear" data-type="${resource}">❌</button>
+            </td>
+        `;
+
+        if (isNeed) {
+            row.style.background = "#eaf6ff"; // Bleu clair pour ressources demandées
+        }
+
+        tableBody.appendChild(row);
+    });
+} */
+function displayTradeAgreementTimeLeft(expiration){
+    const currentTime = Date.now();
+    const remainingTime = Math.floor((expiration - currentTime ) / 1000);
+    const jours = Math.floor(remainingTime / 60);
+    if (jours <= 0) {
+        return `Expirer`;
+    }
+    if (jours > 1) {
+        return `${jours}jours`;
+    }
+    return `${jours}jour`;
+}
+
+/* nearbyMarketList.forEach(market => {
+        const marketSellsOrders = market.sellOrders;
+        if (marketSellsOrders.length <= 0) return;
+        const marketVillage = market.getBuildingVillage().village;
+        const tradeAgreement = marketVillage.tradeAgreement.find(agreement => agreement.id === villageId);
+        const tradeAgreementInfo = (tradeAgreement)? 
+                `<div class="trade-agreement-info">
+                    Accord commercial expire dans ${displayTradeAgreementTimeLeft(tradeAgreement.expiration)}
+                    <span class="market-tax">Taxes: ${Math.round(tradeAgreement.taxAmount * 100)}%</span>
+                </div>` :
+                `<div class="trade-agreement-info">
+                    Aucun accord commercial
+                    <span class="market-tax">Taxes: ${Math.round(market.baseTax * 100)}%</span>
+                </div>`;
+        const marketSellsOrdersDiv = document.createElement('div');
+        marketSellsOrdersDiv.id = `market-${market.id}`;
+        marketSellsOrdersDiv.className = `market-sellOrders`;
+        marketSellsOrdersDiv.innerHTML = `<div class="market-village-name">${marketVillage.name}${tradeAgreementInfo}</div>`;
+        const tradeOptionUL = document.createElement('ul');
+        tradeOptionUL.className = `selected-marketed-resources`;
+        marketSellsOrders.forEach(SellsOrder => {
+            // if (SellsOrder.soldTo) return;
+            const sellOrderLI = document.createElement('li');
+            sellOrderLI.className = `market-sellOrder-prod resource ${(SellsOrder.soldTo)? "sold":"" }`;
+            sellOrderLI.innerHTML = `<div class="prod-canSell">
+                    <div class="canSell-icon canSell-${SellsOrder.type}"></div>
+                    <span  class="info-text" style="color:#333">${SellsOrder.quantity} ${ressourceFrName(SellsOrder.type)||""}</span>
+                </div>
+                <span class="resource-price"><div class="resource-price-gold"></div>${SellsOrder.price}</span>`;
+            tradeOptionUL.appendChild(sellOrderLI);
+        });
+        marketSellsOrdersDiv.appendChild(tradeOptionUL);
+        marketsOffers.after(marketSellsOrdersDiv);
+    }); */

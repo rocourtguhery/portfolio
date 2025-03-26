@@ -271,6 +271,7 @@ class Villages {
 
                 }else{
                     this.agriFoodNeeds.push({
+                        id: `${Date.now()}-${Math.random().toString(36).substring(2, 5)}`,
                         type: "food",
                         quantity: Math.ceil(dailyFoodNeed),
                         priority: "high"
@@ -297,6 +298,7 @@ class Villages {
 
                         }else{
                             this.agriFoodNeeds.push({
+                                id: `${Date.now()}-${Math.random().toString(36).substring(2, 5)}`,
                                 type: ingredient,
                                 quantity,
                                 priority: "medium"

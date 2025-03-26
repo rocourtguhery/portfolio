@@ -5,8 +5,10 @@ class Markets extends Buildings {
         this.buyOrders = []; // { villageID, resourceType, quantity, price }
         this.sellOrders = []; // { villageID, resourceType, quantity, price }
         this.marketCanSell = [];
+        this.marketRules = [];
         this.villageName = data.villageName;
         this.priceFluctuation = {};
+        this.baseTax = 0.25;
         this.initializePriceFluctuations();
         this.expirationTime = 180000; // Temps d'expiration en millisecondes (180 secondes)
     }
@@ -58,7 +60,6 @@ class Markets extends Buildings {
 
             return;
         };
-
         const existingOrder = this.buyOrders.find(order => order.type === resourceType);
         
         if (existingOrder) {
@@ -77,13 +78,20 @@ class Markets extends Buildings {
 
     // Passer des ordres de vente
     placeSellOrder(villageID, resourceType, quantity, price) {
-        this.sellOrders.push({
-            villageID,
-            type: resourceType,
-            quantity: Math.floor(quantity),
-            price,
-            soldTo: null,
-            timestamp: Date.now(), });
+        const existingOrder = this.sellOrders.find(order => order.type === resourceType);
+        const fixedQty = Math.min(50, quantity);
+        
+        if (existingOrder) {
+            existingOrder.quantity = Math.max(existingOrder.quantity + fixedQty, 100);
+        }else{
+            this.sellOrders.push({
+                villageID,
+                type: resourceType,
+                quantity: Math.floor(quantity),
+                price,
+                soldTo: null,
+                timestamp: Date.now(), });
+        }
     }
     evaluateMarketsNeeds(callback){
         // Évaluation des besoins
@@ -446,9 +454,9 @@ class Markets extends Buildings {
                     quantity: 10,
                     priority: null,
                 });
-                village.otherSupplyNeeds = village.otherSupplyNeeds.filter(need => need.type !== element.type && need.quantity > 0);
-                village.agriFoodNeeds = village.agriFoodNeeds.filter(need => need.type !== element.type && need.quantity > 0);
             }
+            village.otherSupplyNeeds = village.otherSupplyNeeds.filter(need => need.type !== element.type && need.quantity > 0);
+            village.agriFoodNeeds = village.agriFoodNeeds.filter(need => need.type !== element.type && need.quantity > 0);
         });
 
         this.marketCanSell = Array.from(sellMap.values());

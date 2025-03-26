@@ -1,5 +1,5 @@
 .market-view .village-market-header{
-    width: calc(100% - (100% / 3) - 10px);
+    /* width: calc(100% - (100% / 3) - 10px); */
     height: 145px;
     border-radius: 3px;
     display: flex;
@@ -73,9 +73,17 @@
     background-position: center !important;
 }
 .market-view .village-needs .need-icon,
+.market-management-rules .need-icon,
 .market-view .market-can-sell .canSell-icon{
     width: 20px;
     height: 20px;
+}
+.market-management-rules .need-icon{
+    position:relative;
+    top: unset;
+    left: unset;
+    right: unset;
+    bottom: unset;
 }
 .market-view .canSell-icon{
     /* bottom: unset; */
@@ -98,6 +106,7 @@
 
 .market-view .need-cotton,
 .village-trade-agreement .canSell-cotton,
+.market-management-rules .need-cotton,
 .market-view .canSell-cotton {
     background: no-repeat url("../assets/images/cotton-icon-1.png");
 }
@@ -107,6 +116,7 @@
 }
 .market-view .need-coal,
 .village-trade-agreement .canSell-coal,
+.market-management-rules .need-coal,
 .market-view .canSell-coal{
     background: no-repeat url("../assets/images/coal-icon-1.png");
 }
@@ -118,6 +128,7 @@
 }
 .market-view .need-iron,
 .village-trade-agreement .canSell-iron,
+.market-management-rules .need-iron,
 .market-view .canSell-iron{
     background: no-repeat url("../assets/images/iron-icon.png");
 }
@@ -129,33 +140,39 @@
 }
 .market-view .need-silver,
 .village-trade-agreement .canSell-silver,
+.market-management-rules .need-silver,
 .market-view .canSell-silver{
     background: no-repeat url("../assets/images/silver-bar-icon-2.png");
 }
 .market-view .need-gold,
 .village-trade-agreement .canSell-gold,
+.market-management-rules .need-gold,
 .market-view .canSell-gold{
     background: no-repeat url("../assets/images/gold-bar-icon.png");
 }
 
 .market-view .need-gems_purple,
 .village-trade-agreement .canSell-gems_purple,
+.market-management-rules .need-gems_purple,
 .market-view .canSell-gems_purple{
     background: no-repeat url("../assets/images/gems-purple-icon.png");
 }
 .market-view .need-gems_green,
 .village-trade-agreement .canSell-gems_green,
+.market-management-rules .need-gems_green,
 .market-view .canSell-gems_green{
     background: no-repeat url("../assets/images/gems-green-icon-3.png");
 }
 .market-view .need-gems_blue,
 .village-trade-agreement .canSell-gems_blue,
+.market-management-rules .need-gems_blue,
 .market-view .canSell-gems_blue{
     background: no-repeat url("../assets/images/gems-blue-icon.png");
 }
 
 .market-view .need-wood,
 .village-trade-agreement .canSell-wood,
+.market-management-rules .need-wood,
 .market-view .canSell-wood{
     background: no-repeat url("../assets/images/wood-icon-7.png");
 }
@@ -165,6 +182,7 @@
 }
 .market-view .need-stone,
 .village-trade-agreement .canSell-stone,
+.market-management-rules .need-stone,
 .market-view .canSell-stone{
     background: no-repeat url("../assets/images/stone-icon-5.png");
 }
@@ -177,16 +195,19 @@
 }
 .market-view .need-tools,
 .village-trade-agreement .canSell-tools,
+.market-management-rules .need-tools,
 .market-view .canSell-tools{
     background: no-repeat url("../assets/images/tools-icon-1.png");
 }
 .market-view .need-copper,
 .village-trade-agreement .canSell-copper,
+.market-management-rules .need-copper,
 .market-view .canSell-copper{
     background: no-repeat url("../assets/images/copper-4.png");
 }
 .market-view .need-cereals,
 .village-trade-agreement .canSell-cereals,
+.market-management-rules .need-cereals,
 .market-view .canSell-cereals{
     background: no-repeat url("../assets/images/cereals-flour-icon.png");
 }
@@ -198,11 +219,13 @@
 }
 .market-view .need-fabric,
 .village-trade-agreement .canSell-fabric,
+.market-management-rules .need-fabric,
 .market-view .canSell-fabric{
     background: no-repeat url("../assets/images/fabric-icon-3.png");
 }
 .market-view .need-coffee,
 .village-trade-agreement .canSell-coffee,
+.market-management-rules .need-coffee,
 .market-view .canSell-coffee{
     background: no-repeat url("../assets/images/coffee-bag-icon-8.png");
 }
@@ -214,16 +237,19 @@
 }
 .market-view .need-cacao,
 .village-trade-agreement .canSell-cacao,
+.market-management-rules .need-cacao,
 .market-view .canSell-cacao{
     background: no-repeat url("../assets/images/cacao-icon-3.png");
 }
 .market-view .need-tobacco,
 .village-trade-agreement .canSell-tobacco,
+.market-management-rules .need-tobacco,
 .market-view .canSell-tobacco{
     background: no-repeat url("../assets/images/tobacco-icon.png");
 }
 .market-view .need-sugar_cane,
 .village-trade-agreement .canSell-sugar_cane,
+.market-management-rules .need-sugar_cane,
 .market-view .canSell-sugar_cane{
     background: no-repeat url("../assets/images/sugar_cane-icon-1.png");
 }
@@ -233,27 +259,32 @@
 }
 .market-view .need-vine,
 .village-trade-agreement .canSell-vine,
+.market-management-rules .need-vine,
 .market-view .canSell-vine{
     background: no-repeat url("../assets/images/vine-icon.png");
 }
 .market-view .need-liquor,
 .village-trade-agreement .canSell-liquor,
+.market-management-rules .need-liquor,
 .market-view .canSell-liquor{
     background: no-repeat url("../assets/images/liquor.png");
 }
 .market-view .need-cigars,
 .village-trade-agreement .canSell-cigars,
+.market-management-rules .need-cigars,
 .market-view .canSell-cigars{
     background: no-repeat url("../assets/images/cigar-icon-1.png");
 }
 .market-view .need-chocolate,
 .village-trade-agreement .canSell-chocolate,
+.market-management-rules .need-chocolate,
 .market-view .canSell-chocolate{
     background: no-repeat url("../assets/images/chocolate-icon-4.png");
     filter: brightness(1.2) contrast(1.2);
 }
 .market-view .need-ground_coffee,
 .village-trade-agreement .canSell-ground_coffee,
+.market-management-rules .need-ground_coffee,
 .market-view .canSell-ground_coffee{
     background: no-repeat url("../assets/images/coffee-powder-icon-3.png");
 }
@@ -265,11 +296,13 @@
 }
 .market-view .need-jewelry,
 .village-trade-agreement .canSell-jewelry,
+.market-management-rules .need-jewelry,
 .market-view .canSell-jewelry{
     background: no-repeat url("../assets/images/jewelry-icon-1.png");
 }
 .market-view .need-clothes,
 .village-trade-agreement .canSell-clothes,
+.market-management-rules .need-clothes,
 .market-view .canSell-clothes{
     background: no-repeat url("../assets/images/clothes-icon-1.png");
 }
@@ -281,16 +314,19 @@
 }
 .market-view .need-wool,
 .village-trade-agreement .canSell-wool,
+.market-management-rules .need-wool,
 .market-view .canSell-wool{
     background: no-repeat url("../assets/images/wool-icon.png");
 }
 .market-view .need-lumber,
 .village-trade-agreement .canSell-lumber,
+.market-management-rules .need-lumber,
 .market-view .canSell-lumber{
     background: no-repeat url("../assets/images/lumber-icon.png");
 }
 .market-view .need-banana,
 .village-trade-agreement .canSell-banana,
+.market-management-rules .need-banana,
 .market-view .canSell-banana{
     background: no-repeat url("../assets/images/banana-icon.png");
 }
@@ -300,11 +336,13 @@
 }
 .market-view .need-orchards,
 .village-trade-agreement .canSell-orchards,
+.market-management-rules .need-orchards,
 .market-view .canSell-orchards{
     background: no-repeat url("../assets/images/orchards-icon-1.png");
 }
 .market-view .need-meat,
 .village-trade-agreement .canSell-meat,
+.market-management-rules .need-meat,
 .market-view .canSell-meat{
     background: no-repeat url("../assets/images/meat-icon.png");
 }
@@ -314,6 +352,7 @@
 }
 .market-view .need-fish,
 .village-trade-agreement .canSell-fish,
+.market-management-rules .need-fish,
 .market-view .canSell-fish{
     background: no-repeat url("../assets/images/fish-icon-2.png");
 }
@@ -323,15 +362,16 @@
 }
 .market-view .need-food,
 .village-trade-agreement .canSell-food,
+.market-management-rules .need-food,
 .market-view .canSell-food{
     background: no-repeat url("../assets/images/canned-food-icon.png");
 }
 .village-needs .need-food,
 .market-can-sell .canSell-food{
-    bottom: 15px;
+    bottom: 14px;
 }
 .village-nearby-market{
-    width: calc((100% / 3) - 10px);
+    /* width: calc((100% / 3) - 10px); */
     height: 100%;
     padding-bottom: 25px;
 }
@@ -420,7 +460,8 @@
 
 .market-view .this-market-buy .need-icon,
 .village-trade-agreement .canSell-icon,
-.market-view .this-market-sells .canSell-icon{
+.market-view .this-market-sells .canSell-icon,
+.village-markets-offers .canSell-icon{
     width: 16px;
     height: 16px;
     bottom: unset;
@@ -540,39 +581,49 @@
     top: 25px;
 }
 .trade-agreement-terms ul,
-.trade-agreement-terms ul li{
+.trade-agreement-terms ul li,
+.village-markets-offers ul,
+.village-markets-offers ul li{
     display: flex;
     list-style: none;
     gap: 5px;
 }
-.trade-agreement-terms ul{
+.village-markets-offers ul li{
+    gap: 0px;
+}
+.trade-agreement-terms ul,
+.village-markets-offers ul{
     flex-wrap: wrap;
 }
-.trade-agreement-terms ul li{
+.trade-agreement-terms ul li,
+.village-markets-offers ul li{
     width: fit-content;
     padding: 0px !important;
     margin: 0px !important;
     list-style: none;
 }
-.village-trade-agreement .select-option-container .prod-canSell{
+.village-trade-agreement .select-option-container .prod-canSell,
+.village-markets-offers .select-option-container .prod-canSell{
     background: none;
     box-shadow: none;
 }
-.village-trade-agreement ul.selected-marketed-resources li{
+.village-trade-agreement ul.selected-marketed-resources li,
+.village-markets-offers ul.selected-marketed-resources li{
     margin-right: 10px !important;
 }
 .village-trade-agreement .selected-marketed-resources{
     padding: 15px 10px;
 }
-.village-trade-agreement .selected-marketed-resources .prod-canSell{
+.village-trade-agreement .selected-marketed-resources .prod-canSell,
+.village-markets-offers .selected-marketed-resources .prod-canSell{
     /* width: 32px;
     height: 32px; */
     background: transparent;
     box-shadow: none;
 }
-.village-trade-agreement .selected-marketed-resources .canSell-icon{
-    /* width: 20px;
-    height: 20px; */
+.village-markets-offers .selected-marketed-resources .prod-canSell{
+    width: 24px;
+    height: 24px;
 }
 .village-trade-agreement .selected-marketed-resources .terms-select{
     left: -3px;
@@ -655,4 +706,170 @@ input[type=range] ~ datalist option {
     background: 0 0;
     padding: 0;
     text-align: center;
+}
+.village-markets-offers {
+    padding: 0 10px;
+    height: 315px;
+    overflow-y: overlay;
+}
+.village-markets-offers .market-tax{
+    margin-left: 25px;
+}
+.market-sellOrder-prod.sold{
+    box-shadow: inset 0px 0px 10px 5px #ff00005e;
+    padding-right: 7px !important;
+    border-radius: 7px;
+}
+.village-markets-offers li{
+    cursor: pointer;
+}
+.village-markets-offers li.market-sellOrder-prod:hover .info-text{
+    display: block;
+    font-size: 10px;
+    top: -15px;
+}
+.resource-price{
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 12px;
+    font-weight: 500;
+}
+.resource-price-gold{
+    width: 12px;
+    height: 12px;
+    background: gold;
+    border: 2px solid goldenrod;
+    border-radius: 50%;
+}
+
+.market-management-table-body{
+    width: calc(100% + 5px);
+    height: 260px;
+    overflow-y: overlay;
+    padding-bottom: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    font-size: 10px;
+}
+
+td {
+    position: relative;
+    padding: 4px;
+    border: 1px solid #c2ae93a8;
+}
+
+th {
+    padding: 5px;
+    color: #333;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    background-color: #b1936f;
+    font-size: 12px;
+    border-right: 1px solid #c2ae93a8;
+}
+th:first-child{
+    border-top-left-radius: 5px;
+}
+th:last-child{
+    border-top-right-radius: 5px;
+    border-right: unset;
+}
+.resource-column{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 5px;
+}
+
+td input {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    background: unset;
+    border: unset;
+    transform: translateY(-50%);
+    user-select: none !important;
+}
+td input:focus-visible {
+    outline: unset;
+}
+td:not(.col-action):focus-within::after {
+    width: 100%;
+    height: 100%;
+    left: 50%;
+    top: 0px;
+}
+td::after {
+    content: '';
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 0px;
+    height: 0px;
+    /* opacity: 0.2; */
+    background-color: #5f370740;
+    transform: translateX(-50%);
+    transition: width 250ms ease-in-out;
+}
+.col-resource{
+    width: 20%;
+}
+.col-stock{
+    width: 20%;
+}
+.col-buy{
+    width: 20%;
+}
+.col-sell{
+    width: 20%;
+}
+.col-action{
+    width: 20%;
+}
+/* tbody tr{
+    box-shadow: inset 0px 0px 7px 5px #dab377;
+} */
+tbody tr.prioritize{
+    box-shadow: inset 0px 0px 5px 3px #f2736063;
+}
+
+tbody tr.purchase{
+    box-shadow: inset 0px 0px 5px 3px #2cb917b0;
+}
+tbody tr.sale{
+    box-shadow: inset 0px 0px 5px 3px #609ff2d6;
+}
+tbody tr:hover{
+    cursor: pointer;
+    box-shadow: inset 0px 0px 5px 3px #dab377;
+    background-color: #ffffffbf !important;
+    transition: background-color 150ms ease-in-out;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+    display: none;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield; /* Pour Firefox */
+}
+
+.market-rules-btn{
+    border: 2px solid #b1936fb8;
+}
+.market-rules-btn:not(:disabled):hover{
+    border-color: #2a7435de;
+    border-radius: 4px;
+    transition: border-radius 150ms ease-in-out;
+    transition: border-color 300ms ease-in-out;
+    box-shadow: inset 0px 0px 7px 0px #2a74358a;
 }
