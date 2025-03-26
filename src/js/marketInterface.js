@@ -388,8 +388,7 @@ function tradeAgreementResources(villageId, tradeVillageId, selector){
     tradeOptionUL.className = `selected-marketed-resources`;
     const options = tradeMarket.marketCanSell;
     options.forEach(resource => {
-        // const tradeAgreement = village.tradeAgreement.find(agreement => agreement.villageid === tradeVillage.id);
-        const isSelected = selectedResources.has(resource); // tradeAgreement?.resources.find(resource => resource.type === option);
+        const isSelected = selectedResources.has(resource);
 
         const tradeOptionLI = document.createElement('li');
         tradeOptionLI.className = `resource`;
@@ -580,33 +579,6 @@ function removeMarketRule(villageId, type) {
 
 }
 
-/* function populateMarketTable() {
-    const tableBody = document.getElementById("market-rules");
-    tableBody.innerHTML = ""; // Reset
-
-    allResources.forEach(resource => {
-        const isNeed = evaluateMarketsNeeds(resource); // Simule la demande active
-
-        const row = document.createElement("tr");
-        row.innerHTML = `
-            <td>${resource}</td>
-            <td id="stock-${resource}">0</td>
-            <td><input type="number" id="buy-${resource}" placeholder="--"></td>
-            <td><input type="number" id="sell-${resource}" placeholder="--"></td>
-            <td>
-                <button class="btn-buy" data-type="${resource}">🛒</button>
-                <button class="btn-sell" data-type="${resource}">💰</button>
-                <button class="btn-clear" data-type="${resource}">❌</button>
-            </td>
-        `;
-
-        if (isNeed) {
-            row.style.background = "#eaf6ff"; // Bleu clair pour ressources demandées
-        }
-
-        tableBody.appendChild(row);
-    });
-} */
 function displayTradeAgreementTimeLeft(expiration){
     const currentTime = Date.now();
     const remainingTime = Math.floor((expiration - currentTime ) / 1000);
@@ -619,38 +591,3 @@ function displayTradeAgreementTimeLeft(expiration){
     }
     return `${jours}jour`;
 }
-
-/* nearbyMarketList.forEach(market => {
-        const marketSellsOrders = market.sellOrders;
-        if (marketSellsOrders.length <= 0) return;
-        const marketVillage = market.getBuildingVillage().village;
-        const tradeAgreement = marketVillage.tradeAgreement.find(agreement => agreement.id === villageId);
-        const tradeAgreementInfo = (tradeAgreement)? 
-                `<div class="trade-agreement-info">
-                    Accord commercial expire dans ${displayTradeAgreementTimeLeft(tradeAgreement.expiration)}
-                    <span class="market-tax">Taxes: ${Math.round(tradeAgreement.taxAmount * 100)}%</span>
-                </div>` :
-                `<div class="trade-agreement-info">
-                    Aucun accord commercial
-                    <span class="market-tax">Taxes: ${Math.round(market.baseTax * 100)}%</span>
-                </div>`;
-        const marketSellsOrdersDiv = document.createElement('div');
-        marketSellsOrdersDiv.id = `market-${market.id}`;
-        marketSellsOrdersDiv.className = `market-sellOrders`;
-        marketSellsOrdersDiv.innerHTML = `<div class="market-village-name">${marketVillage.name}${tradeAgreementInfo}</div>`;
-        const tradeOptionUL = document.createElement('ul');
-        tradeOptionUL.className = `selected-marketed-resources`;
-        marketSellsOrders.forEach(SellsOrder => {
-            // if (SellsOrder.soldTo) return;
-            const sellOrderLI = document.createElement('li');
-            sellOrderLI.className = `market-sellOrder-prod resource ${(SellsOrder.soldTo)? "sold":"" }`;
-            sellOrderLI.innerHTML = `<div class="prod-canSell">
-                    <div class="canSell-icon canSell-${SellsOrder.type}"></div>
-                    <span  class="info-text" style="color:#333">${SellsOrder.quantity} ${ressourceFrName(SellsOrder.type)||""}</span>
-                </div>
-                <span class="resource-price"><div class="resource-price-gold"></div>${SellsOrder.price}</span>`;
-            tradeOptionUL.appendChild(sellOrderLI);
-        });
-        marketSellsOrdersDiv.appendChild(tradeOptionUL);
-        marketsOffers.after(marketSellsOrdersDiv);
-    }); */
