@@ -174,7 +174,7 @@ $(document).ready(function () {
         displayConstructionTimeLeft($this);
         setInterval(() => {
             displayConstructionTimeLeft($this)
-        }, 1000)
+        }, 1000);
     });
     function displayConstructionTimeLeft($this){
         const statTime = parseInt($this.attr("statTime"));
